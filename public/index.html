@@ -16,6 +16,9 @@
 <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
 <script>eruda.init();</script>
 
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
 <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
 <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
 <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -372,34 +375,32 @@ function App(){
   // ── ONBOARD ──
   const[ob,setOb]=useState({step:0,goal:"",pref:"",age:"",weight:"",height:"",gender:"m"});
 
-  // 🔥 FIREBASE INITIALIZATION & SYNC LOGIC 🔥
+  // 🔥 FIXED: FIREBASE INITIALIZATION & SYNC LOGIC 🔥
   useEffect(() => {
     const initFirebase = async () => {
       try {
-        const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js");
-        const { getFirestore, doc, getDoc, setDoc } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js");
+        if (!window.firebase.apps.length) {
+          window.firebase.initializeApp({
+            apiKey: "AIzaSyBaNFG34QfaciXeOVQWQtNGoMI65ozEVTA",
+            authDomain: "cosfit-af85d.firebaseapp.com",
+            projectId: "cosfit-af85d",
+            storageBucket: "cosfit-af85d.firebasestorage.app",
+            messagingSenderId: "58737921778",
+            appId: "1:58737921778:web:1dbd0913dfbbf05f494a6b"
+          });
+        }
         
-        const app = initializeApp({
-          apiKey: "AIzaSyBaNFG34QfaciXeOVQWQtNGoMI65ozEVTA",
-          authDomain: "cosfit-af85d.firebaseapp.com",
-          projectId: "cosfit-af85d",
-          storageBucket: "cosfit-af85d.firebasestorage.app",
-          messagingSenderId: "58737921778",
-          appId: "1:58737921778:web:1dbd0913dfbbf05f494a6b"
-        });
+        const db = window.firebase.firestore();
+        window.fbDB = db; // Global access for sync
         
-        const db = getFirestore(app);
-        window.fbDB = db; // Make global for sync function
+        const docRef = db.collection("app_data").doc("foods_menu");
+        const snap = await docRef.get();
         
-        // Fetch foods from Firebase
-        const docRef = doc(db, "app_data", "foods_menu");
-        const snap = await getDoc(docRef);
-        
-        if (snap.exists()) {
+        if (snap.exists) {
           setFoods(snap.data());
         } else {
           // Upload INIT_FOODS if database is empty
-          await setDoc(docRef, INIT_FOODS);
+          await docRef.set(INIT_FOODS);
         }
       } catch (err) { console.error("Firebase Error: ", err); }
     };
@@ -409,9 +410,8 @@ function App(){
   // Helper to sync modified foods to Firebase instantly
   const syncToFirebase = async (newFoodsData) => {
     try {
-      const { doc, setDoc } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js");
       if (window.fbDB) {
-        await setDoc(doc(window.fbDB, "app_data", "foods_menu"), newFoodsData);
+        await window.fbDB.collection("app_data").doc("foods_menu").set(newFoodsData);
       }
     } catch (err) { console.error("Sync Error: ", err); }
   };
