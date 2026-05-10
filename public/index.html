@@ -12,9 +12,13 @@
 <link rel="manifest" href="manifest.json"/>
 <link rel="apple-touch-icon" href="icon.png"/>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
-  
+
+<script src="https://cdn.jsdelivr.net/npm/eruda"></script>
+<script>eruda.init();</script>
+
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
 
 <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
 <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
@@ -95,54 +99,36 @@ const INIT_FOODS={
     breakfast:[
       {id:1,name:"Green Detox Smoothie",desc:"Spinach, apple, ginger, lemon",cal:185,p:5,c:32,f:3,price:129,emoji:"🥤",tag:"Detox",time:"5m",active:true,stock:true},
       {id:2,name:"Oats Berry Bowl",desc:"Rolled oats, mixed berries, chia seeds",cal:240,p:9,c:38,f:5,price:149,emoji:"🥣",tag:"High Fiber",time:"8m",active:true,stock:true},
-      {id:3,name:"Egg White Wrap",desc:"3 egg whites, spinach, whole grain",cal:210,p:22,c:18,f:4,price:169,emoji:"🌯",tag:"Protein",time:"10m",active:true,stock:true},
-      {id:4,name:"Watermelon Mint Juice",desc:"Fresh watermelon, mint, lime",cal:90,p:1,c:22,f:0,price:89,emoji:"🍉",tag:"Low Cal",time:"3m",active:true,stock:true},
     ],
     lunch:[
       {id:5,name:"Grilled Chicken Salad",desc:"Lettuce, tomato, cucumber, lemon dressing",cal:320,p:34,c:12,f:11,price:229,emoji:"🥗",tag:"Low Carb",time:"15m",active:true,stock:true},
       {id:6,name:"Millet Khichdi",desc:"Foxtail millet, moong dal, turmeric",cal:290,p:13,c:48,f:5,price:179,emoji:"🍲",tag:"Gluten Free",time:"18m",active:true,stock:true},
-      {id:7,name:"Tuna Quinoa Bowl",desc:"Quinoa, tuna, avocado, cherry tomato",cal:380,p:36,c:28,f:12,price:279,emoji:"🥙",tag:"Omega-3",time:"12m",active:true,stock:true},
     ],
     dinner:[
       {id:8,name:"Steamed Fish & Greens",desc:"Tilapia, broccoli, beans, lemon",cal:310,p:38,c:10,f:12,price:259,emoji:"🐟",tag:"Heart Healthy",time:"20m",active:true,stock:true},
       {id:9,name:"Moong Dal Soup",desc:"Green lentil, ginger, pepper, coriander",cal:195,p:13,c:28,f:3,price:139,emoji:"🍵",tag:"Digestive",time:"15m",active:true,stock:true},
-      {id:10,name:"Zucchini Noodles",desc:"Zucchini, cherry tomato, basil pesto",cal:225,p:8,c:20,f:11,price:199,emoji:"🍝",tag:"Low Carb",time:"12m",active:true,stock:true},
     ],
   },
   muscle_gain:{
     breakfast:[
       {id:11,name:"Protein Power Bowl",desc:"4 eggs, oats, banana, peanut butter",cal:620,p:42,c:58,f:18,price:219,emoji:"💪",tag:"Muscle Fuel",time:"12m",active:true,stock:true},
-      {id:12,name:"Chicken Omelette",desc:"Chicken strips, 3 eggs, cheese, peppers",cal:540,p:48,c:8,f:22,price:239,emoji:"🍳",tag:"High Protein",time:"12m",active:true,stock:true},
-      {id:13,name:"Mass Gainer Shake",desc:"Milk, banana, oats, whey, almond butter",cal:780,p:55,c:80,f:20,price:249,emoji:"🥛",tag:"Mass Builder",time:"5m",active:true,stock:true},
     ],
     lunch:[
       {id:14,name:"Chicken Quinoa Feast",desc:"250g grilled chicken, quinoa, broccoli",cal:680,p:56,c:55,f:16,price:329,emoji:"🍗",tag:"Muscle Gain",time:"20m",active:true,stock:true},
-      {id:15,name:"Paneer Power Thali",desc:"Paneer tikka, brown rice, dal, salad",cal:720,p:44,c:72,f:24,price:299,emoji:"🧀",tag:"Vegetarian",time:"22m",active:true,stock:true},
-      {id:16,name:"Salmon Rice Bowl",desc:"Grilled salmon, jasmine rice, edamame",cal:660,p:52,c:60,f:18,price:349,emoji:"🍣",tag:"Omega-3",time:"18m",active:true,stock:true},
     ],
     dinner:[
       {id:17,name:"Steak & Sweet Potato",desc:"Lean beef steak, sweet potato mash",cal:690,p:54,c:48,f:22,price:389,emoji:"🥩",tag:"Iron Rich",time:"25m",active:true,stock:true},
-      {id:18,name:"Tuna Pasta Bake",desc:"Whole wheat pasta, tuna, tomato sauce",cal:610,p:46,c:65,f:12,price:269,emoji:"🍝",tag:"High Protein",time:"20m",active:true,stock:true},
-      {id:19,name:"Egg Bhurji & Roti",desc:"Scrambled eggs, 2 whole wheat rotis",cal:520,p:38,c:42,f:18,price:189,emoji:"🥚",tag:"Classic",time:"15m",active:true,stock:true},
     ],
   },
   general:{
     breakfast:[
       {id:20,name:"Avocado Toast",desc:"Multigrain bread, avocado, seeds, lemon",cal:310,p:10,c:34,f:16,price:179,emoji:"🥑",tag:"Healthy Fat",time:"8m",active:true,stock:true},
-      {id:21,name:"Idli Sambar",desc:"3 idlis, sambar, coconut chutney",cal:280,p:9,c:52,f:3,price:119,emoji:"🫕",tag:"Traditional",time:"10m",active:true,stock:true},
-      {id:22,name:"Masala Dosa",desc:"Crispy dosa, potato masala, chutneys",cal:370,p:8,c:62,f:10,price:149,emoji:"🫓",tag:"Traditional",time:"15m",active:true,stock:true},
-      {id:23,name:"Banana Walnut Smoothie",desc:"Banana, walnut, dates, almond milk",cal:340,p:8,c:48,f:12,price:149,emoji:"🍌",tag:"Energy",time:"5m",active:true,stock:true},
     ],
     lunch:[
       {id:24,name:"Dal Tadka & Brown Rice",desc:"Yellow dal, ghee, brown rice, pickle",cal:440,p:18,c:72,f:8,price:159,emoji:"🍚",tag:"Classic",time:"18m",active:true,stock:true},
-      {id:25,name:"Chicken Biryani Bowl",desc:"Basmati rice, chicken, saffron, raita",cal:520,p:32,c:62,f:14,price:249,emoji:"🍛",tag:"Flavourful",time:"25m",active:true,stock:true},
-      {id:26,name:"Veggie Buddha Bowl",desc:"Roasted veg, chickpeas, tahini, greens",cal:420,p:16,c:58,f:14,price:219,emoji:"🥗",tag:"Plant Based",time:"15m",active:true,stock:true},
-      {id:27,name:"Rajma Chawal",desc:"Red kidney beans, white rice, salad",cal:480,p:20,c:78,f:8,price:149,emoji:"🫘",tag:"Protein Rich",time:"20m",active:true,stock:true},
     ],
     dinner:[
       {id:28,name:"Palak Paneer & Roti",desc:"Spinach gravy, cottage cheese, 2 rotis",cal:390,p:22,c:44,f:14,price:189,emoji:"🥬",tag:"Iron Rich",time:"20m",active:true,stock:true},
-      {id:29,name:"Grilled Veg Platter",desc:"Mixed grilled veg, hummus, pita bread",cal:320,p:12,c:48,f:8,price:199,emoji:"🫕",tag:"Light",time:"15m",active:true,stock:true},
-      {id:30,name:"Fish Curry & Rice",desc:"Tilapia fish curry, steamed basmati rice",cal:430,p:36,c:52,f:10,price:229,emoji:"🐠",tag:"Omega-3",time:"22m",active:true,stock:true},
     ],
   },
 };
@@ -372,18 +358,18 @@ function App(){
   // ── ONBOARD ──
   const[ob,setOb]=useState({step:0,goal:"",pref:"",age:"",weight:"",height:"",gender:"m"});
 
-  // 🔥 FIXED: FIREBASE INITIALIZATION & SYNC LOGIC 🔥
+  // 🔥 FIREBASE INITIALIZATION & SYNC LOGIC 🔥
   useEffect(() => {
     const initFirebase = async () => {
       try {
         if (!window.firebase.apps.length) {
           window.firebase.initializeApp({
-            apiKey: "AIzaSyBaNFG34QfaciXeOVQWQtNGoMI65ozEVTA",
-            authDomain: "cosfit-af85d.firebaseapp.com",
-            projectId: "cosfit-af85d",
-            storageBucket: "cosfit-af85d.firebasestorage.app",
-            messagingSenderId: "58737921778",
-            appId: "1:58737921778:web:1dbd0913dfbbf05f494a6b"
+            apiKey: "AIzaSyBvD-i0yV6u6iV6u6iV6u6iV6u6iV6u6iV6",
+            authDomain: "cosfit-4395b.firebaseapp.com",
+            projectId: "cosfit-4395b",
+            storageBucket: "cosfit-4395b.firebasestorage.app",
+            messagingSenderId: "821360181518",
+            appId: "1:821360181518:android:3e0205c069273577d24276"
           });
         }
         
@@ -441,31 +427,51 @@ function App(){
   const aiTips=user?getAITips(user,orders):[];
   const menuItems=(foods[mGoal]?.[mMeal]||[]).filter(i=>i.active&&i.stock&&(!search||i.name.toLowerCase().includes(search.toLowerCase())||i.tag.toLowerCase().includes(search.toLowerCase())));
 
-  // ── AUTH HANDLERS ──
+  // ── AUTH HANDLERS WITH FIREBASE ──
   const handleRegister=()=>{
     setAuthErr("");
     if(!rName || !rUsername || !rEmail || !phone || !rPassword) return setAuthErr("All fields are required");
     if(rPassword !== rConfirm) return setAuthErr("Passwords do not match");
     if(rPassword.length < 6) return setAuthErr("Password must be at least 6 characters");
     if(!rEmail.includes("@")) return setAuthErr("Enter a valid email address");
-    if(users.find(u=>u.username===rUsername.toLowerCase() || u.email===rEmail.toLowerCase() || u.phone===phone)) return setAuthErr("User already exists.");
-    const nu={ id:nid(), name:rName.trim(), username:rUsername.toLowerCase().trim(), email:rEmail.toLowerCase().trim(), phone, password:rPassword, avatar:"😊", plan:null, planActivatedAt:null, address:"", goal:"general", pref:"all", age:"25", weight:"70", height:"175", gender:"m", joinedAt:new Date().toISOString() };
-    setUsers(p=>[...p,nu]); setUser(nu); setScr("onboard"); pop("Account created successfully! 🎉");
+    
+    window.firebase.auth().createUserWithEmailAndPassword(rEmail.toLowerCase().trim(), rPassword)
+      .then((userCredential) => {
+        const nu={ id:userCredential.user.uid, name:rName.trim(), username:rUsername.toLowerCase().trim(), email:rEmail.toLowerCase().trim(), phone, password:rPassword, avatar:"😊", plan:null, planActivatedAt:null, address:"", goal:"general", pref:"all", age:"25", weight:"70", height:"175", gender:"m", joinedAt:new Date().toISOString() };
+        setUsers(p=>[...p,nu]); setUser(nu); setScr("onboard"); pop("Account created successfully! 🎉");
+      })
+      .catch((error) => {
+        setAuthErr(error.message);
+      });
   };
 
   const handleLogin=()=>{
     setAuthErr("");
-    if(!loginId || !loginPassword) return setAuthErr("Enter Username/Email and Password");
-    const u = users.find(x=>(x.email===loginId.toLowerCase() || x.username===loginId.toLowerCase()) && x.password===loginPassword);
-    if(!u) return setAuthErr("Invalid credentials. Please try again.");
-    setUser(u); setMGoal(u.goal||"general"); setScr("app"); pop(`Welcome back, ${u.name.split(" ")[0]}! 👋`);
+    if(!loginId || !loginPassword) return setAuthErr("Enter Email and Password");
+    
+    window.firebase.auth().signInWithEmailAndPassword(loginId.toLowerCase().trim(), loginPassword)
+      .then((userCredential) => {
+        let u = users.find(x=>(x.email===loginId.toLowerCase() || x.username===loginId.toLowerCase()));
+        if(!u) {
+            u = { id:userCredential.user.uid, name:loginId.split("@")[0], email:loginId.toLowerCase(), username:loginId.split("@")[0], phone:"-", password:loginPassword, avatar:"😊", plan:null, address:"", goal:"general", pref:"all", age:"25", weight:"70", height:"175", gender:"m" };
+            setUsers(p=>[...p,u]);
+        }
+        setUser(u); setMGoal(u.goal||"general"); setScr("app"); pop(`Welcome back, ${u.name.split(" ")[0]}! 👋`);
+      })
+      .catch((error) => {
+        setAuthErr("Invalid credentials. Please try again.");
+      });
   };
 
   const handleForgotEmail=()=>{ setAuthErr(""); if(!fEmail.includes("@")) return setAuthErr("Enter a valid email"); if(!users.find(x=>x.email===fEmail.toLowerCase())) return setAuthErr("No account found"); setOtpArr(["","","","",""]); setAuthStep("otp"); pop("OTP sent to your email!"); };
   const handleForgotOTP=()=>{ setAuthErr(""); if(otpArr.join("")!=="12345") return setAuthErr("Wrong OTP. Try 12345 for demo"); setAuthStep("reset"); pop("OTP Verified!"); };
   const handleForgotReset=()=>{ setAuthErr(""); if(fNewPass.length<6) return setAuthErr("Password must be at least 6 characters"); setUsers(p=>p.map(u=>u.email===fEmail.toLowerCase()?{...u,password:fNewPass}:u)); setAuthTab("login"); setAuthStep("email"); pop("Password updated successfully!"); };
   const handleAdminLogin=()=>{ const a=admins.find(x=>x.username===adminUsername&&x.password===adminPw&&x.active); if(!a){pop("Wrong admin credentials!",true);return;} setAdminUser(a);setIsAdmin(true);setModal(null);setTab("admin");setAdminUsername("");setAdminPw("");pop(`Welcome ${a.name}! 🎉`); };
-  const handleSignOut=()=>{ setScr("auth"); setUser(null); setCart([]); setNotifs([]); setIsAdmin(false); setAdminUser(null); setTab("home"); setLoginId(""); setLoginPassword(""); setAuthTab("login"); setAuthErr(""); };
+  const handleSignOut=()=>{ 
+    window.firebase.auth().signOut().then(()=>{
+      setScr("auth"); setUser(null); setCart([]); setNotifs([]); setIsAdmin(false); setAdminUser(null); setTab("home"); setLoginId(""); setLoginPassword(""); setAuthTab("login"); setAuthErr(""); 
+    });
+  };
 
   // ── CART & ORDER ──
   const addToCart=item=>{setCart(p=>{const e=p.find(c=>c.id===item.id);return e?p.map(c=>c.id===item.id?{...c,qty:c.qty+1}:c):[...p,{...item,qty:1}];});pop(`${item.emoji} Added to cart!`);setModal(null);};
