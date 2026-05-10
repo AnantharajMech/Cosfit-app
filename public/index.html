@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+<title>Cosfit — Eat Smart Live Strong</title>
+<meta name="description" content="Smart fitness food delivery by Coscoom Creative Tech Solutions"/>
+<meta name="theme-color" content="#4ade80"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<link rel="manifest" href="/manifest.json"/>
+<link rel="apple-touch-icon" href="/icon.png"/>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{background:#060c08;overflow-x:hidden;width:100%;font-family:'Inter',sans-serif}
+#root{width:100%;max-width:430px;margin:0 auto;overflow-x:hidden;position:relative}
+::-webkit-scrollbar{display:none}
+input,textarea,select{font-family:'Inter',sans-serif;box-sizing:border-box;-webkit-appearance:none;outline:none;border:none}
+button{cursor:pointer;border:none;outline:none}
+button:active{transform:scale(.92)!important;transition:transform .08s!important}
+@keyframes pop{from{opacity:0;transform:scale(.15)}to{opacity:1;transform:scale(1)}}
+@keyframes up{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes slideUp{from{opacity:0;transform:translateY(100%)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes cIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+@keyframes notif{from{opacity:0;transform:translateY(-80px)}to{opacity:1;transform:translateY(0)}}
+@keyframes dot{0%,100%{opacity:.1}50%{opacity:1}}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.18)}}
+@keyframes toast{from{opacity:0;transform:translateX(-50%) translateY(-20px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+@keyframes install{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+.spin{animation:spin 1s linear infinite}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const {useState,useEffect,useRef,useCallback}=React;
+
+// ── DESIGN TOKENS ────────────────────────────────────────────────
+const N={fontFamily:"'Nunito',sans-serif"};
+const F={fontFamily:"'Inter',sans-serif"};
+const C={
+  bg:"#060c08",surf:"#0c1610",card:"#101a13",card2:"#142019",
+  b:"#1b2d1f",b2:"#243829",
+  g:"#4ade80",gG:"linear-gradient(135deg,#4ade80,#22c55e)",
+  o:"#fb923c",gO:"linear-gradient(135deg,#fb923c,#f97316)",
+  gold:"#fbbf24",w:"#edf8f0",m:"#5e7d68",m2:"#3d5545",
+  r:"#f87171",blue:"#60a5fa",pur:"#a78bfa",
+};
+
+const COMPANY={name:"Coscoom Creative Tech Solutions",brand:"Idappadi Creators",email:"anantharajeinstein@gmail.com",phone:"8778148899",addr:"21/AJ,68,New Street,Kavandampatti,Idappadi,Salem-637101",state:"Tamilnadu"};
+const GOALS=[{id:"weight_loss",label:"Weight Loss",icon:"⚖️",calMod:-500},{id:"muscle_gain",label:"Muscle Gain",icon:"💪",calMod:300},{id:"general",label:"Stay Fit",icon:"🌿",calMod:0}];
+const PREFS=[{id:"all",label:"Everything",icon:"🍽"},{id:"veg",label:"Vegetarian",icon:"🥦"},{id:"nonveg",label:"Non-Veg",icon:"🍗"},{id:"vegan",label:"Vegan",icon:"🌱"}];
+const MEALS=["breakfast","lunch","dinner"];
+const MIC={breakfast:"☀️",lunch:"🌤",dinner:"🌙"};
+const AVATARS=["😊","💪","🌟","🏃","🧘","🥗","🔥","⚡","🌈","🎯","👑","🦁","🎮","🎵","✨","💎","🌺","🦊","🐯","🌸"];
+const ORDER_STEPS=[{icon:"✅",label:"Order Confirmed",msg:"Your order is confirmed! We're on it."},{icon:"👨‍🍳",label:"Preparing Food",msg:"Chefs are cooking your fresh meal!"},{icon:"📦",label:"Order Packed",msg:"Packed & ready for pickup."},{icon:"🛵",label:"Out for Delivery",msg:"Rider is heading to you now!"},{icon:"🎉",label:"Delivered!",msg:"Enjoy your meal! Stay fit 💪"}];
+
+// ── API HELPERS ───────────────────────────────────────────────────
+const TK='cosfit_tk';
+const ATK='cosfit_atk';
+const getToken  = ()=>localStorage.getItem(TK)||'';
+const setToken  = t=>t?localStorage.setItem(TK,t):localStorage.removeItem(TK);
+const getAToken = ()=>localStorage.getItem(ATK)||'';
+const setAToken = t=>t?localStorage.setItem(ATK,t):localStorage.removeItem(ATK);
+
+const api = async (endpoint, opts={})=>{
+  const tk = opts.admin ? getAToken() : getToken();
+  const headers = {'Content-Type':'application/json', ...(tk?{Authorization:`Bearer ${tk}`}:{}), ...(opts.headers||{})};
+  const res = await fetch(endpoint, {...opts, headers, body: opts.body?JSON.stringify(opts.body):undefined});
+  const data = await res.json();
+  if(!res.ok) throw new Error(data.error||`Request failed (${res.status})`);
+  return data;
+};
+
+// ── HELPERS ──────────────────────────────────────────────────────
+const tdee=(w,h,a,g,goal)=>{
+  const bmr=g==="f"?10*w+6.25*h-5*a-161:10*w+6.25*h-5*a+5;
+  return Math.round(bmr*1.55)+((GOALS.find(x=>x.id===goal))||{calMod:0}).calMod;
+};
+const getGreeting=(name,goal,orders)=>{
+  const hr=new Date().getHours();
+  const fn=name?.split(" ")[0]||"there";
+  let greeting,icon,meal,tip,sticker;
+  if(hr>=5&&hr<12){greeting="Good Morning";icon="☀️";meal="breakfast";sticker="🌅";tip=goal==="weight_loss"?"Start light – your detox smoothie awaits!":goal==="muscle_gain"?"Fuel up! High-protein breakfast time 💪":"Kick off your day with a healthy breakfast!";}
+  else if(hr>=12&&hr<17){greeting="Good Afternoon";icon="🌤";meal="lunch";sticker="🌞";tip=goal==="weight_loss"?"Stay on track – choose your low-cal lunch!":goal==="muscle_gain"?"Lunch = muscle building time! Eat big 💪":"Keep your energy going – it's lunch time!";}
+  else if(hr>=17&&hr<21){greeting="Good Evening";icon="🌆";meal="dinner";sticker="🌇";tip=goal==="weight_loss"?"Light dinner = better sleep & weight loss!":goal==="muscle_gain"?"Recovery dinner – protein is key tonight!":"Wind down with a nutritious dinner!";}
+  else{greeting="Good Night";icon="🌙";meal="dinner";sticker="🌃";tip="Light meal recommended for better sleep 😴";}
+  const loyalty=orders.length>=10?"🏆 Top customer!":orders.length>=5?"⭐ Loyal member!":orders.length>=2?"✨ Regular customer!":"";
+  return{greeting,icon,meal,tip,sticker,loyalty,fn};
+};
+const getAITips=(user,orders)=>{
+  const tips=[];const hr=new Date().getHours();if(!user)return[];
+  if(orders.length===0)tips.push({icon:"🎯",text:"Place your first order and start your fitness journey!",color:C.g});
+  if(hr>=7&&hr<9)tips.push({icon:"⚡",text:"Morning boost: Have breakfast within 1 hour of waking!",color:C.gold});
+  if(user.goal==="weight_loss")tips.push({icon:"💧",text:"Drink 2-3L water today to support weight loss",color:C.blue});
+  if(user.goal==="muscle_gain")tips.push({icon:"🥩",text:`Protein target: ${Math.round((+user.weight||70)*2.2)}g today`,color:C.pur});
+  if(orders.length>0&&orders[0].status_idx<4)tips.push({icon:"🛵",text:"Your latest order is being tracked live!",color:C.g});
+  tips.push({icon:"📊",text:`Estimated ${Math.round(new Date().getHours()*65)} cal burned today`,color:C.g});
+  return tips.slice(0,3);
+};
+const fmt=d=>new Date(d).toLocaleString('en-IN',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});
+let NID=800;const nid=()=>++NID;
+
+// ── MINI COMPONENTS ──────────────────────────────────────────────
+function Toast({t}){
+  return <div style={{position:"fixed",top:22,left:"50%",transform:"translateX(-50%)",background:t.err?"rgba(248,113,113,.15)":"rgba(74,222,128,.12)",border:`1px solid ${t.err?"rgba(248,113,113,.5)":"rgba(74,222,128,.5)"}`,color:t.err?"#fca5a5":"#4ade80",padding:"12px 22px",borderRadius:50,fontWeight:700,fontSize:13,zIndex:9999,whiteSpace:"nowrap",maxWidth:"88vw",...F,animation:"toast .35s cubic-bezier(.34,1.56,.64,1) both",boxShadow:"0 8px 32px rgba(0,0,0,.5)"}}>
+    {t.msg}
+  </div>;
+}
+function NBanner({n,onClose}){
+  return <div onClick={onClose} style={{position:"fixed",top:0,left:"50%",transform:"translateX(-50%)",width:"100%",maxWidth:430,zIndex:9990,background:"linear-gradient(135deg,#0c1610,#142019)",borderBottom:"1px solid rgba(74,222,128,.3)",padding:"14px 20px 16px",display:"flex",alignItems:"center",gap:12,animation:"notif .45s cubic-bezier(.34,1.56,.64,1) both",boxShadow:"0 12px 40px rgba(0,0,0,.6)",cursor:"pointer"}}>
+    <div style={{width:44,height:44,background:"rgba(74,222,128,.15)",borderRadius:14,display:"flex",alignItems:"center",justifyContent:"center",fontSize:22,flexShrink:0}}>{n.icon}</div>
+    <div style={{flex:1,minWidth:0}}>
+      <div style={{color:C.g,fontWeight:800,fontSize:13,...N}}>{n.label}</div>
+      <div style={{color:C.m,fontSize:12,marginTop:2,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{n.msg}</div>
+    </div>
+    <div style={{color:C.m,fontSize:22,flexShrink:0}}>×</div>
+  </div>;
+}
+function Sheet({onClose,children,tall}){
+  return <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,.88)",zIndex:950,display:"flex",alignItems:"flex-end",justifyContent:"center",animation:"fadeIn .2s both"}} onClick={onClose}>
+    <div style={{background:C.surf,borderRadius:"28px 28px 0 0",width:"100%",maxWidth:430,padding:"22px 22px 44px",animation:"slideUp .35s cubic-bezier(.34,1.56,.64,1)",maxHeight:tall?"94vh":"82vh",overflowY:"auto"}} onClick={e=>e.stopPropagation()}>
+      <div style={{width:42,height:4,background:C.b,borderRadius:99,margin:"0 auto 20px"}}/>
+      {children}
+    </div>
+  </div>;
+}
+function Field({label,value,onChange,type="text",ph="",rows,min,note}){
+  const s={width:"100%",padding:"13px 16px",background:C.card,border:`1.5px solid ${value?"rgba(74,222,128,.5)":C.b}`,borderRadius:13,color:C.w,fontSize:14,...F,transition:"border-color .2s",boxSizing:"border-box"};
+  return <div style={{width:"100%"}}>
+    {label&&<div style={{fontSize:10,fontWeight:700,color:C.m,textTransform:"uppercase",letterSpacing:1.2,marginBottom:7,...F}}>{label}</div>}
+    {rows?<textarea rows={rows} value={value} onChange={e=>onChange(e.target.value)} placeholder={ph} style={{...s,resize:"none",lineHeight:1.7}}/>
+    :<input type={type} value={value} onChange={e=>onChange(type==="number"?+e.target.value:e.target.value)} placeholder={ph} min={min} style={s}/>}
+    {note&&<div style={{fontSize:11,color:C.m,marginTop:5,...F}}>{note}</div>}
+  </div>;
+}
+function Spinner(){return <div style={{width:18,height:18,border:"3px solid rgba(74,222,128,.2)",borderTopColor:C.g,borderRadius:"50%"}} className="spin"/>;}
+
+function PlanModal({plan,onSave,onClose}){
+  const blank={id:"p"+Date.now(),label:"",price:0,per:"month",save:"",hot:false,color:C.g,features:[""]};
+  const[d,setD]=useState(plan?{...plan,features:[...plan.features]}:blank);
+  const up=k=>v=>setD(p=>({...p,[k]:v}));
+  const addFeat=()=>setD(p=>({...p,features:[...p.features,""]}));
+  const updFeat=(i,v)=>setD(p=>{const f=[...p.features];f[i]=v;return{...p,features:f};});
+  const delFeat=i=>setD(p=>({...p,features:p.features.filter((_,j)=>j!==i)}));
+  const ok=d.label&&d.price>0;
+  return <Sheet onClose={onClose} tall>
+    <div style={{...N,color:C.g,fontWeight:900,fontSize:18,marginBottom:16}}>{plan?"✏️ Edit Plan":"➕ New Plan"}</div>
+    <div style={{display:"flex",flexDirection:"column",gap:12}}>
+      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
+        <Field label="Plan Name *" value={d.label} onChange={up("label")} ph="e.g. Weekly"/>
+        <Field label="Price (₹) *" value={d.price} onChange={up("price")} type="number" min={0}/>
+        <Field label="Period" value={d.per} onChange={up("per")} ph="week / month / year"/>
+        <Field label="Save Badge" value={d.save||""} onChange={v=>setD(p=>({...p,save:v||null}))} ph="Save 25%"/>
+      </div>
+      <button onClick={()=>setD(p=>({...p,hot:!p.hot}))} style={{padding:"12px",borderRadius:12,background:d.hot?"rgba(74,222,128,.12)":"transparent",border:`1.5px solid ${d.hot?C.g:C.b}`,color:d.hot?C.g:C.m,fontWeight:700,fontSize:13,...F}}>{d.hot?"★ Popular":"☆ Mark Popular"}</button>
+      <div>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10}}>
+          <div style={{fontSize:10,fontWeight:700,color:C.m,textTransform:"uppercase",letterSpacing:1.2,...F}}>Features</div>
+          <button onClick={addFeat} style={{background:"rgba(74,222,128,.1)",border:"1px solid rgba(74,222,128,.3)",color:C.g,padding:"4px 12px",borderRadius:20,fontSize:11,fontWeight:700,...F}}>+ Add</button>
+        </div>
+        {d.features.map((f,i)=><div key={i} style={{display:"flex",gap:8,marginBottom:8}}>
+          <input value={f} onChange={e=>updFeat(i,e.target.value)} placeholder={`Feature ${i+1}`} style={{flex:1,padding:"10px 14px",background:C.card,border:`1.5px solid ${C.b}`,borderRadius:11,color:C.w,fontSize:13,...F,boxSizing:"border-box"}}/>
+          <button onClick={()=>delFeat(i)} style={{background:"rgba(248,113,113,.12)",border:"none",color:C.r,width:34,height:34,borderRadius:10,fontSize:16,fontWeight:900,flexShrink:0}}>×</button>
+        </div>)}
+      </div>
+      <div style={{display:"flex",gap:8,marginTop:6}}>
+        <button onClick={onClose} style={{flex:1,background:"transparent",border:`1px solid ${C.b}`,color:C.m,padding:"13px",borderRadius:13,fontWeight:700,...F}}>Cancel</button>
+        <button disabled={!ok} onClick={()=>ok&&onSave(d)} style={{flex:2,background:ok?C.gG:"#1a1a1a",color:ok?"#060c08":C.m,border:"none",padding:"13px",borderRadius:13,fontWeight:900,fontSize:14,...N}}>Save Plan ✓</button>
+      </div>
+    </div>
+  </Sheet>;
+}
+
+function FoodModal({food,goalId,meal,onSave,onClose}){
+  const blank={name:"",desc:"",cal:0,p:0,c:0,f:0,price:0,emoji:"🍱",tag:"New",time:"15m",active:true,stock:true};
+  const[d,setD]=useState(food?{...food}:blank);
+  const up=k=>v=>setD(p=>({...p,[k]:v}));
+  const ok=d.name&&d.price>0&&d.cal>0;
+  return <Sheet onClose={onClose} tall>
+    <div style={{...N,color:C.blue,fontWeight:900,fontSize:18,marginBottom:4}}>{food?"✏️ Edit Item":"➕ Add Food Item"}</div>
+    <div style={{color:C.m,fontSize:12,marginBottom:16}}>Goal: {GOALS.find(g=>g.id===goalId)?.label} · {MIC[meal]} {meal}</div>
+    <div style={{display:"flex",flexDirection:"column",gap:11}}>
+      <div style={{display:"flex",gap:10}}>
+        <div style={{flex:1}}><Field label="Item Name *" value={d.name} onChange={up("name")} ph="e.g. Green Smoothie"/></div>
+        <div style={{width:80}}><Field label="Emoji" value={d.emoji} onChange={up("emoji")} ph="🍱"/></div>
+      </div>
+      <Field label="Description" value={d.desc} onChange={up("desc")} ph="Ingredients..." rows={2}/>
+      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
+        <Field label="Price ₹ *" value={d.price} onChange={up("price")} type="number" min={0}/>
+        <Field label="Calories *" value={d.cal} onChange={up("cal")} type="number" min={0}/>
+        <Field label="Protein (g)" value={d.p} onChange={up("p")} type="number" min={0}/>
+        <Field label="Carbs (g)" value={d.c} onChange={up("c")} type="number" min={0}/>
+        <Field label="Fat (g)" value={d.f} onChange={up("f")} type="number" min={0}/>
+        <Field label="Tag" value={d.tag} onChange={up("tag")} ph="Low Carb"/>
+        <Field label="Prep Time" value={d.time} onChange={up("time")} ph="15m"/>
+      </div>
+      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
+        {[["📦 In Stock","stock"],["👁 Visible","active"]].map(([l,k])=><button key={k} onClick={()=>setD(p=>({...p,[k]:!p[k]}))} style={{padding:"12px",borderRadius:12,border:`1.5px solid ${d[k]?C.g:C.b}`,background:d[k]?"rgba(74,222,128,.1)":"transparent",color:d[k]?C.g:C.m,fontWeight:700,fontSize:13,...F}}>{d[k]?`✓ ${l}`:`✗ ${l}`}</button>)}
+      </div>
+      <div style={{background:C.b2,borderRadius:14,padding:"12px 14px",border:`1px solid ${C.b}`}}>
+        <div style={{fontSize:9,color:C.m,textTransform:"uppercase",letterSpacing:1.2,marginBottom:8}}>Preview</div>
+        <div style={{display:"flex",gap:10,alignItems:"center"}}>
+          <span style={{fontSize:28}}>{d.emoji}</span>
+          <div>
+            <div style={{...N,color:C.w,fontWeight:800,fontSize:13}}>{d.name||"Item Name"}</div>
+            <div style={{color:C.m,fontSize:11,marginTop:2}}>{d.desc||"Description"}</div>
+            <div style={{display:"flex",gap:6,marginTop:5}}>
+              <span style={{background:"rgba(251,146,60,.14)",color:C.o,fontSize:10,fontWeight:700,padding:"2px 8px",borderRadius:99}}>🔥{d.cal}</span>
+              <span style={{background:"rgba(74,222,128,.1)",color:C.g,fontSize:10,fontWeight:700,padding:"2px 8px",borderRadius:99}}>₹{d.price}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div style={{display:"flex",gap:8,marginTop:4}}>
+        <button onClick={onClose} style={{flex:1,background:"transparent",border:`1px solid ${C.b}`,color:C.m,padding:"13px",borderRadius:13,fontWeight:700,...F}}>Cancel</button>
+        <button disabled={!ok} onClick={()=>ok&&onSave(d)} style={{flex:2,background:ok?C.gG:"#1a1a1a",color:ok?"#060c08":C.m,border:"none",padding:"13px",borderRadius:13,fontWeight:900,fontSize:14,...N}}>Save ✓</button>
+      </div>
+    </div>
+  </Sheet>;
+}
+
+// ════════════════════════════════════════════════════════════════
+// MAIN APP
+// ════════════════════════════════════════════════════════════════
+function App(){
+  const[scr,setScr]=useState("splash");
+  const[authTab,setAuthTab]=useState("login");
+  const[authErr,setAuthErr]=useState("");
+  const[loading,setLoading]=useState(false);
+
+  // Login fields
+  const[loginId,setLoginId]=useState("");
+  const[loginPw,setLoginPw]=useState("");
+  const[showLoginPw,setShowLoginPw]=useState(false);
+
+  // Register fields
+  const[rName,setRName]=useState("");
+  const[rUsername,setRUsername]=useState("");
+  const[rEmail,setREmail]=useState("");
+  const[rPhone,setRPhone]=useState("");
+  const[rPw,setRPw]=useState("");
+  const[rPwC,setRPwC]=useState("");
+  const[showRPw,setShowRPw]=useState(false);
+
+  // Forgot password
+  const[forgotStep,setForgotStep]=useState("");
+  const[forgotEmail,setForgotEmail]=useState("");
+  const[forgotOtp,setForgotOtp]=useState(["","","","","",""]);
+  const[forgotErr,setForgotErr]=useState("");
+  const[newPw,setNewPw]=useState("");
+  const[newPwC,setNewPwC]=useState("");
+  const[showNewPw,setShowNewPw]=useState(false);
+  const[devOtp,setDevOtp]=useState("");
+
+  // Session
+  const[user,setUser]=useState(null);
+  const[isAdmin,setIsAdmin]=useState(false);
+  const[adminUser,setAdminUser]=useState(null);
+  const[adminUn,setAdminUn]=useState("");
+  const[adminPw,setAdminPw]=useState("");
+
+  // App data
+  const[foods,setFoods]=useState({weight_loss:{breakfast:[],lunch:[],dinner:[]},muscle_gain:{breakfast:[],lunch:[],dinner:[]},general:{breakfast:[],lunch:[],dinner:[]}});
+  const[plans,setPlans]=useState([]);
+  const[settings,setSettings]=useState({deliveryCharge:40,freeDeliveryMin:400,platformFee:10,gst:5,currency:"₹",appName:"Cosfit"});
+  const[cart,setCart]=useState([]);
+  const[orders,setOrders]=useState([]);
+  const[notifs,setNotifs]=useState([]);
+  const[banner,setBanner]=useState(null);
+  const[toast,setToast]=useState(null);
+
+  // UI
+  const[tab,setTab]=useState("home");
+  const[adminTab,setAdminTab]=useState("orders");
+  const[modal,setModal]=useState(null);
+  const[mGoal,setMGoal]=useState("weight_loss");
+  const[mMeal,setMMeal]=useState("breakfast");
+  const[search,setSearch]=useState("");
+  const[installPrompt,setInstallPrompt]=useState(null);
+  const[showInstall,setShowInstall]=useState(false);
+  const[ob,setOb]=useState({step:0
