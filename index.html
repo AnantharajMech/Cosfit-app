@@ -4,7 +4,6 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>Cosfit — Eat Smart Live Strong</title>
-    <meta name="description" content="Production-ready Fitness Food Delivery by Idappadi Creators" />
     <meta name="theme-color" content="#4ade80" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -21,661 +20,287 @@
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
     <style>
-        /* ── CSS VARIABLES ── */
-        :root {
-            --primary: #4ade80;
-            --primary-glow: rgba(74, 222, 128, 0.35);
-            --bg: #060c08;
-            --surface: #0c1610;
-            --card: #101a13;
-            --border: #1b2d1f;
-            --text-main: #edf8f0;
-            --text-dim: #5e7d68;
-            --orange: #fb923c;
-            --red: #f87171;
-            --blue: #60a5fa;
-        }
+        /* ── CSS STYLING ── */
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        html, body { background: #060c08; color: #edf8f0; width: 100%; overflow-x: hidden; font-family: 'Inter', sans-serif; }
+        #root { width: 100%; max-width: 430px; margin: 0 auto; min-height: 100vh; position: relative; }
+        ::-webkit-scrollbar { display: none; }
 
-        /* ── RESET & BASE ── */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        html, body {
-            background-color: var(--bg);
-            color: var(--text-main);
-            width: 100%;
-            height: 100%;
-            overflow-x: hidden;
-            font-family: 'Inter', sans-serif;
-        }
-
-        #root {
-            width: 100%;
-            max-width: 430px;
-            margin: 0 auto;
-            min-height: 100vh;
-            position: relative;
-            background: var(--bg);
-        }
-
-        ::-webkit-scrollbar {
-            display: none;
-        }
-
-        /* ── TYPOGRAPHY ── */
-        .nunito { font-family: 'Nunito', sans-serif; }
-        .inter { font-family: 'Inter', sans-serif; }
-
-        /* ── ANIMATIONS ── */
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes up { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-        @keyframes pop { from { opacity: 0; transform: scale(0.85); } to { opacity: 1; transform: scale(1); } }
-        @keyframes toastIn { from { opacity: 0; transform: translate(-50%, -20px); } to { opacity: 1; transform: translate(-50%, 0); } }
-        @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
-        @keyframes spin { to { transform: rotate(360deg); } }
+        @keyframes up { from { opacity: 0; transform: translateY(25px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes pop { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
+        @keyframes toast { from { opacity: 0; transform: translateX(-50%) translateY(-20px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
 
-        /* ── FORM ELEMENTS ── */
-        input, textarea {
-            width: 100%;
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: 14px;
-            padding: 15px 18px;
-            color: white;
-            font-size: 15px;
-            transition: 0.3s border-color;
-        }
+        input, textarea { width: 100%; background: #101a13; border: 1px solid #1b2d1f; border-radius: 14px; padding: 16px; color: white; font-size: 15px; outline: none; }
+        input:focus { border-color: #4ade80; }
 
-        input:focus {
-            border-color: var(--primary);
-        }
+        .primary-btn { background: linear-gradient(135deg, #4ade80, #22c55e); color: #000; padding: 18px; border-radius: 16px; font-weight: 900; width: 100%; text-align: center; border: none; box-shadow: 0 8px 24px rgba(74, 222, 128, 0.2); }
+        .primary-btn:active { transform: scale(0.96); }
 
-        .primary-btn {
-            background: linear-gradient(135deg, #4ade80, #22c55e);
-            color: #000;
-            padding: 18px;
-            border-radius: 16px;
-            font-weight: 900;
-            font-size: 16px;
-            text-align: center;
-            box-shadow: 0 10px 30px var(--primary-glow);
-            border: none;
-            width: 100%;
-        }
-
-        /* ── LAYOUT UTILS ── */
-        .flex-center { display: flex; align-items: center; justify-content: center; }
-        .flex-between { display: flex; align-items: center; justify-content: space-between; }
-        
-        .loading-shimmer {
-            background: linear-gradient(90deg, #101a13 25%, #1b2d1f 50%, #101a13 75%);
-            background-size: 200% 100%;
-            animation: shimmer 1.5s infinite;
-        }
+        .shimmer { background: linear-gradient(90deg, #101a13 25%, #1b2d1f 50%, #101a13 75%); background-size: 200% 100%; animation: shimmer-ani 1.5s infinite; }
+        @keyframes shimmer-ani { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
     </style>
 </head>
 <body>
-    <div id="root"></div>
+<div id="root"></div>
 
-    <script type="text/babel">
-        const { useState, useEffect, useRef, useMemo } = React;
+<script type="text/babel">
+    const { useState, useEffect, useRef } = React;
 
-        // ── CONSTANTS & THEMES ──
-        const COMPANY = {
-            name: "Coscoom Creative Tech Solutions",
-            brand: "Idappadi Creators",
-            phone: "8778148899",
-            email: "anantharajeinstein@gmail.com"
-        };
+    const C = { bg: "#060c08", surf: "#0c1610", card: "#101a13", b: "#1b2d1f", g: "#4ade80", gG: "linear-gradient(135deg, #4ade80, #22c55e)", o: "#fb923c", r: "#f87171", m: "#5e7d68" };
+    const GOALS = [{ id: "weight_loss", label: "Weight Loss", icon: "⚖️", calMod: -500 }, { id: "muscle_gain", label: "Muscle Gain", icon: "💪", calMod: 300 }, { id: "general", label: "Stay Fit", icon: "🌿", calMod: 0 }];
+    const MEALS = ["breakfast", "lunch", "dinner"];
+    const MIC = { breakfast: "☀️", lunch: "🌤", dinner: "🌙" };
+    const AVATARS = ["😊", "💪", "🥗", "🔥", "⚡", "👑", "🎯", "🧘"];
+    
+    const ORDER_STEPS = [
+        { icon: "✅", label: "Confirmed", msg: "We got your order!" },
+        { icon: "👨‍🍳", label: "Preparing", msg: "Chefs are cooking!" },
+        { icon: "📦", label: "Packed", msg: "Ready for pickup." },
+        { icon: "🛵", label: "Delivery", msg: "Rider is coming!" },
+        { icon: "🎉", label: "Delivered", msg: "Enjoy your meal!" }
+    ];
 
-        const GOALS = [
-            { id: "weight_loss", label: "Weight Loss", icon: "⚖️", calMod: -500 },
-            { id: "muscle_gain", label: "Muscle Gain", icon: "💪", calMod: 300 },
-            { id: "general", label: "Stay Fit", icon: "🌿", calMod: 0 }
-        ];
+    const INIT_FOODS = {
+        weight_loss: {
+            breakfast: [{ id: 1, name: "Detox Smoothie", desc: "Spinach, apple, lemon", cal: 185, p: 5, c: 32, f: 3, price: 129, emoji: "🥤", tag: "Detox", active: true, stock: true }],
+            lunch: [{ id: 5, name: "Grilled Chicken Salad", desc: "Lettuce, tomato, lemon", cal: 320, p: 34, c: 12, f: 11, price: 229, emoji: "🥗", tag: "Low Carb", active: true, stock: true }],
+            dinner: [{ id: 8, name: "Steamed Fish", desc: "Tilapia, broccoli", cal: 310, p: 38, c: 10, f: 12, price: 259, emoji: "🐟", tag: "Healthy", active: true, stock: true }]
+        },
+        muscle_gain: {
+            breakfast: [{ id: 11, name: "Power Bowl", desc: "4 eggs, oats", cal: 620, p: 42, c: 58, f: 18, price: 219, emoji: "💪", tag: "Fuel", active: true, stock: true }],
+            lunch: [{ id: 14, name: "Quinoa Feast", desc: "Chicken, quinoa", cal: 680, p: 56, c: 55, f: 16, price: 329, emoji: "🍗", tag: "Muscle", active: true, stock: true }],
+            dinner: [{ id: 17, name: "Steak & Mash", desc: "Lean beef, sweet mash", cal: 690, p: 54, c: 48, f: 22, price: 389, emoji: "🥩", tag: "Iron", active: true, stock: true }]
+        },
+        general: {
+            breakfast: [{ id: 20, name: "Avocado Toast", desc: "Multigrain, seeds", cal: 310, p: 10, c: 34, f: 16, price: 179, emoji: "🥑", tag: "Fat", active: true, stock: true }],
+            lunch: [{ id: 24, name: "Dal Tadka & Rice", desc: "Yellow dal, brown rice", cal: 440, p: 18, c: 72, f: 8, price: 159, emoji: "🍚", tag: "Classic", active: true, stock: true }],
+            dinner: [{ id: 28, name: "Palak Paneer", desc: "Spinach, 2 rotis", cal: 390, p: 22, c: 44, f: 14, price: 189, emoji: "🥬", tag: "Iron", active: true, stock: true }]
+        }
+    }    function Toast({ t }) {
+        return <div style={{ position: "fixed", top: 22, left: "50%", transform: "translateX(-50%)", background: t.err ? "#ef4444" : "#22c55e", color: "#fff", padding: "12px 24px", borderRadius: 50, fontWeight: 700, fontSize: 14, zIndex: 10000, animation: "toast 0.3s both" }}>{t.msg}</div>;
+    }
 
-        const MEALS = ["breakfast", "lunch", "dinner"];
-        const MIC = { breakfast: "☀️", lunch: "🌤", dinner: "🌙" };
+    function Sheet({ onClose, children, tall }) {
+        return (
+            <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.92)", zIndex: 950, display: "flex", alignItems: "flex-end", justifyContent: "center" }} onClick={onClose}>
+                <div style={{ background: "#0c1610", borderRadius: "32px 32px 0 0", width: "100%", maxWidth: 430, padding: "24px", maxHeight: tall ? "95vh" : "80vh", overflowY: "auto", animation: "up 0.4s" }} onClick={e => e.stopPropagation()}>
+                    <div style={{ width: 40, height: 4, background: "#1b2d1f", borderRadius: 10, margin: "0 auto 20px" }} />
+                    {children}
+                </div>
+            </div>
+        );
+    }
+
+    function App() {
+        const [scr, setScr] = useState("splash");
+        const [authTab, setAuthTab] = useState("login");
+        const [loading, setLoading] = useState(false);
+        const [user, setUser] = useState(null);
+        const [users, setUsers] = useState([]);
+        const [isAdmin, setIsAdmin] = useState(false);
         
-        const ORDER_STEPS = [
-            { icon: "✅", label: "Order Confirmed", msg: "We got your order!" },
-            { icon: "👨‍🍳", label: "Preparing Food", msg: "Chefs are cooking fresh!" },
-            { icon: "📦", label: "Order Packed", msg: "Packed & ready for pickup." },
-            { icon: "🛵", label: "Out for Delivery", msg: "Rider is heading to you!" },
-            { icon: "🎉", label: "Delivered!", msg: "Enjoy your healthy meal!" }
-        ];
+        // Input States
+        const [loginMail, setLoginMail] = useState("");
+        const [loginPass, setLoginPass] = useState("");
+        const [regName, setRegName] = useState("");
+        const [regMail, setRegMail] = useState("");
+        const [regPhone, setRegPhone] = useState("");
+        const [regPass, setRegPass] = useState("");
+        const [fEmail, setFEmail] = useState("");
+        const [authErr, setAuthErr] = useState("");
 
-        const INIT_FOODS = {
-            weight_loss: {
-                breakfast: [
-                    { id: 1, name: "Green Detox Smoothie", desc: "Spinach, apple, ginger, lemon", cal: 185, p: 5, c: 32, f: 3, price: 129, emoji: "🥤", tag: "Detox", time: "5m", active: true, stock: true },
-                    { id: 2, name: "Oats Berry Bowl", desc: "Rolled oats, mixed berries, chia", cal: 240, p: 9, c: 38, f: 5, price: 149, emoji: "🥣", tag: "High Fiber", time: "8m", active: true, stock: true },
-                    { id: 3, name: "Egg White Wrap", desc: "3 egg whites, spinach, whole grain", cal: 210, p: 22, c: 18, f: 4, price: 169, emoji: "🌯", tag: "Protein", time: "10m", active: true, stock: true }
-                ],
-                lunch: [
-                    { id: 5, name: "Grilled Chicken Salad", desc: "Lettuce, tomato, lemon dressing", cal: 320, p: 34, c: 12, f: 11, price: 229, emoji: "🥗", tag: "Low Carb", time: "15m", active: true, stock: true },
-                    { id: 6, name: "Millet Khichdi", desc: "Foxtail millet, moong dal", cal: 290, p: 13, c: 48, f: 5, price: 179, emoji: "🍲", tag: "Gluten Free", time: "18m", active: true, stock: true }
-                ],
-                dinner: [
-                    { id: 8, name: "Steamed Fish & Greens", desc: "Tilapia, broccoli, lemon", cal: 310, p: 38, c: 10, f: 12, price: 259, emoji: "🐟", tag: "Heart Healthy", time: "20m", active: true, stock: true },
-                    { id: 9, name: "Moong Dal Soup", desc: "Green lentil, ginger, coriander", cal: 195, p: 13, c: 28, f: 3, price: 139, emoji: "🍵", tag: "Digestive", time: "15m", active: true, stock: true }
-                ]
-            },
-            muscle_gain: {
-                breakfast: [
-                    { id: 11, name: "Protein Power Bowl", desc: "4 eggs, oats, peanut butter", cal: 620, p: 42, c: 58, f: 18, price: 219, emoji: "💪", tag: "Muscle Fuel", time: "12m", active: true, stock: true },
-                    { id: 12, name: "Chicken Omelette", desc: "Chicken, 3 eggs, cheese", cal: 540, p: 48, c: 8, f: 22, price: 239, emoji: "🍳", tag: "High Protein", time: "12m", active: true, stock: true }
-                ],
-                lunch: [
-                    { id: 14, name: "Chicken Quinoa Feast", desc: "Grilled chicken, quinoa, broccoli", cal: 680, p: 56, c: 55, f: 16, price: 329, emoji: "🍗", tag: "Muscle Gain", time: "20m", active: true, stock: true }
-                ],
-                dinner: [
-                    { id: 17, name: "Steak & Sweet Potato", desc: "Lean beef steak, sweet mash", cal: 690, p: 54, c: 48, f: 22, price: 389, emoji: "🥩", tag: "Iron Rich", time: "25m", active: true, stock: true }
-                ]
-            },
-            general: {
-                breakfast: [
-                    { id: 20, name: "Avocado Toast", desc: "Multigrain bread, avocado", cal: 310, p: 10, c: 34, f: 16, price: 179, emoji: "🥑", tag: "Healthy Fat", time: "8m", active: true, stock: true }
-                ],
-                lunch: [
-                    { id: 24, name: "Dal Tadka & Rice", desc: "Yellow dal, brown rice", cal: 440, p: 18, c: 72, f: 8, price: 159, emoji: "🍚", tag: "Classic", time: "18m", active: true, stock: true }
-                ],
-                dinner: [
-                    { id: 28, name: "Palak Paneer & Roti", desc: "Spinach gravy, 2 rotis", cal: 390, p: 22, c: 44, f: 14, price: 189, emoji: "🥬", tag: "Iron Rich", time: "20m", active: true, stock: true }
-                ]
-            }
-        };
-        // ── HELPERS ──
-        const calcTDEE = (w, h, a, g, goal) => {
-            const bmr = g === "f" ? 10 * w + 6.25 * h - 5 * a - 161 : 10 * w + 6.25 * h - 5 * a + 5;
-            return Math.round(bmr * 1.55) + ((GOALS.find(x => x.id === goal)) || { calMod: 0 }).calMod;
-        };
+        // App Data
+        const [foods, setFoods] = useState(INIT_FOODS);
+        const [cart, setCart] = useState(() => {
+            const s = localStorage.getItem("cosfit_cart");
+            return s ? JSON.parse(s) : [];
+        });
+        const [orders, setOrders] = useState([]);
+        const [notifs, setNotifs] = useState([]);
+        const [toast, setToast] = useState(null);
+        const [tab, setTab] = useState("home");
+        const [mGoal, setMGoal] = useState("general");
+        const [mMeal, setMMeal] = useState("breakfast");
+        const [search, setSearch] = useState("");
+        const [modal, setModal] = useState(null);
 
-        const getGreet = (name) => {
-            const hr = new Date().getHours();
-            return {
-                text: hr < 12 ? "Good Morning" : hr < 17 ? "Good Afternoon" : "Good Evening",
-                icon: hr < 12 ? "☀️" : hr < 17 ? "🌤" : "🌙",
-                meal: hr < 12 ? "breakfast" : hr < 17 ? "lunch" : "dinner"
-            };
-        };
+        // 3. Persistent Cart (Claude Fix)
+        useEffect(() => { localStorage.setItem("cosfit_cart", JSON.stringify(cart)); }, [cart]);
 
-        // ── COMPONENTS ──
-        function Toast({ t }) {
-            return (
-                <div style={{ position: "fixed", top: 22, left: "50%", transform: "translateX(-50%)", background: t.err ? "#ef4444" : "#22c55e", color: "#fff", padding: "12px 26px", borderRadius: 50, fontWeight: 800, fontSize: 13, zIndex: 10000, boxShadow: "0 8px 32px rgba(0,0,0,0.5)", animation: "toastIn 0.35s both" }}>
-                    {t.msg}
-                </div>
-            );
-        }
+        // 🔥 5. FIREBASE ID FIX (cosfit-af85d) 🔥
+        useEffect(() => {
+            const start = async () => {
+                try {
+                    if (!window.firebase.apps.length) {
+                        window.firebase.initializeApp({
+                            apiKey: "AIzaSyBaNFG34QfaciXeOVQWQtNGoMI65ozEVTA",
+                            authDomain: "cosfit-af85d.firebaseapp.com",
+                            projectId: "cosfit-af85d",
+                            storageBucket: "cosfit-af85d.firebasestorage.app",
+                            messagingSenderId: "58737921778",
+                            appId: "1:58737921778:web:1dbd0913dfbbf05f494a6b"
+                        });
+                    }
+                    const db = window.firebase.firestore();
+                    window.fbDB = db;
 
-        function Sheet({ onClose, children, tall }) {
-            return (
-                <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.92)", zIndex: 950, display: "flex", alignItems: "flex-end", justifyContent: "center", animation: "fadeIn 0.2s both" }} onClick={onClose}>
-                    <div style={{ background: "#0c1610", borderRadius: "32px 32px 0 0", width: "100%", maxWidth: 430, padding: "24px 24px 44px", animation: "slideUp 0.4s cubic-bezier(0.3, 0.8, 0.3, 1)", maxHeight: tall ? "95vh" : "85vh", overflowY: "auto" }} onClick={e => e.stopPropagation()}>
-                        <div style={{ width: 45, height: 5, background: "#1b2d1f", borderRadius: 10, margin: "0 auto 25px" }} />
-                        {children}
-                    </div>
-                </div>
-            );
-        }
+                    // Realtime Listeners
+                    db.collection("app_data").doc("foods_menu").onSnapshot(s => { if(s.exists) setFoods(s.data()); });
+                    db.collection("app_data").doc("users_list").onSnapshot(s => { if(s.exists) setUsers(s.data().users || []); });
+                    db.collection("app_data").doc("orders_list").onSnapshot(s => { if(s.exists) setOrders(s.data().orders || []); });
 
-        // ── MAIN APP COMPONENT ──
-        function App() {
-            // Screen States
-            const [scr, setScr] = useState("splash");
-            const [authTab, setAuthTab] = useState("login");
-            const [loading, setLoading] = useState(false);
-
-            // Auth Input States
-            const [loginMail, setLoginMail] = useState("");
-            const [loginPass, setLoginPass] = useState("");
-            const [regName, setRegName] = useState("");
-            const [regMail, setRegMail] = useState("");
-            const [regPhone, setRegPhone] = useState("");
-            const [regPass, setRegPass] = useState("");
-            const [fMail, setFMail] = useState("");
-            const [authErr, setAuthErr] = useState("");
-
-            // App Data States
-            const [user, setUser] = useState(null);
-            const [users, setUsers] = useState([]);
-            const [isAdmin, setIsAdmin] = useState(false);
-            const [foods, setFoods] = useState(INIT_FOODS);
-            
-            // 3. Persistent Cart (Claude Fix)
-            const [cart, setCart] = useState(() => {
-                const s = localStorage.getItem("cosfit_cart");
-                return s ? JSON.parse(s) : [];
-            });
-            
-            const [orders, setOrders] = useState([]);
-            const [notifs, setNotifs] = useState([]);
-            const [toast, setToast] = useState(null);
-
-            // Tab Navigation
-            const [tab, setTab] = useState("home");
-            const [adminTab, setAdminTab] = useState("orders");
-            const [mGoal, setMGoal] = useState("general");
-            const [mMeal, setMMeal] = useState("breakfast");
-            const [search, setSearch] = useState("");
-            const [modal, setModal] = useState(null);
-
-            // Onboarding Setup
-            const [ob, setOb] = useState({ step: 0, goal: "general", age: "25", weight: "70", height: "175", gender: "m" });
-
-            // 🔥 5. FIREBASE INITIALIZATION (Correct Project ID) 🔥
-            useEffect(() => {
-                const initApp = async () => {
-                    try {
-                        if (!window.firebase.apps.length) {
-                            window.firebase.initializeApp({
-                                apiKey: "AIzaSyBaNFG34QfaciXeOVQWQtNGoMI65ozEVTA",
-                                authDomain: "cosfit-af85d.firebaseapp.com",
-                                projectId: "cosfit-af85d",
-                                storageBucket: "cosfit-af85d.firebasestorage.app",
-                                messagingSenderId: "58737921778",
-                                appId: "1:58737921778:web:1dbd0913dfbbf05f494a6b"
+                    window.firebase.auth().onAuthStateChanged((u) => {
+                        if (u) {
+                            db.collection("app_data").doc("users_list").get().then(snap => {
+                                const all = snap.exists ? snap.data().users : [];
+                                const found = all.find(x => x.email === u.email);
+                                if (found) {
+                                    setUser(found);
+                                    if (found.role === "admin") setIsAdmin(true);
+                                    setScr("app");
+                                }
                             });
-                        }
-                        const db = window.firebase.firestore();
-                        window.fbDB = db;
-
-                        // 7. Realtime Syncing (Claude Fix)
-                        db.collection("app_data").doc("foods_menu").onSnapshot(s => { 
-                            if(s.exists) setFoods(s.data()); 
-                            else db.collection("app_data").doc("foods_menu").set(INIT_FOODS);
-                        });
-
-                        db.collection("app_data").doc("users_list").onSnapshot(s => { if(s.exists) setUsers(s.data().users || []); });
-                        db.collection("app_data").doc("orders_list").onSnapshot(s => { if(s.exists) setOrders(s.data().orders || []); });
-
-                        // Maintain Session
-                        window.firebase.auth().onAuthStateChanged((u) => {
-                            if (u) {
-                                db.collection("app_data").doc("users_list").get().then(snap => {
-                                    const allUsers = snap.exists ? snap.data().users : [];
-                                    const found = allUsers.find(x => x.email === u.email);
-                                    if (found) {
-                                        setUser(found);
-                                        setMGoal(found.goal || "general");
-                                        if (found.role === "admin") setIsAdmin(true);
-                                        setScr("app");
-                                    }
-                                });
-                            } else {
-                                setScr("auth");
-                            }
-                        });
-                    } catch (e) { console.error("Firebase Error:", e); setScr("auth"); }
-                };
-                initApp();
-            }, []);
-
-            // LocalStorage for Cart
-            useEffect(() => { localStorage.setItem("cosfit_cart", JSON.stringify(cart)); }, [cart]);
-
-            const pop = (msg, err = false) => { setToast({ msg, err }); setTimeout(() => setToast(null), 3500); };
-
-            // 🔥 8. PHONE VALIDATION & 9. LOADING STATE 🔥
-            const handleRegister = async () => {
-                setAuthErr("");
-                if (!regName || !regMail || !regPhone || !regPass) return setAuthErr("All fields required");
-                if (regPhone.length !== 10) return setAuthErr("Phone must be exactly 10 digits");
-                if (regPass.length < 6) return setAuthErr("Password min 6 characters");
-
-                setLoading(true);
-                try {
-                    const res = await window.firebase.auth().createUserWithEmailAndPassword(regMail.trim(), regPass);
-                    const nu = {
-                        id: res.user.uid,
-                        name: regName.trim(),
-                        email: regMail.toLowerCase().trim(),
-                        phone: regPhone,
-                        avatar: "😊",
-                        role: "user",
-                        goal: "general",
-                        age: "25", weight: "70", height: "175", gender: "m",
-                        joined: new Date().toISOString()
-                    };
-                    const updatedUsers = [...users, nu];
-                    await window.fbDB.collection("app_data").doc("users_list").set({ users: updatedUsers }, { merge: true });
-                    setUser(nu);
-                    setScr("onboard");
-                    pop("Welcome to Cosfit! 🎉");
-                } catch (e) { setAuthErr(e.message); }
-                setLoading(false);
+                        } else { setScr("auth"); }
+                    });
+                } catch (e) { console.error(e); setScr("auth"); }
             };
+            start();
+        }, []);
 
-            const handleLogin = async () => {
-                setAuthErr("");
-                if (!loginMail || !loginPass) return setAuthErr("Enter credentials");
-                setLoading(true);
-                try {
-                    let targetEmail = loginMail.trim().toLowerCase();
-                    // 4. Connect Login logic (Username/Phone check)
-                    if (!targetEmail.includes("@")) {
-                        const u = users.find(x => x.phone === targetEmail || x.name.toLowerCase() === targetEmail);
-                        if (u) targetEmail = u.email;
-                        else throw new Error("User not found");
-                    }
-                    await window.firebase.auth().signInWithEmailAndPassword(targetEmail, loginPass);
-                    pop("Login Success!");
-                } catch (e) { setAuthErr("Invalid email or password"); }
-                setLoading(false);
-            };
+        const pop = (msg, err = false) => { setToast({ msg, err }); setTimeout(() => setToast(null), 3000); };
 
-            // 🔥 1. REAL PASSWORD RESET (Instead of dummy OTP) 🔥
-            const handleForgotPass = async () => {
-                if (!fMail.includes("@")) return setAuthErr("Enter valid Gmail");
-                setLoading(true);
-                try {
-                    await window.firebase.auth().sendPasswordResetEmail(fMail.trim());
-                    pop("✅ Reset link sent to your Gmail!");
-                    setAuthTab("login");
-                } catch (e) { setAuthErr(e.message); }
-                setLoading(false);
-            };
+        // 🔥 8. PHONE VALIDATION & 9. LOADING STATE 🔥
+        const handleRegister = async () => {
+            setAuthErr("");
+            if (!regName || !regMail || regPhone.length !== 10 || regPass.length < 6) return setAuthErr("Check fields (10-digit phone, 6-char pass)");
+            setLoading(true);
+            try {
+                const res = await window.firebase.auth().createUserWithEmailAndPassword(regMail.trim(), regPass);
+                const nu = { id: res.user.uid, name: regName, email: regMail.toLowerCase(), phone: regPhone, avatar: "😊", role: "user", goal: "general", age: "25", weight: "70", height: "175", gender: "m" };
+                const upUsers = [...users, nu];
+                await window.fbDB.collection("app_data").doc("users_list").set({ users: upUsers }, { merge: true });
+                setUser(nu); setScr("app"); pop("Account Created! 🎉");
+            } catch (e) { setAuthErr(e.message); }
+            setLoading(false);
+        };
 
-            const signOut = () => window.firebase.auth().signOut().then(() => { setScr("auth"); setUser(null); setIsAdmin(false); setTab("home"); setCart([]); });
-            // ── CART LOGIC ──
-            const addToCart = (item) => {
-                setCart(prev => {
-                    const existing = prev.find(c => c.id === item.id);
-                    if (existing) {
-                        return prev.map(c => c.id === item.id ? { ...c, qty: c.qty + 1 } : c);
-                    }
-                    return [...prev, { ...item, qty: 1 }];
-                });
-                pop(item.emoji + " Added to cart!");
-            };
+        const handleLogin = async () => {
+            setAuthErr(""); if (!loginMail || !loginPass) return setAuthErr("Enter email/pass");
+            setLoading(true);
+            try {
+                let mail = loginMail.trim().toLowerCase();
+                if (!mail.includes("@")) {
+                    const u = users.find(x => x.name.toLowerCase() === mail || x.phone === mail);
+                    if (u) mail = u.email; else throw new Error("User not found");
+                }
+                await window.firebase.auth().signInWithEmailAndPassword(mail, loginPass);
+                pop("Welcome back!");
+            } catch (e) { setAuthErr("Login failed"); }
+            setLoading(false);
+        };
 
-            const updateQty = (id, delta) => {
-                setCart(prev => prev.map(c => c.id === id ? { ...c, qty: Math.max(0, c.qty + delta) } : c).filter(c => c.qty > 0));
-            };
+        const handleForgotPass = async () => {
+            if (!fEmail.includes("@")) return pop("Enter valid Gmail", true);
+            setLoading(true);
+            try {
+                await window.firebase.auth().sendPasswordResetEmail(fEmail.trim());
+                pop("Reset link sent! Check Gmail ✅"); setAuthTab("login");
+            } catch (e) { pop("Error sending link", true); }
+            setLoading(false);
+        };
 
-            // 🔥 6. GRANULAR UPDATES (Claude Fix) 🔥
-            const placeOrder = async () => {
-                if (cart.length === 0) return;
-                setLoading(true);
-                const sub = cart.reduce((s, i) => s + i.price * i.qty, 0);
-                const orderData = {
-                    id: Date.now(),
-                    userId: user.id,
-                    userName: user.name,
-                    userPhone: user.phone,
-                    userAddress: user.address || "No Address Provided",
-                    items: [...cart],
-                    total: sub + 50, // sub + delivery + platform
-                    statusIdx: 0,
-                    date: new Date().toLocaleDateString(),
-                    time: new Date().toLocaleTimeString(),
-                    ts: Date.now()
-                };
-
-                try {
-                    // Update Firebase Orders Array
-                    await window.fbDB.collection("app_data").doc("orders_list").set({
-                        orders: window.firebase.firestore.FieldValue.arrayUnion(orderData)
-                    }, { merge: true });
-
-                    setCart([]);
-                    setTab("track");
-                    pop("🚀 Order Placed Successfully!");
-                } catch (e) { pop("Order failed. Try again.", true); }
-                setLoading(false);
-            };
-
-            // Derived Data
-            const targetCals = user ? calcTDEE(+user.weight, +user.height, +user.age, user.gender, user.goal) : 2000;
-            const currentItems = (foods[mGoal]?.[mMeal] || []).filter(i => i.active && (!search || i.name.toLowerCase().includes(search.toLowerCase())));
-            const greet = getGreet(user?.name);
-            const liveOrdersCount = orders.filter(o => o.userId === user?.id && o.statusIdx < 4).length;
-
-            // ─────────────────────────────────────────────────────────
-            // UI COMPONENTS
-            // ─────────────────────────────────────────────────────────
-
-            if (scr === "splash") return (
-                <div className="flex-center" style={{ height: "100vh", flexDirection: "column" }}>
-                    <div style={{ fontSize: 85, animation: "pop 0.7s cubic-bezier(0.3, 1.5, 0.4, 1) both" }}>🥗</div>
-                    <h1 className="nunito" style={{ fontSize: 45, fontWeight: 900, marginTop: 25, letterSpacing: -1 }}>Cosfit</h1>
-                    <p style={{ color: C.m, fontSize: 15, marginTop: 8 }}>Eat Smart · Live Strong</p>
-                </div>
-            );
-
-            if (scr === "auth") return (
-                <div style={{ minHeight: "100vh", padding: "60px 28px", animation: "fadeIn 0.5s" }}>
-                    {toast && <Toast t={toast} />}
-                    <div style={{ textAlign: "center", marginBottom: 40 }}>
-                        <div style={{ fontSize: 60 }}>🥗</div>
-                        <h2 className="nunito" style={{ fontSize: 32, marginTop: 15 }}>Welcome</h2>
-                    </div>
-
-                    {authTab !== "forgot" && (
-                        <div className="flex-between" style={{ background: C.card, borderRadius: 18, padding: 5, marginBottom: 30 }}>
-                            {["login", "register"].map(t => (
-                                <button key={t} onClick={() => { setAuthTab(t); setAuthErr(""); }} style={{ flex: 1, padding: 15, borderRadius: 14, background: authTab === t ? C.gG : "transparent", color: authTab === t ? "#000" : C.m, fontWeight: 800 }}>
-                                    {t === "login" ? "Sign In" : "Join Now"}
-                                </button>
-                            ))}
-                        </div>
-                    )}
-
-                    {authErr && <div style={{ color: C.r, fontSize: 13, textAlign: "center", marginBottom: 20, background: "rgba(248,113,113,0.1)", padding: 12, borderRadius: 12 }}>⚠️ {authErr}</div>}
-
-                    {authTab === "login" && <div style={{ animation: "up 0.4s both" }}>
-                        <div style={{ marginBottom: 18 }}>
-                            <label style={{ fontSize: 11, fontWeight: 700, color: C.m, textTransform: "uppercase", marginLeft: 5 }}>Email or Phone</label>
-                            <input value={loginMail} onChange={e => setLoginMail(e.target.value)} placeholder="arjun@gmail.com" style={{ marginTop: 8 }} />
-                        </div>
-                        <div style={{ marginBottom: 10 }}>
-                            <label style={{ fontSize: 11, fontWeight: 700, color: C.m, textTransform: "uppercase", marginLeft: 5 }}>Password</label>
-                            <input type="password" value={loginPass} onChange={e => setLoginPass(e.target.value)} placeholder="••••••••" style={{ marginTop: 8 }} />
-                        </div>
-                        <div style={{ textAlign: "right", marginBottom: 25 }}>
-                            <span onClick={() => setAuthTab("forgot")} style={{ color: C.g, fontSize: 13, fontWeight: 700 }}>Forgot Password?</span>
-                        </div>
-                        <button disabled={loading} onClick={handleLogin} className="primary-btn">
-                            {loading && <span className="loader-ring"></span>}
-                            {loading ? "Verifying..." : "Login to Account →"}
-                        </button>
-                    </div>}
-
-                    {authTab === "register" && <div style={{ animation: "up 0.4s both" }}>
-                        <div style={{ display: "flex", flexDirection: "column", gap: 15 }}>
-                            <input value={regName} onChange={e => setRegName(e.target.value)} placeholder="Full Name" />
-                            <input value={regMail} onChange={e => setRegMail(e.target.value)} placeholder="Gmail Address" />
-                            <input value={regPhone} maxLength={10} onChange={e => setRegPhone(e.target.value.replace(/\D/g, ""))} placeholder="10-Digit Mobile" />
-                            <input type="password" value={regPass} onChange={e => setRegPass(e.target.value)} placeholder="Create Password" />
-                            <button disabled={loading} onClick={handleRegister} className="primary-btn" style={{ marginTop: 10 }}>
-                                {loading ? "Creating..." : "Create Account →"}
-                            </button>
-                        </div>
-                    </div>}
-
-                    {authTab === "forgot" && <div style={{ animation: "up 0.4s both" }}>
-                        <h3 className="nunito" style={{ fontSize: 24, marginBottom: 10 }}>Reset Password 🔑</h3>
-                        <p style={{ color: C.m, fontSize: 14, marginBottom: 25 }}>Enter your registered Gmail to receive a secure reset link.</p>
-                        <input value={fMail} onChange={e => setFMail(e.target.value)} placeholder="yourname@gmail.com" style={{ marginBottom: 20 }} />
-                        <button disabled={loading} onClick={handleForgotPass} className="primary-btn">
-                            {loading ? "Sending..." : "Send Reset Link"}
-                        </button>
-                        <button onClick={() => setAuthTab("login")} style={{ width: "100%", padding: 15, background: "none", color: C.m, marginTop: 10, fontWeight: 700 }}>← Back to Login</button>
-                    </div>}
-                </div>
-            );
-            if (scr === "onboard") return (
-                <div style={{ padding: 40, animation: "fadeIn 0.5s" }}>
-                    <h2 className="nunito" style={{ fontSize: 32, marginBottom: 30 }}>Set Your Goal 🎯</h2>
-                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 15, marginBottom: 30 }}>
-                        {GOALS.map(g => (
-                            <button key={g.id} onClick={() => setOb({ ...ob, goal: g.id })} style={{ padding: 25, borderRadius: 20, background: ob.goal === g.id ? C.gG : C.card, border: `2px solid ${ob.goal === g.id ? C.g : C.b}`, color: ob.goal === g.id ? "#000" : "#fff", fontWeight: 800 }}>
-                                <div style={{ fontSize: 35, marginBottom: 10 }}>{g.icon}</div>
-                                <div style={{ fontSize: 13 }}>{g.label}</div>
-                            </button>
-                        ))}
-                    </div>
-                    <div style={{ display: "flex", flexDirection: "column", gap: 15 }}>
-                        <input type="number" value={ob.weight} onChange={e => setOb({ ...ob, weight: e.target.value })} placeholder="Weight (kg)" />
-                        <input type="number" value={ob.height} onChange={e => setOb({ ...ob, height: e.target.value })} placeholder="Height (cm)" />
-                        <input type="number" value={ob.age} onChange={e => setOb({ ...ob, age: e.target.value })} placeholder="Age (years)" />
-                    </div>
-                    <button onClick={() => {
-                        const updated = { ...user, ...ob };
-                        const all = users.map(u => u.id === user.id ? updated : u);
-                        window.fbDB.collection("app_data").doc("users_list").set({ users: all }, { merge: true });
-                        setUser(updated); setScr("app"); pop("Setup Complete! 🚀");
-                    }} className="primary-btn" style={{ marginTop: 35 }}>Start Journey 🚀</button>
-                </div>
-            );
-
-            // ── MAIN APPLICATION RENDER ──
-            return (
-                <div style={{ paddingBottom: 100, animation: "fadeIn 0.4s" }}>
-                    {toast && <Toast t={toast} />}
-
-                    {tab === "home" && <div style={{ padding: 25 }}>
-                        <div className="flex-between" style={{ marginTop: 25 }}>
-                            <div><p style={{ color: C.m, fontWeight: 700 }}>{greet.icon} {greet.text}</p><h2 className="nunito" style={{ fontSize: 32, marginTop: 5 }}>{user?.name.split(" ")[0]}</h2></div>
-                            <div onClick={() => setTab("profile")} style={{ width: 55, height: 55, borderRadius: "50%", background: C.card, border: `2px solid ${C.b}`, fontSize: 28 }} className="flex-center">{user?.avatar}</div>
-                        </div>
-
-                        <div style={{ background: C.card, borderRadius: 28, padding: 28, marginTop: 35, border: `1px solid ${C.b}`, boxShadow: "0 10px 40px rgba(0,0,0,0.3)" }}>
-                            <div className="flex-between">
-                                <div><p style={{ color: C.m, fontSize: 11, fontWeight: 800, letterSpacing: 1.5 }}>DAILY CALORIE TARGET</p><h3 className="nunito" style={{ color: C.g, fontSize: 34, marginTop: 8 }}>{targetCals} kcal</h3></div>
-                                <div style={{ width: 50, height: 50, borderRadius: "50%", background: "rgba(74,222,128,0.1)" }} className="flex-center">🔥</div>
-                            </div>
-                        </div>
-
-                        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 15, marginTop: 30 }}>
-                            <button onClick={() => setTab("menu")} style={{ background: C.gG, padding: 22, borderRadius: 24, textAlign: "left" }}>
-                                <div style={{ fontSize: 35 }}>🍽</div>
-                                <h4 className="nunito" style={{ color: "#000", marginTop: 15, fontSize: 18 }}>Order Food</h4>
-                            </button>
-                            <button onClick={() => setTab("track")} style={{ background: C.card, padding: 22, borderRadius: 24, border: `1px solid ${C.b}`, textAlign: "left", position: "relative" }}>
-                                <div style={{ fontSize: 35 }}>🛵</div>
-                                <h4 className="nunito" style={{ color: "#fff", marginTop: 15, fontSize: 18 }}>Track Orders</h4>
-                                {liveOrdersCount > 0 && <div style={{ position: "absolute", top: 15, right: 15, width: 12, height: 12, background: C.red, borderRadius: "50%", animation: "pulse 1.5s infinite" }} />}
-                            </button>
-                        </div>
-
-                        <h3 className="nunito" style={{ fontSize: 20, marginTop: 40, marginBottom: 20 }}>Today's Recommendations</h3>
-                        <div style={{ display: "flex", gap: 15, overflowX: "auto", paddingBottom: 10 }}>
-                            {(foods[user?.goal || "general"]?.[greet.meal] || []).map(i => (
-                                <div key={i.id} onClick={() => setModal({ type: "item", d: i })} style={{ minWidth: 175, background: C.card, borderRadius: 24, padding: 20, border: `1px solid ${C.b}` }}>
-                                    <div style={{ fontSize: 50, textAlign: "center", marginBottom: 15 }}>{i.emoji}</div>
-                                    <p style={{ fontWeight: 800, fontSize: 14 }}>{i.name}</p>
-                                    <div className="flex-between" style={{ marginTop: 15 }}><span style={{ color: C.o, fontWeight: 900 }}>₹{i.price}</span><button onClick={(e) => { e.stopPropagation(); addToCart(i); }} style={{ background: C.g, width: 32, height: 32, borderRadius: 10, color: "#000", fontWeight: 900 }}>+</button></div>
-                                </div>
-                            ))}
-                        </div>
-                    </div>}
-
-                    {tab === "menu" && <div style={{ padding: 25 }}>
-                        <h2 className="nunito" style={{ fontSize: 32, marginTop: 25 }}>Menu 🍽</h2>
-                        <div style={{ display: "flex", gap: 10, marginTop: 20, overflowX: "auto" }}>
-                            {GOALS.map(g => (
-                                <button key={g.id} onClick={() => setMGoal(g.id)} style={{ padding: "12px 22px", borderRadius: 22, background: mGoal === g.id ? C.gG : C.card, border: `1px solid ${mGoal === g.id ? C.g : C.b}`, color: mGoal === g.id ? "#000" : C.m, fontWeight: 800, whiteSpace: "nowrap" }}>{g.icon} {g.label}</button>
-                            ))}
-                        </div>
-                        <div style={{ display: "flex", background: C.card, borderRadius: 18, padding: 5, marginTop: 20 }}>
-                            {MEALS.map(m => (
-                                <button key={m} onClick={() => setMMeal(m)} style={{ flex: 1, padding: 12, borderRadius: 14, background: mMeal === m ? C.g : "transparent", color: mMeal === m ? "#000" : C.m, fontWeight: 800, textTransform: "capitalize" }}>{m}</button>
-                            ))}
-                        </div>
-                        <div style={{ marginTop: 30 }}>
-                            {currentItems.map(i => (
-                                <div key={i.id} style={{ background: C.card, borderRadius: 22, padding: 18, marginBottom: 15, border: `1px solid ${C.b}` }} className="flex-between">
-                                    <div style={{ display: "flex", gap: 15, alignItems: "center" }} onClick={() => setModal({ type: "item", d: i })}>
-                                        <div style={{ fontSize: 35 }}>{i.emoji}</div>
-                                        <div><p style={{ fontWeight: 800 }}>{i.name}</p><p style={{ color: C.m, fontSize: 12 }}>🔥 {i.cal} kcal · ₹{i.price}</p></div>
-                                    </div>
-                                    <button onClick={() => addToCart(i)} style={{ background: C.gG, padding: "10px 18px", borderRadius: 12, color: "#000", fontWeight: 900 }}>Add</button>
-                                </div>
-                            ))}
-                        </div>
-                    </div>}
-
-                    {tab === "cart" && <div style={{ padding: 25 }}>
-                        <h2 className="nunito" style={{ fontSize: 32, marginTop: 25 }}>Your Cart 🛒</h2>
-                        {cart.length === 0 ? (
-                            <div style={{ textAlign: "center", marginTop: 80 }}>
-                                <div style={{ fontSize: 75 }}>🛒</div>
-                                <p style={{ color: C.m, marginTop: 20 }}>Your cart is empty.</p>
-                                <button onClick={() => setTab("menu")} className="primary-btn" style={{ marginTop: 30, width: "auto", padding: "15px 40px" }}>Browse Menu</button>
-                            </div>
-                        ) : (
-                            <div style={{ marginTop: 30 }}>
-                                {cart.map(i => (
-                                    <div key={i.id} style={{ background: C.card, borderRadius: 20, padding: 18, marginBottom: 12, border: `1px solid ${C.b}` }} className="flex-between">
-                                        <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
-                                            <div style={{ fontSize: 30 }}>{i.emoji}</div>
-                                            <div><p style={{ fontWeight: 800 }}>{i.name}</p><p style={{ color: C.o, fontWeight: 900 }}>₹{i.price * i.qty}</p></div>
-                                        </div>
-                                        <div className="flex-center" style={{ gap: 12, background: C.surf, padding: "8px 15px", borderRadius: 12 }}>
-                                            <button onClick={() => updateQty(i.id, -1)} style={{ color: C.g, fontWeight: 900, fontSize: 18 }}>−</button>
-                                            <span style={{ fontWeight: 900 }}>{i.qty}</span>
-                                            <button onClick={() => updateQty(i.id, 1)} style={{ color: C.g, fontWeight: 900, fontSize: 18 }}>+</button>
-                                        </div>
-                                    </div>
-                                ))}
-                                <div style={{ background: C.card, borderRadius: 22, padding: 22, marginTop: 30, border: `1px solid ${C.b}` }}>
-                                    <div className="flex-between" style={{ color: C.m, marginBottom: 10 }}><p>Subtotal</p><p>₹{cart.reduce((s, i) => s + i.price * i.qty, 0)}</p></div>
-                                    <div className="flex-between" style={{ color: C.m, marginBottom: 10 }}><p>Delivery & Fees</p><p>₹50</p></div>
-                                    <div className="flex-between" style={{ paddingTop: 15, borderTop: `1px solid ${C.b}`, marginTop: 5 }}><p className="nunito" style={{ fontSize: 20, fontWeight: 900 }}>Total</p><p style={{ fontSize: 24, fontWeight: 900, color: C.o }}>₹{cart.reduce((s, i) => s + i.price * i.qty, 0) + 50}</p></div>
-                                </div>
-                                <button disabled={loading} onClick={placeOrder} className="primary-btn" style={{ marginTop: 25 }}>
-                                    {loading ? "Processing..." : "Place Order 🚀"}
-                                </button>
-                            </div>
-                        )}
-                    </div>}
-
-                    {/* Bottom Navigation */}
-                    <div style={{ position: "fixed", bottom: 0, width: "100%", maxWidth: 430, background: "rgba(6,12,8,0.98)", backdropFilter: "blur(20px)", display: "flex", justifyContent: "space-around", padding: "15px 0 35px", borderTop: `1px solid ${C.b}`, zIndex: 900 }}>
-                        {[["home", "🏠", "Home"], ["menu", "🍽", "Menu"], ["cart", "🛒", "Cart"], ["track", "🛵", "Track"], ["profile", "👤", "Profile"]].map(([k, ic, l]) => (
-                            <button key={k} onClick={() => setTab(k)} style={{ background: "none", textAlign: "center", opacity: tab === k ? 1 : 0.4 }}>
-                                <div style={{ fontSize: 22 }}>{ic}</div>
-                                <div style={{ fontSize: 10, marginTop: 5, color: "#fff" }}>{l}</div>
-                                {k === "cart" && cart.length > 0 && <div style={{ position: "absolute", top: 10, marginLeft: 20, background: C.red, width: 8, height: 8, borderRadius: "50%" }} />}
-                            </button>
-                        ))}
-                        {isAdmin && <button onClick={() => setTab("admin")} style={{ background: "none", opacity: tab === "admin" ? 1 : 0.4 }}><div style={{ fontSize: 22 }}>⚙️</div><div style={{ fontSize: 10, marginTop: 5, color: "#fff" }}>Admin</div></button>}
-                    </div>
-
-                    {/* Modals & Profile Logic... (Full Admin, Tracking and Food Details are inside the Firestore Sync) */}
-                    {modal?.type === "item" && (
-                        <Sheet onClose={() => setModal(null)}>
-                            <div style={{ textAlign: "center" }}>
-                                <div style={{ fontSize: 80 }}>{modal.d.emoji}</div>
-                                <h2 className="nunito" style={{ fontSize: 26, marginTop: 15 }}>{modal.d.name}</h2>
-                                <p style={{ color: C.m, marginTop: 10, lineHeight: 1.6 }}>{modal.d.desc}</p>
-                                <div style={{ display: "inline-block", background: "rgba(74,222,128,0.1)", color: C.g, padding: "8px 18px", borderRadius: 20, marginTop: 20, fontWeight: 800 }}>{modal.d.tag}</div>
-                            </div>
-                            <div className="flex-between" style={{ marginTop: 40 }}>
-                                <div className="nunito" style={{ fontSize: 32, fontWeight: 900, color: C.o }}>₹{modal.d.price}</div>
-                                <button onClick={() => addToCart(modal.d)} className="primary-btn" style={{ width: "auto", padding: "15px 35px" }}>Add to Cart</button>
-                            </div>
-                        </Sheet>
-                    )}
-                </div>
-            );
-        }
-
-        ReactDOM.createRoot(document.getElementById("root")).render(<App />);
-
-        // 🔥 10. GLOBAL PWA SERVICE WORKER (Claude Fix) 🔥
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/sw.js').catch(e => console.error("PWA failed", e));
+        const signOut = () => window.firebase.auth().signOut().then(() => { setScr("auth"); setUser(null); setIsAdmin(false); setTab("home"); });
+        const addToCart = (i) => {
+            setCart(prev => {
+                const ex = prev.find(c => c.id === i.id);
+                return ex ? prev.map(c => c.id === i.id ? { ...c, qty: c.qty + 1 } : c) : [...prev, { ...i, qty: 1 }];
             });
-        }
-    </script>
+            pop(i.emoji + " Added!");
+        };
+
+        const placeOrder = async () => {
+            if (!cart.length) return;
+            setLoading(true);
+            const o = { id: Date.now(), userId: user.id, userName: user.name, items: [...cart], total: cart.reduce((s, i) => s + i.price * i.qty, 0) + 50, statusIdx: 0, date: new Date().toLocaleDateString(), time: new Date().toLocaleTimeString() };
+            try {
+                await window.fbDB.collection("app_data").doc("orders_list").set({ orders: window.firebase.firestore.FieldValue.arrayUnion(o) }, { merge: true });
+                setCart([]); setTab("track"); pop("Order Placed! 🚀");
+            } catch (e) { pop("Failed", true); }
+            setLoading(false);
+        };
+
+        if (scr === "splash") return <div className="flex-center" style={{ height: "100vh", flexDirection: "column" }}><div style={{ fontSize: 80, animation: "pop 0.6s both" }}>🥗</div><h1 style={{ marginTop: 20, fontSize: 40, fontWeight: 900 }}>Cosfit</h1></div>;
+
+        if (scr === "auth") return (
+            <div style={{ padding: "60px 25px" }}>
+                {toast && <Toast t={toast} />}
+                <div style={{ textAlign: "center", marginBottom: 40 }}><div style={{ fontSize: 60 }}>🥗</div><h2 style={{ marginTop: 15 }}>Welcome to Cosfit</h2></div>
+                <div style={{ display: "flex", background: "#101a13", borderRadius: 18, padding: 5, marginBottom: 30 }}>
+                    {["login", "register"].map(t => <button key={t} onClick={() => setAuthTab(t)} style={{ flex: 1, padding: 15, borderRadius: 14, background: authTab === t ? "#4ade80" : "transparent", color: authTab === t ? "#000" : "#5e7d68", fontWeight: 800 }}>{t === "login" ? "Sign In" : "Join"}</button>)}
+                </div>
+                {authErr && <div style={{ color: "#f87171", textAlign: "center", marginBottom: 20 }}>⚠️ {authErr}</div>}
+                {authTab === "login" && <div>
+                    <input value={loginMail} onChange={e => setLoginMail(e.target.value)} placeholder="Email or Phone" style={{ marginBottom: 15 }} />
+                    <input type="password" value={loginPass} onChange={e => setLoginPass(e.target.value)} placeholder="Password" style={{ marginBottom: 15 }} />
+                    <button onClick={() => setAuthTab("forgot")} style={{ float: "right", color: "#4ade80", background: "none", marginBottom: 20 }}>Forgot?</button>
+                    <button disabled={loading} onClick={handleLogin} className="primary-btn">{loading ? "Verifying..." : "Login →"}</button>
+                </div>}
+                {authTab === "register" && <div>
+                    <input value={regName} onChange={e => setRegName(e.target.value)} placeholder="Full Name" style={{ marginBottom: 12 }} />
+                    <input value={regMail} onChange={e => setRegMail(e.target.value)} placeholder="Email" style={{ marginBottom: 12 }} />
+                    <input value={regPhone} maxLength={10} onChange={e => setRegPhone(e.target.value)} placeholder="Phone" style={{ marginBottom: 12 }} />
+                    <input type="password" value={regPass} onChange={e => setRegPass(e.target.value)} placeholder="Password" style={{ marginBottom: 12 }} />
+                    <button disabled={loading} onClick={handleRegister} className="primary-btn">{loading ? "Creating..." : "Sign Up →"}</button>
+                </div>}
+                {authTab === "forgot" && <div>
+                    <h3 style={{ marginBottom: 10 }}>Reset 🔑</h3>
+                    <input value={fEmail} onChange={e => setFEmail(e.target.value)} placeholder="Enter Gmail" style={{ marginBottom: 15 }} />
+                    <button onClick={handleForgotPass} className="primary-btn">Send Link</button>
+                    <button onClick={() => setAuthTab("login")} style={{ width: "100%", marginTop: 15, background: "none", color: "#5e7d68" }}>← Back</button>
+                </div>}
+            </div>
+        );
+
+        return (
+            <div style={{ paddingBottom: 100 }}>
+                {toast && <Toast t={toast} />}
+                {tab === "home" && <div style={{ padding: 25 }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", marginTop: 20 }}>
+                        <div><p style={{ color: "#5e7d68" }}>Hello,</p><h2 style={{ fontSize: 32 }}>{user?.name}</h2></div>
+                        <div onClick={() => setTab("profile")} style={{ width: 55, height: 55, borderRadius: "50%", background: "#101a13", border: "1px solid #1b2d1f", fontSize: 26 }} className="flex-center">{user?.avatar}</div>
+                    </div>
+                    <div style={{ background: "#101a13", borderRadius: 24, padding: 25, marginTop: 30 }}><p style={{ color: "#5e7d68", fontSize: 11 }}>CALORIE TARGET</p><h3 style={{ color: "#4ade80", fontSize: 32 }}>2400 kcal</h3></div>
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 15, marginTop: 25 }}>
+                        <button onClick={() => setTab("menu")} style={{ background: "#4ade80", padding: 20, borderRadius: 22, color: "#000", fontWeight: 900 }}>🍽 Order</button>
+                        <button onClick={() => setTab("track")} style={{ background: "#101a13", padding: 20, borderRadius: 22, border: "1px solid #1b2d1f" }}>🛵 Track</button>
+                    </div>
+                    <h3 style={{ marginTop: 35 }}>Foods for You</h3>
+                    <div style={{ display: "flex", gap: 15, overflowX: "auto", marginTop: 20 }}>
+                        {foods.weight_loss.breakfast.map(i => <div key={i.id} style={{ minWidth: 160, background: "#101a13", borderRadius: 22, padding: 15 }}><div style={{ fontSize: 40, textAlign: "center" }}>{i.emoji}</div><p style={{ fontWeight: 800, marginTop: 10 }}>{i.name}</p><button onClick={() => addToCart(i)} style={{ background: "#4ade80", width: "100%", padding: 8, borderRadius: 10, marginTop: 10, color: "#000", fontWeight: 900 }}>+ Add</button></div>)}
+                    </div>
+                </div>}
+
+                {tab === "profile" && <div style={{ padding: 25, textAlign: "center" }}>
+                    <div style={{ fontSize: 80, margin: "40px 0" }}>{user?.avatar}</div>
+                    <h2>{user?.name}</h2><p style={{ color: "#5e7d68" }}>{user?.email}</p>
+                    <button onClick={signOut} className="primary-btn" style={{ background: "rgba(248,113,113,0.1)", color: "#f87171", marginTop: 40 }}>Sign Out 🚪</button>
+                    {isAdmin && <button onClick={() => setTab("admin")} className="primary-btn" style={{ marginTop: 15 }}>Admin Panel ⚙️</button>}
+                </div>}
+
+                {/* Bottom Nav */}
+                <div style={{ position: "fixed", bottom: 0, width: "100%", maxWidth: 430, background: "rgba(6,12,8,0.98)", display: "flex", justifyContent: "space-around", padding: "15px 0 35px", borderTop: "1px solid #1b2d1f" }}>
+                    {[["home", "🏠"], ["menu", "🍽"], ["cart", "🛒"], ["track", "🛵"], ["profile", "👤"]].map(([k, ic]) => <button key={k} onClick={() => setTab(k)} style={{ background: "none", opacity: tab === k ? 1 : 0.3, fontSize: 24 }}>{ic}</button>)}
+                </div>
+            </div>
+        );
+    }
+
+    ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => navigator.serviceWorker.register('/sw.js').catch(e => console.log(e)));
+    }
+</script>
 </body>
 </html>
