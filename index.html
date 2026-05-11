@@ -13,9 +13,6 @@
 <link rel="apple-touch-icon" href="icon.png"/>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
 
-<script src="https://cdn.jsdelivr.net/npm/eruda"></script>
-<script>eruda.init();</script>
-
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
@@ -23,607 +20,952 @@
 <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
 <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
 <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
 <style>
-*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{background:#060c08;overflow-x:hidden;width:100%;font-family:'Inter',sans-serif}
-#root{width:100%;max-width:430px;margin:0 auto;overflow-x:hidden;position:relative}
-::-webkit-scrollbar{display:none}
-input,textarea,select{font-family:'Inter',sans-serif;box-sizing:border-box;-webkit-appearance:none;outline:none;border:none}
-button{cursor:pointer;border:none;outline:none}
-button:active{transform:scale(.92)!important;transition:transform .08s!important}
-@keyframes pop{from{opacity:0;transform:scale(.15)}to{opacity:1;transform:scale(1)}}
-@keyframes up{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
-@keyframes slideUp{from{opacity:0;transform:translateY(100%)}to{opacity:1;transform:translateY(0)}}
-@keyframes fadeIn{from{opacity:0}to{opacity:1}}
-@keyframes cIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
-@keyframes notif{from{opacity:0;transform:translateY(-80px)}to{opacity:1;transform:translateY(0)}}
-@keyframes dot{0%,100%{opacity:.1}50%{opacity:1}}
-@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.18)}}
-@keyframes toast{from{opacity:0;transform:translateX(-50%) translateY(-20px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
-@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
-@keyframes install{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { background: #060c08; overflow-x: hidden; width: 100%; font-family: 'Inter', sans-serif; }
+  #root { width: 100%; max-width: 430px; margin: 0 auto; overflow-x: hidden; position: relative; min-height: 100vh; }
+  ::-webkit-scrollbar { display: none; }
+  input, textarea, select { font-family: 'Inter', sans-serif; box-sizing: border-box; outline: none; border: none; }
+  button { cursor: pointer; border: none; outline: none; }
+  button:active { transform: scale(0.95); transition: transform 0.1s ease; }
+  
+  @keyframes pop { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
+  @keyframes up { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes slideUp { from { opacity: 0; transform: translateY(100%); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes cIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes notif { from { opacity: 0; transform: translateY(-80px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes toast { from { opacity: 0; transform: translateX(-50%) translateY(-20px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
+  @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.15); } }
 </style>
 </head>
 <body>
 <div id="root"></div>
+
 <script type="text/babel">
-const {useState,useEffect,useRef,useCallback}=React;
+const { useState, useEffect, useRef } = React;
 
-const N={fontFamily:"'Nunito',sans-serif"};
-const F={fontFamily:"'Inter',sans-serif"};
-const C={bg:"#060c08",surf:"#0c1610",card:"#101a13",card2:"#142019",b:"#1b2d1f",b2:"#243829",g:"#4ade80",gG:"linear-gradient(135deg,#4ade80,#22c55e)",o:"#fb923c",gO:"linear-gradient(135deg,#fb923c,#f97316)",gold:"#fbbf24",w:"#edf8f0",m:"#5e7d68",m2:"#3d5545",r:"#f87171",blue:"#60a5fa",pur:"#a78bfa"};
+// ── DESIGN TOKENS ──
+const N = { fontFamily: "'Nunito', sans-serif" };
+const F = { fontFamily: "'Inter', sans-serif" };
+const C = {
+  bg: "#060c08", surf: "#0c1610", card: "#101a13", card2: "#142019",
+  b: "#1b2d1f", b2: "#243829",
+  g: "#4ade80", gG: "linear-gradient(135deg, #4ade80, #22c55e)",
+  o: "#fb923c", gO: "linear-gradient(135deg, #fb923c, #f97316)",
+  gold: "#fbbf24", w: "#edf8f0", m: "#5e7d68", m2: "#3d5545",
+  r: "#f87171", blue: "#60a5fa", pur: "#a78bfa",
+};
 
-const COMPANY={name:"Coscoom Creative Tech Solutions",brand:"Idappadi Creators",email:"anantharajeinstein@gmail.com",phone:"8778148899",addr:"21/AJ,68,New Street,Kavandampatti,Idappadi,Salem-637101",state:"Tamilnadu"};
+const COMPANY = { name: "Coscoom Creative Tech Solutions", brand: "Idappadi Creators", email: "anantharajeinstein@gmail.com", phone: "8778148899", addr: "Salem-637101", state: "Tamilnadu" };
 
-const INIT_ADMINS=[
-  {id:1,name:"Anantharaj",username:"Anantharajmech",role:"Super Admin",password:"ananthaarthi160893",active:true},
-  {id:2,name:"Aarthi",username:"Aarthimech",role:"Admin",password:"aarthiananth160893",active:true},
-  {id:3,name:"Ajith",username:"Ajithmech",role:"Staff",password:"ajithmerga160893",active:true},
+const INIT_ADMINS = [
+  { id: 1, name: "Anantharaj", username: "Anantharajmech", role: "Super Admin", password: "ananthaarthi160893", active: true },
+  { id: 2, name: "Aarthi", username: "Aarthimech", role: "Admin", password: "aarthiananth160893", active: true }
 ];
 
-const INIT_SETTINGS={deliveryCharge:40,freeDeliveryMin:400,platformFee:10,gst:5,appName:"Cosfit",tagline:"Eat Smart · Live Strong",currency:"₹",supportPhone:"8778148899",supportEmail:"anantharajeinstein@gmail.com"};
+const INIT_SETTINGS = { deliveryCharge: 40, freeDeliveryMin: 400, platformFee: 10, gst: 5, appName: "Cosfit", currency: "₹" };
 
-const INIT_PLANS=[
-  {id:"w",label:"Weekly",price:499,per:"week",save:null,hot:false,color:"#60a5fa",features:["Personalized meal plan","Calorie & macro tracking","Free delivery on all orders","Priority customer support","Daily health tips"]},
-  {id:"m",label:"Monthly",price:1499,per:"month",save:"Save 25%",hot:true,color:"#4ade80",features:["Everything in Weekly","Advanced nutrition analytics","Chef special exclusive items","Dedicated health coach","Weekly progress reports","Meal prep guidance"]},
-  {id:"y",label:"Yearly",price:9999,per:"year",save:"Save 58%",hot:false,color:"#fbbf24",features:["Everything in Monthly","Annual health assessment","Exclusive premium recipes","Family plan for 4 members","Priority chef requests","Premium VIP badge","Yearly health report"]},
+const INIT_PLANS = [
+  { id: "w", label: "Weekly", price: 499, per: "week", save: null, hot: false, color: "#60a5fa", features: ["Personalized meal plan", "Free delivery"] },
+  { id: "m", label: "Monthly", price: 1499, per: "month", save: "Save 25%", hot: true, color: "#4ade80", features: ["Everything in Weekly", "Chef special items"] },
+  { id: "y", label: "Yearly", price: 9999, per: "year", save: "Save 58%", hot: false, color: "#fbbf24", features: ["Everything in Monthly", "VIP badge"] }
 ];
 
-const GOALS=[{id:"weight_loss",label:"Weight Loss",icon:"⚖️",calMod:-500},{id:"muscle_gain",label:"Muscle Gain",icon:"💪",calMod:300},{id:"general",label:"Stay Fit",icon:"🌿",calMod:0}];
-const PREFS=[{id:"all",label:"Everything",icon:"🍽"},{id:"veg",label:"Vegetarian",icon:"🥦"},{id:"nonveg",label:"Non-Veg",icon:"🍗"},{id:"vegan",label:"Vegan",icon:"🌱"}];
-const MEALS=["breakfast","lunch","dinner"];
-const MIC={breakfast:"☀️",lunch:"🌤",dinner:"🌙"};
-const AVATARS=["😊","💪","🌟","🏃","🧘","🥗","🔥","⚡","🌈","🎯","👑","🦁","🎮","🎵","✨","💎","🌺","🦊","🐯","🌸"];
-const ORDER_STEPS=[{icon:"✅",label:"Order Confirmed",msg:"Your order is confirmed! We're on it."},{icon:"👨‍🍳",label:"Preparing Food",msg:"Chefs are cooking your fresh meal!"},{icon:"📦",label:"Order Packed",msg:"Packed & ready for pickup."},{icon:"🛵",label:"Out for Delivery",msg:"Rider is heading to you now!"},{icon:"🎉",label:"Delivered!",msg:"Enjoy your meal! Stay fit 💪"}];
+const GOALS = [
+  { id: "weight_loss", label: "Weight Loss", icon: "⚖️", calMod: -500 },
+  { id: "muscle_gain", label: "Muscle Gain", icon: "💪", calMod: 300 },
+  { id: "general", label: "Stay Fit", icon: "🌿", calMod: 0 }
+];
 
-const INIT_FOODS={
-  weight_loss:{
-    breakfast:[{id:1,name:"Green Detox Smoothie",desc:"Spinach, apple, ginger, lemon",cal:185,p:5,c:32,f:3,price:129,emoji:"🥤",tag:"Detox",time:"5m",active:true,stock:true},{id:2,name:"Oats Berry Bowl",desc:"Rolled oats, mixed berries, chia seeds",cal:240,p:9,c:38,f:5,price:149,emoji:"🥣",tag:"High Fiber",time:"8m",active:true,stock:true}],
-    lunch:[{id:5,name:"Grilled Chicken Salad",desc:"Lettuce, tomato, cucumber, lemon dressing",cal:320,p:34,c:12,f:11,price:229,emoji:"🥗",tag:"Low Carb",time:"15m",active:true,stock:true},{id:6,name:"Millet Khichdi",desc:"Foxtail millet, moong dal, turmeric",cal:290,p:13,c:48,f:5,price:179,emoji:"🍲",tag:"Gluten Free",time:"18m",active:true,stock:true}],
-    dinner:[{id:8,name:"Steamed Fish & Greens",desc:"Tilapia, broccoli, beans, lemon",cal:310,p:38,c:10,f:12,price:259,emoji:"🐟",tag:"Heart Healthy",time:"20m",active:true,stock:true},{id:9,name:"Moong Dal Soup",desc:"Green lentil, ginger, pepper, coriander",cal:195,p:13,c:28,f:3,price:139,emoji:"🍵",tag:"Digestive",time:"15m",active:true,stock:true}],
+const PREFS = [ { id: "all", label: "Everything", icon: "🍽" }, { id: "veg", label: "Vegetarian", icon: "🥦" }, { id: "nonveg", label: "Non-Veg", icon: "🍗" } ];
+const MEALS = ["breakfast", "lunch", "dinner"];
+const MIC = { breakfast: "☀️", lunch: "🌤", dinner: "🌙" };
+const AVATARS = ["😊", "💪", "🌟", "🏃", "🧘", "🥗", "🔥", "⚡", "👑", "🌈", "🎯"];
+const ORDER_STEPS = [
+  { icon: "✅", label: "Order Confirmed", msg: "We got your order!" },
+  { icon: "👨‍🍳", label: "Preparing", msg: "Chefs are cooking fresh!" },
+  { icon: "📦", label: "Packed", msg: "Packed & ready for dispatch." },
+  { icon: "🛵", label: "Out for Delivery", msg: "Rider is heading to you!" },
+  { icon: "🎉", label: "Delivered", msg: "Enjoy your healthy meal!" }
+];
+
+const INIT_FOODS = {
+  weight_loss: {
+    breakfast: [
+      { id: 1, name: "Green Detox Smoothie", desc: "Spinach, apple, lemon", cal: 185, p: 5, c: 32, f: 3, price: 129, emoji: "🥤", tag: "Detox", time: "5m", active: true, stock: true },
+      { id: 2, name: "Oats Berry Bowl", desc: "Rolled oats, berries", cal: 240, p: 9, c: 38, f: 5, price: 149, emoji: "🥣", tag: "High Fiber", time: "8m", active: true, stock: true }
+    ],
+    lunch: [
+      { id: 5, name: "Grilled Chicken Salad", desc: "Lettuce, lemon dressing", cal: 320, p: 34, c: 12, f: 11, price: 229, emoji: "🥗", tag: "Low Carb", time: "15m", active: true, stock: true },
+      { id: 6, name: "Millet Khichdi", desc: "Foxtail millet", cal: 290, p: 13, c: 48, f: 5, price: 179, emoji: "🍲", tag: "Gluten Free", time: "18m", active: true, stock: true }
+    ],
+    dinner: [
+      { id: 8, name: "Steamed Fish", desc: "Tilapia, broccoli", cal: 310, p: 38, c: 10, f: 12, price: 259, emoji: "🐟", tag: "Healthy", time: "20m", active: true, stock: true }
+    ]
   },
-  muscle_gain:{
-    breakfast:[{id:11,name:"Protein Power Bowl",desc:"4 eggs, oats, banana, peanut butter",cal:620,p:42,c:58,f:18,price:219,emoji:"💪",tag:"Muscle Fuel",time:"12m",active:true,stock:true}],
-    lunch:[{id:14,name:"Chicken Quinoa Feast",desc:"250g grilled chicken, quinoa, broccoli",cal:680,p:56,c:55,f:16,price:329,emoji:"🍗",tag:"Muscle Gain",time:"20m",active:true,stock:true}],
-    dinner:[{id:17,name:"Steak & Sweet Potato",desc:"Lean beef steak, sweet potato mash",cal:690,p:54,c:48,f:22,price:389,emoji:"🥩",tag:"Iron Rich",time:"25m",active:true,stock:true}],
+  muscle_gain: {
+    breakfast: [
+      { id: 11, name: "Protein Power Bowl", desc: "Eggs, oats, peanut butter", cal: 620, p: 42, c: 58, f: 18, price: 219, emoji: "💪", tag: "Muscle", time: "12m", active: true, stock: true }
+    ],
+    lunch: [
+      { id: 14, name: "Chicken Quinoa Feast", desc: "Grilled chicken, quinoa", cal: 680, p: 56, c: 55, f: 16, price: 329, emoji: "🍗", tag: "Muscle Gain", time: "20m", active: true, stock: true }
+    ],
+    dinner: [
+      { id: 17, name: "Steak & Sweet Potato", desc: "Lean beef steak", cal: 690, p: 54, c: 48, f: 22, price: 389, emoji: "🥩", tag: "Iron Rich", time: "25m", active: true, stock: true }
+    ]
   },
-  general:{
-    breakfast:[{id:20,name:"Avocado Toast",desc:"Multigrain bread, avocado, seeds, lemon",cal:310,p:10,c:34,f:16,price:179,emoji:"🥑",tag:"Healthy Fat",time:"8m",active:true,stock:true}],
-    lunch:[{id:24,name:"Dal Tadka & Brown Rice",desc:"Yellow dal, ghee, brown rice, pickle",cal:440,p:18,c:72,f:8,price:159,emoji:"🍚",tag:"Classic",time:"18m",active:true,stock:true}],
-    dinner:[{id:28,name:"Palak Paneer & Roti",desc:"Spinach gravy, cottage cheese, 2 rotis",cal:390,p:22,c:44,f:14,price:189,emoji:"🥬",tag:"Iron Rich",time:"20m",active:true,stock:true}],
-  },
+  general: {
+    breakfast: [
+      { id: 20, name: "Avocado Toast", desc: "Multigrain bread, seeds", cal: 310, p: 10, c: 34, f: 16, price: 179, emoji: "🥑", tag: "Healthy Fat", time: "8m", active: true, stock: true }
+    ],
+    lunch: [
+      { id: 24, name: "Dal Tadka & Rice", desc: "Yellow dal, brown rice", cal: 440, p: 18, c: 72, f: 8, price: 159, emoji: "🍚", tag: "Classic", time: "18m", active: true, stock: true }
+    ],
+    dinner: [
+      { id: 28, name: "Palak Paneer", desc: "Spinach gravy, 2 rotis", cal: 390, p: 22, c: 44, f: 14, price: 189, emoji: "🥬", tag: "Iron Rich", time: "20m", active: true, stock: true }
+    ]
+  }
 };
 
-const tdee=(w,h,a,g,goal)=>{const bmr=g==="f"?10*w+6.25*h-5*a-161:10*w+6.25*h-5*a+5; return Math.round(bmr*1.55)+((GOALS.find(x=>x.id===goal))||{calMod:0}).calMod;};
-
-const getGreeting=(name,goal,orders)=>{
-  const hr=new Date().getHours(); const fn=name?.split(" ")[0]||"there"; let greeting,icon,meal,tip,sticker;
-  if(hr>=5&&hr<12){greeting="Good Morning";icon="☀️";meal="breakfast";sticker="🌅";tip=goal==="weight_loss"?"Start light – your detox smoothie awaits!":goal==="muscle_gain"?"Fuel up! High-protein breakfast time 💪":"Kick off your day with a healthy breakfast!";}
-  else if(hr>=12&&hr<17){greeting="Good Afternoon";icon="🌤";meal="lunch";sticker="🌞";tip=goal==="weight_loss"?"Stay on track – choose your low-cal lunch!":goal==="muscle_gain"?"Lunch = muscle building time! Eat big 💪":"Keep your energy going – it's lunch time!";}
-  else if(hr>=17&&hr<21){greeting="Good Evening";icon="🌆";meal="dinner";sticker="🌇";tip=goal==="weight_loss"?"Light dinner = better sleep & weight loss!":goal==="muscle_gain"?"Recovery dinner – protein is key tonight!":"Wind down with a nutritious dinner!";}
-  else{greeting="Good Night";icon="🌙";meal="dinner";sticker="🌃";tip="Light meal recommended for better sleep 😴";}
-  const loyalty=orders.length>=10?"🏆 Top customer!":orders.length>=5?"⭐ Loyal member!":orders.length>=2?"✨ Regular customer!":"";
-  return{greeting,icon,meal,tip,sticker,loyalty,fn};
+const tdee = (w, h, a, g, goal) => {
+  const bmr = g === "f" ? 10 * w + 6.25 * h - 5 * a - 161 : 10 * w + 6.25 * h - 5 * a + 5;
+  return Math.round(bmr * 1.55) + ((GOALS.find(x => x.id === goal)) || { calMod: 0 }).calMod;
 };
 
-const getAITips=(user,orders)=>{
-  const tips=[]; const hr=new Date().getHours(); if(!user)return[];
-  if(orders.length===0)tips.push({icon:"🎯",text:"Place your first order and start your fitness journey!",color:C.g});
-  if(hr>=7&&hr<9)tips.push({icon:"⚡",text:"Morning boost: Have breakfast within 1 hour of waking!",color:C.gold});
-  if(user.goal==="weight_loss")tips.push({icon:"💧",text:"Drink 2-3L water today to support weight loss",color:C.blue});
-  if(user.goal==="muscle_gain")tips.push({icon:"🥩",text:`Protein target: ${Math.round((+user.weight||70)*2.2)}g today`,color:C.pur});
-  if(orders.length>0&&orders[0].statusIdx<4)tips.push({icon:"🛵",text:"Your latest order is being tracked live!",color:C.g});
-  tips.push({icon:"📊",text:`Estimated ${Math.round(new Date().getHours()*65)} cal burned today`,color:C.g});
-  return tips.slice(0,3);
+const getGreeting = (name) => {
+  const hr = new Date().getHours();
+  let greeting, icon, meal, tip, sticker;
+  if (hr >= 5 && hr < 12) { greeting = "Good Morning"; icon = "☀️"; meal = "breakfast"; sticker = "🌅"; } 
+  else if (hr >= 12 && hr < 17) { greeting = "Good Afternoon"; icon = "🌤"; meal = "lunch"; sticker = "🌞"; } 
+  else if (hr >= 17 && hr < 21) { greeting = "Good Evening"; icon = "🌆"; meal = "dinner"; sticker = "🌇"; } 
+  else { greeting = "Good Night"; icon = "🌙"; meal = "dinner"; sticker = "🌃"; }
+  return { greeting, icon, meal, sticker };
 };
 
-let NID=800; const nid=()=>++NID;
-const fmt=(d)=>new Date(d).toLocaleString('en-IN',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});
+// ── MINI COMPONENTS ──
+function Toast({ t }) {
+  return (
+    <div style={{ position: "fixed", top: 22, left: "50%", transform: "translateX(-50%)", background: t.err ? "#ef4444" : "#22c55e", color: "#fff", padding: "12px 22px", borderRadius: 50, fontWeight: 800, fontSize: 13, zIndex: 9999, whiteSpace: "nowrap", boxShadow: "0 8px 32px rgba(0,0,0,0.4)", animation: "toast 0.3s cubic-bezier(0.34,1.56,0.64,1) both" }}>
+      {t.msg}
+    </div>
+  );
+}
 
-function Toast({t}){return <div style={{position:"fixed",top:22,left:"50%",transform:"translateX(-50%)",background:t.err?"rgba(248,113,113,.15)":"rgba(74,222,128,.12)",border:`1px solid ${t.err?"rgba(248,113,113,.5)":"rgba(74,222,128,.5)"}`,color:t.err?"#fca5a5":"#4ade80",padding:"12px 22px",borderRadius:50,fontWeight:700,fontSize:13,zIndex:9999,whiteSpace:"nowrap",maxWidth:"88vw",...F,animation:"toast .35s cubic-bezier(.34,1.56,.64,1) both",boxShadow:"0 8px 32px rgba(0,0,0,.5)"}}>{t.msg}</div>;}
-function NBanner({n,onClose}){return <div onClick={onClose} style={{position:"fixed",top:0,left:"50%",transform:"translateX(-50%)",width:"100%",maxWidth:430,zIndex:9990,background:"linear-gradient(135deg,#0c1610,#142019)",borderBottom:"1px solid rgba(74,222,128,.3)",padding:"14px 20px 16px",display:"flex",alignItems:"center",gap:12,animation:"notif .45s cubic-bezier(.34,1.56,.64,1) both",boxShadow:"0 12px 40px rgba(0,0,0,.6)",cursor:"pointer"}}><div style={{width:44,height:44,background:"rgba(74,222,128,.15)",borderRadius:14,display:"flex",alignItems:"center",justifyContent:"center",fontSize:22,flexShrink:0}}>{n.icon}</div><div style={{flex:1,minWidth:0}}><div style={{color:C.g,fontWeight:800,fontSize:13,...N}}>{n.label}</div><div style={{color:C.m,fontSize:12,marginTop:2,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{n.msg}</div></div><div style={{color:C.m,fontSize:22,flexShrink:0}}>×</div></div>;}
-function Sheet({onClose,children,tall}){return <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,.88)",zIndex:950,display:"flex",alignItems:"flex-end",justifyContent:"center",animation:"fadeIn .2s both"}} onClick={onClose}><div style={{background:C.surf,borderRadius:"28px 28px 0 0",width:"100%",maxWidth:430,padding:"22px 22px 44px",animation:"slideUp .35s cubic-bezier(.34,1.56,.64,1)",maxHeight:tall?"94vh":"82vh",overflowY:"auto"}} onClick={e=>e.stopPropagation()}><div style={{width:42,height:4,background:C.b,borderRadius:99,margin:"0 auto 20px"}}/>{children}</div></div>;}
-function Field({label,value,onChange,type="text",ph="",rows,min,note}){const s={width:"100%",padding:"13px 16px",background:C.card,border:`1.5px solid ${value?"rgba(74,222,128,.5)":C.b}`,borderRadius:13,color:C.w,fontSize:14,...F,transition:"border-color .2s",boxSizing:"border-box"}; return <div style={{width:"100%"}}>{label&&<div style={{fontSize:10,fontWeight:700,color:C.m,textTransform:"uppercase",letterSpacing:1.2,marginBottom:7,...F}}>{label}</div>}{rows?<textarea rows={rows} value={value} onChange={e=>onChange(e.target.value)} placeholder={ph} style={{...s,resize:"none",lineHeight:1.7}}/>:<input type={type} value={value} onChange={e=>onChange(type==="number"?+e.target.value:e.target.value)} placeholder={ph} min={min} style={s}/>}{note&&<div style={{fontSize:11,color:C.m,marginTop:5,...F}}>{note}</div>}</div>;}
-
-function PlanModal({plan,onSave,onClose}){
-  const blank={id:"p"+Date.now(),label:"",price:0,per:"month",save:"",hot:false,color:C.g,features:[""]};
-  const[d,setD]=useState(plan?{...plan,features:[...plan.features]}:blank);
-  const up=k=>v=>setD(p=>({...p,[k]:v}));
-  const addFeat=()=>setD(p=>({...p,features:[...p.features,""]}));
-  const updFeat=(i,v)=>setD(p=>{const f=[...p.features];f[i]=v;return{...p,features:f};});
-  const delFeat=i=>setD(p=>({...p,features:p.features.filter((_,j)=>j!==i)}));
-  const ok=d.label&&d.price>0;
-  return <Sheet onClose={onClose} tall>
-    <div style={{...N,color:C.g,fontWeight:900,fontSize:18,marginBottom:16}}>{plan?"✏️ Edit Plan":"➕ New Plan"}</div>
-    <div style={{display:"flex",flexDirection:"column",gap:12}}>
-      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}><Field label="Plan Name *" value={d.label} onChange={up("label")} ph="e.g. Weekly"/><Field label="Price (₹) *" value={d.price} onChange={up("price")} type="number" min={0}/><Field label="Period" value={d.per} onChange={up("per")} ph="week / month / year"/><Field label="Save Badge" value={d.save||""} onChange={v=>setD(p=>({...p,save:v||null}))} ph="Save 25%"/></div>
-      <div style={{display:"flex",gap:10}}><button onClick={()=>setD(p=>({...p,hot:!p.hot}))} style={{flex:1,padding:"12px",borderRadius:12,background:d.hot?"rgba(74,222,128,.12)":"transparent",border:`1.5px solid ${d.hot?C.g:C.b}`,color:d.hot?C.g:C.m,fontWeight:700,fontSize:13,...F}}>{d.hot?"★ Popular":"☆ Mark Popular"}</button></div>
-      <div>
-        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10}}><div style={{fontSize:10,fontWeight:700,color:C.m,textTransform:"uppercase",letterSpacing:1.2,...F}}>Features</div><button onClick={addFeat} style={{background:"rgba(74,222,128,.1)",border:"1px solid rgba(74,222,128,.3)",color:C.g,padding:"4px 12px",borderRadius:20,fontSize:11,fontWeight:700,...F}}>+ Add</button></div>
-        {d.features.map((f,i)=><div key={i} style={{display:"flex",gap:8,marginBottom:8}}><input value={f} onChange={e=>updFeat(i,e.target.value)} placeholder={`Feature ${i+1}`} style={{flex:1,padding:"10px 14px",background:C.card,border:`1.5px solid ${C.b}`,borderRadius:11,color:C.w,fontSize:13,...F,boxSizing:"border-box"}}/><button onClick={()=>delFeat(i)} style={{background:"rgba(248,113,113,.12)",border:"none",color:C.r,width:34,height:34,borderRadius:10,fontSize:16,fontWeight:900,flexShrink:0}}>×</button></div>)}
+function NBanner({ n, onClose }) {
+  return (
+    <div onClick={onClose} style={{ position: "fixed", top: 0, left: "50%", transform: "translateX(-50%)", width: "100%", maxWidth: 430, zIndex: 9990, background: C.card, borderBottom: `1px solid ${C.g}`, padding: "14px 20px", display: "flex", alignItems: "center", gap: 12, animation: "slideUp 0.4s both", cursor: "pointer" }}>
+      <div style={{ fontSize: 24 }}>{n.icon}</div>
+      <div style={{ flex: 1 }}>
+        <div style={{ color: C.g, fontWeight: 800, ...N }}>{n.label}</div>
+        <div style={{ color: C.m, fontSize: 12 }}>{n.msg}</div>
       </div>
-      <div style={{display:"flex",gap:8,marginTop:6}}><button onClick={onClose} style={{flex:1,background:"transparent",border:`1px solid ${C.b}`,color:C.m,padding:"13px",borderRadius:13,fontWeight:700,...F}}>Cancel</button><button disabled={!ok} onClick={()=>ok&&onSave(d)} style={{flex:2,background:ok?C.gG:"#1a1a1a",color:ok?"#060c08":C.m,border:"none",padding:"13px",borderRadius:13,fontWeight:900,fontSize:14,...N,boxShadow:ok?"0 4px 18px rgba(74,222,128,.3)":"none"}}>Save Plan ✓</button></div>
     </div>
-  </Sheet>;
+  );
 }
 
-function FoodModal({food,goalId,meal,onSave,onClose}){
-  const blank={name:"",desc:"",cal:0,p:0,c:0,f:0,price:0,emoji:"🍱",tag:"New",time:"15m",active:true,stock:true};
-  const[d,setD]=useState(food?{...food}:blank);
-  const up=k=>v=>setD(p=>({...p,[k]:v}));
-  const ok=d.name&&d.price>0&&d.cal>0;
-  return <Sheet onClose={onClose} tall>
-    <div style={{...N,color:C.blue,fontWeight:900,fontSize:18,marginBottom:4}}>{food?"✏️ Edit Item":"➕ Add Food Item"}</div>
-    <div style={{color:C.m,fontSize:12,marginBottom:16}}>Goal: {GOALS.find(g=>g.id===goalId)?.label} · {MIC[meal]} {meal}</div>
-    <div style={{display:"flex",flexDirection:"column",gap:11}}>
-      <div style={{display:"flex",gap:10}}><div style={{flex:1}}><Field label="Item Name *" value={d.name} onChange={up("name")} ph="e.g. Green Smoothie"/></div><div style={{width:80}}><Field label="Emoji" value={d.emoji} onChange={up("emoji")} ph="🍱"/></div></div>
-      <Field label="Description" value={d.desc} onChange={up("desc")} ph="Ingredients..." rows={2}/>
-      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}><Field label="Price ₹ *" value={d.price} onChange={up("price")} type="number" min={0}/><Field label="Calories *" value={d.cal} onChange={up("cal")} type="number" min={0}/><Field label="Protein (g)" value={d.p} onChange={up("p")} type="number" min={0}/><Field label="Carbs (g)" value={d.c} onChange={up("c")} type="number" min={0}/><Field label="Fat (g)" value={d.f} onChange={up("f")} type="number" min={0}/><Field label="Tag" value={d.tag} onChange={up("tag")} ph="Low Carb"/><Field label="Prep Time" value={d.time} onChange={up("time")} ph="15m"/></div>
-      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>{[["📦 In Stock","stock"],["👁 Visible","active"]].map(([l,k])=><button key={k} onClick={()=>setD(p=>({...p,[k]:!p[k]}))} style={{padding:"12px",borderRadius:12,border:`1.5px solid ${d[k]?C.g:C.b}`,background:d[k]?"rgba(74,222,128,.1)":"transparent",color:d[k]?C.g:C.m,fontWeight:700,fontSize:13,...F}}>{d[k]?`✓ ${l}`:`✗ ${l}`}</button>)}</div>
-      <div style={{background:C.b2,borderRadius:14,padding:"12px 14px",border:`1px solid ${C.b}`}}><div style={{fontSize:9,color:C.m,textTransform:"uppercase",letterSpacing:1.2,marginBottom:8}}>Preview</div><div style={{display:"flex",gap:10,alignItems:"center"}}><span style={{fontSize:28}}>{d.emoji}</span><div><div style={{...N,color:C.w,fontWeight:800,fontSize:13}}>{d.name||"Item Name"}</div><div style={{color:C.m,fontSize:11,marginTop:2}}>{d.desc||"Description"}</div><div style={{display:"flex",gap:6,marginTop:5}}><span style={{background:"rgba(251,146,60,.14)",color:C.o,fontSize:10,fontWeight:700,padding:"2px 8px",borderRadius:99}}>🔥{d.cal}</span><span style={{background:"rgba(74,222,128,.1)",color:C.g,fontSize:10,fontWeight:700,padding:"2px 8px",borderRadius:99}}>₹{d.price}</span></div></div></div></div>
-      <div style={{display:"flex",gap:8,marginTop:4}}><button onClick={onClose} style={{flex:1,background:"transparent",border:`1px solid ${C.b}`,color:C.m,padding:"13px",borderRadius:13,fontWeight:700,...F}}>Cancel</button><button disabled={!ok} onClick={()=>ok&&onSave({...d,id:food?.id||nid()})} style={{flex:2,background:ok?C.gG:"#1a1a1a",color:ok?"#060c08":C.m,border:"none",padding:"13px",borderRadius:13,fontWeight:900,fontSize:14,...N,boxShadow:ok?"0 4px 18px rgba(74,222,128,.3)":"none"}}>Save ✓</button></div>
+function Sheet({ onClose, children, tall }) {
+  return (
+    <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.85)", zIndex: 950, display: "flex", alignItems: "flex-end", justifyContent: "center", animation: "fadeIn 0.2s both" }} onClick={onClose}>
+      <div style={{ background: C.surf, borderRadius: "28px 28px 0 0", width: "100%", maxWidth: 430, padding: "22px 22px 44px", animation: "slideUp 0.3s ease-out", maxHeight: tall ? "94vh" : "82vh", overflowY: "auto" }} onClick={e => e.stopPropagation()}>
+        <div style={{ width: 42, height: 4, background: C.b, borderRadius: 99, margin: "0 auto 20px" }} />
+        {children}
+      </div>
     </div>
-  </Sheet>;
+  );
 }
 
-// ═══════════════ MAIN APP ════════════════════════════════════════
-function App(){
-  const[scr,setScr]=useState("splash");
-  const[authTab,setAuthTab]=useState("login"); 
-  const[authErr,setAuthErr]=useState("");
-  const[loading,setLoading]=useState(false);
+function Field({ label, value, onChange, type = "text", ph = "", rows }) {
+  const inputStyle = { width: "100%", padding: "14px 16px", background: C.card, border: `1px solid ${value ? C.g : C.b}`, borderRadius: 14, color: C.w, fontSize: 14, ...F, transition: "0.2s ease" };
+  return (
+    <div style={{ width: "100%", marginBottom: 14 }}>
+      {label && <div style={{ fontSize: 11, fontWeight: 700, color: C.m, marginBottom: 6, textTransform: "uppercase", letterSpacing: 1, ...F }}>{label}</div>}
+      {rows ? (
+        <textarea rows={rows} value={value} onChange={e => onChange(e.target.value)} placeholder={ph} style={{ ...inputStyle, resize: "none" }} />
+      ) : (
+        <input type={type} value={value} onChange={e => onChange(e.target.value)} placeholder={ph} style={inputStyle} />
+      )}
+    </div>
+  );
+}
 
-  const[rName,setRName]=useState("");
-  const[rUsername,setRUsername]=useState("");
-  const[rEmail,setREmail]=useState("");
-  const[phone,setPhone]=useState("");
-  const[rPassword,setRPassword]=useState("");
-  const[rConfirm,setRConfirm]=useState("");
-  const[loginId,setLoginId]=useState("");
-  const[loginPassword,setLoginPassword]=useState("");
-  const[fEmail,setFEmail]=useState("");
+// ── MAIN APP COMPONENT ──
+function App() {
+  // Navigation & States
+  const [scr, setScr] = useState("splash");
+  const [tab, setTab] = useState("home");
+  const [adminTab, setAdminTab] = useState("orders");
+  const [authTab, setAuthTab] = useState("login");
+  const [modal, setModal] = useState(null);
+  
+  const [authErr, setAuthErr] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [toast, setToast] = useState(null);
+  const [banner, setBanner] = useState(null);
 
-  const[user,setUser]=useState(null);
-  const[users,setUsers]=useState([]);
-  const[isAdmin,setIsAdmin]=useState(false);
-  const[adminUser,setAdminUser]=useState(null);
-  const[admins,setAdmins]=useState(INIT_ADMINS);
-  const[adminUsername,setAdminUsername]=useState("");
-  const[adminPw,setAdminPw]=useState("");
+  // Auth Inputs
+  const [rName, setRName] = useState("");
+  const [rUsername, setRUsername] = useState("");
+  const [rEmail, setREmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [rPassword, setRPassword] = useState("");
+  const [rConfirm, setRConfirm] = useState("");
+  
+  const [loginId, setLoginId] = useState("");
+  const [loginPassword, setLoginPassword] = useState("");
+  const [fEmail, setFEmail] = useState("");
 
-  const[foods,setFoods]=useState(INIT_FOODS);
-  const[plans,setPlans]=useState(INIT_PLANS);
-  const[planActivations,setPlanActivations]=useState([]);
-  const[settings,setSettings]=useState(INIT_SETTINGS);
-  const[cart,setCart]=useState([]);
-  const[orders,setOrders]=useState([]);
-  const[notifs,setNotifs]=useState([]);
-  const[banner,setBanner]=useState(null);
-  const[toast,setToast]=useState(null);
+  // Admin Login Inputs
+  const [adminUsername, setAdminUsername] = useState("");
+  const [adminPw, setAdminPw] = useState("");
 
-  const[tab,setTab]=useState("home");
-  const[adminTab,setAdminTab]=useState("orders");
-  const[modal,setModal]=useState(null);
-  const[mGoal,setMGoal]=useState("weight_loss");
-  const[mMeal,setMMeal]=useState("breakfast");
-  const[search,setSearch]=useState("");
-  const[installPrompt,setInstallPrompt]=useState(null);
-  const[showInstall,setShowInstall]=useState(false);
-  const[ob,setOb]=useState({step:0,goal:"",pref:"",age:"",weight:"",height:"",gender:"m"});
+  // Core Data
+  const [user, setUser] = useState(null);
+  const [users, setUsers] = useState([]);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [adminUser, setAdminUser] = useState(null);
+  const [foods, setFoods] = useState(INIT_FOODS);
+  const [cart, setCart] = useState([]);
+  const [orders, setOrders] = useState([]);
+  const [notifs, setNotifs] = useState([]);
+  
+  // App UI states
+  const [mGoal, setMGoal] = useState("general");
+  const [mMeal, setMMeal] = useState("breakfast");
+  const [search, setSearch] = useState("");
+  const [ob, setOb] = useState({ step: 0, goal: "", pref: "", age: "", weight: "", height: "", gender: "m" });
 
-  // 🔥 FIREBASE INITIALIZATION & REAL-TIME SYNC LOGIC 🔥
+  // 🔥 1. FIREBASE REALTIME INITIALIZATION (NO ERROR) 🔥
   useEffect(() => {
     const initFirebase = async () => {
       try {
-        const app = window.firebase.apps.length ? window.firebase.app() : window.firebase.initializeApp({
-          apiKey: "AIzaSyBvD-i0yV6u6iV6u6iV6u6iV6u6iV6u6iV6", // உங்களின் பழைய API key
-          authDomain: "cosfit-4395b.firebaseapp.com",
-          projectId: "cosfit-4395b",
-          storageBucket: "cosfit-4395b.firebasestorage.app",
-          messagingSenderId: "821360181518",
-          appId: "1:821360181518:android:3e0205c069273577d24276"
-        });
+        const app = window.firebase.apps.length 
+          ? window.firebase.app() 
+          : window.firebase.initializeApp({
+              apiKey: "AIzaSyBvD-i0yV6u6iV6u6iV6u6iV6u6iV6u6iV6", // உங்களின் பழைய API
+              authDomain: "cosfit-4395b.firebaseapp.com",
+              projectId: "cosfit-4395b",
+              storageBucket: "cosfit-4395b.firebasestorage.app",
+              messagingSenderId: "821360181518",
+              appId: "1:821360181518:android:3e0205c069273577d24276"
+            });
+
         const db = app.firestore();
         window.fbDB = db; 
-        
-        // Realtime Data Sync
-        db.collection("app_data").doc("foods_menu").onSnapshot(snap => { if (snap.exists) setFoods(snap.data()); else db.collection("app_data").doc("foods_menu").set(INIT_FOODS); });
-        db.collection("app_data").doc("orders_list").onSnapshot(snap => { if (snap.exists) setOrders(snap.data().orders || []); });
-        db.collection("app_data").doc("users_list").onSnapshot(snap => { if (snap.exists) setUsers(snap.data().users || []); });
 
-        // Persistent Auth
+        // Realtime Listeners for Syncing Data
+        db.collection("app_data").doc("foods_menu").onSnapshot(snap => {
+          if (snap.exists) setFoods(snap.data()); 
+          else db.collection("app_data").doc("foods_menu").set(INIT_FOODS);
+        });
+
+        db.collection("app_data").doc("users_list").onSnapshot(snap => {
+          if (snap.exists) setUsers(snap.data().users || []);
+        });
+
+        db.collection("app_data").doc("orders_list").onSnapshot(snap => {
+          if (snap.exists) {
+            const fetchedOrders = snap.data().orders || [];
+            setOrders(fetchedOrders);
+            // Admin Notification logic if new order arrived
+            if (isAdmin && fetchedOrders.length > orders.length) {
+                addNotif("New Order Received from a customer!", "🔔");
+            }
+          }
+        });
+
+        // Persist Login State
         window.firebase.auth().onAuthStateChanged((currUser) => {
           if (currUser) {
              db.collection("app_data").doc("users_list").get().then(s => {
                 const allU = s.exists ? s.data().users : [];
                 const found = allU.find(u => u.email === currUser.email);
-                if (found) { setUser(found); setMGoal(found.goal || "general"); setScr("app"); }
+                if (found) { 
+                  setUser(found); 
+                  setMGoal(found.goal || "general"); 
+                  setScr("app"); 
+                } else {
+                  setScr("auth");
+                }
              });
-          } else { setScr("auth"); }
+          } else {
+             setScr("auth");
+          }
         });
-      } catch (err) { console.error("Firebase Error:", err); }
+
+      } catch (err) { 
+        console.error("Firebase Sync Error: ", err); 
+        setScr("auth");
+      }
     };
     initFirebase();
-    setTimeout(()=>setScr("auth"),2400);
   }, []);
 
-  const syncUsers = (newUsers) => { window.fbDB?.collection("app_data").doc("users_list").set({users: newUsers}); };
-  const syncOrders = (newOrders) => { window.fbDB?.collection("app_data").doc("orders_list").set({orders: newOrders}); };
-  const syncFoods = (newFoods) => { window.fbDB?.collection("app_data").doc("foods_menu").set(newFoods); };
+  // Sync helpers
+  const syncUsersToDB = (data) => { setUsers(data); window.fbDB?.collection("app_data").doc("users_list").set({users: data}, {merge: true}); };
+  const syncOrdersToDB = (data) => { setOrders(data); window.fbDB?.collection("app_data").doc("orders_list").set({orders: data}, {merge: true}); };
 
-  useEffect(()=>{
-    window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();setInstallPrompt(e);setShowInstall(true);});
-    window.addEventListener("appinstalled",()=>setShowInstall(false));
-  },[]);
+  // Utilities
+  const pop = (msg, err = false) => { setToast({ msg, err }); setTimeout(() => setToast(null), 3000); };
+  const addNotif = (msg, icon = "🔔") => {
+    const n = { id: Date.now(), label: "Cosfit Update", msg, icon, read: false, time: new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }) };
+    setNotifs(p => [n, ...p]); setBanner(n); setTimeout(() => setBanner(null), 5000);
+  };
 
-  const pop=(msg,err=false)=>{setToast({msg,err});setTimeout(()=>setToast(null),3000);};
-  const addNotif=(msg,icon="🔔")=>{const n={id:Date.now(),label:"Update",msg,icon,read:false,time:new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'})}; setNotifs(p=>[n,...p]); setBanner(n); setTimeout(()=>setBanner(null),5000);};
-
-  const cartCount=cart.reduce((s,i)=>s+i.qty,0);
-  const cartSub=cart.reduce((s,i)=>s+i.price*i.qty,0);
-  const delivery=cartSub>=settings.freeDeliveryMin?0:settings.deliveryCharge;
-  const gstAmt=Math.round(cartSub*settings.gst/100);
-  const orderTotal=cartSub+delivery+gstAmt+settings.platformFee;
-  const todayCal=cart.reduce((s,i)=>s+i.cal*i.qty,0);
-  const target=user?tdee(+user.weight||70,+user.height||175,+user.age||25,user.gender||"m",user.goal||"general"):2000;
-  const calP=Math.min(100,Math.round(todayCal/target*100));
-  const unread=notifs.filter(n=>!n.read).length;
-  const liveOrders=orders.filter(o=>o.statusIdx<4).length;
-  const allFlat=Object.values(foods).flatMap(g=>Object.values(g).flat());
-  const greet=user?getGreeting(user.name,user.goal,orders):{greeting:"Welcome",icon:"👋",fn:"",tip:"",sticker:"🌟",loyalty:"",meal:"breakfast"};
-  const aiTips=user?getAITips(user,orders):[];
-  const menuItems=(foods[mGoal]?.[mMeal]||[]).filter(i=>i.active&&i.stock&&(!search||i.name.toLowerCase().includes(search.toLowerCase())||i.tag.toLowerCase().includes(search.toLowerCase())));
-
-  // 🔥 1. NORMAL REGISTER & LOGIN (Email/Username + Password) 🔥
-  const handleRegister=()=>{
+  // 🔥 2. LOGIN & REGISTER (USERNAME OR EMAIL) 🔥
+  const handleRegister = () => {
     setAuthErr("");
-    if(!rName || !rUsername || !rEmail || !phone || !rPassword) return setAuthErr("All fields are required");
-    if(rPassword !== rConfirm) return setAuthErr("Passwords do not match");
-    if(rPassword.length < 6) return setAuthErr("Password must be at least 6 characters");
-    if(!rEmail.includes("@")) return setAuthErr("Enter a valid Gmail address");
+    if (!rName || !rUsername || !rEmail || !phone || !rPassword) return setAuthErr("All fields are required");
+    if (rPassword !== rConfirm) return setAuthErr("Passwords do not match");
+    if (rPassword.length < 6) return setAuthErr("Password must be at least 6 characters");
+    if (!rEmail.includes("@")) return setAuthErr("Enter a valid Gmail address");
     
     setLoading(true);
     window.firebase.auth().createUserWithEmailAndPassword(rEmail.toLowerCase().trim(), rPassword)
       .then((userCredential) => {
-        const nu={ id:userCredential.user.uid, name:rName.trim(), username:rUsername.toLowerCase().trim(), email:rEmail.toLowerCase().trim(), phone, password:rPassword, avatar:"😊", plan:null, planActivatedAt:null, address:"", goal:"general", pref:"all", age:"25", weight:"70", height:"175", gender:"m", joinedAt:new Date().toISOString() };
-        syncUsers([...users, nu]);
-        setUser(nu); setScr("onboard"); pop("Account created successfully! 🎉"); setLoading(false);
+        const nu = { 
+          id: userCredential.user.uid, name: rName.trim(), username: rUsername.toLowerCase().trim(), 
+          email: rEmail.toLowerCase().trim(), phone, avatar: "😊", address: "", goal: "general", 
+          pref: "all", age: "25", weight: "70", height: "175", gender: "m", joinedAt: new Date().toISOString() 
+        };
+        syncUsersToDB([...users, nu]);
+        setUser(nu);
+        setScr("onboard");
+        pop("Account created successfully! 🎉");
+        setLoading(false);
       })
       .catch((error) => { setAuthErr(error.message); setLoading(false); });
   };
 
-  const handleLogin=()=>{
+  const handleLogin = () => {
     setAuthErr("");
-    if(!loginId || !loginPassword) return setAuthErr("Enter Username/Email and Password");
+    if (!loginId || !loginPassword) return setAuthErr("Enter Username or Email and Password");
     setLoading(true);
-    let targetEmail = loginId.trim();
-    if(!targetEmail.includes("@")) {
-       const foundUser = users.find(u => u.username === targetEmail.toLowerCase());
-       if(foundUser) targetEmail = foundUser.email;
-       else { setAuthErr("Username not found"); setLoading(false); return; }
+    
+    let targetEmail = loginId.trim().toLowerCase();
+    
+    // Check if user entered Username instead of Email
+    if (!targetEmail.includes("@")) {
+       const foundUser = users.find(u => u.username === targetEmail);
+       if (foundUser) {
+           targetEmail = foundUser.email;
+       } else { 
+           setAuthErr("Username not found in our records."); 
+           setLoading(false); 
+           return; 
+       }
     }
-    window.firebase.auth().signInWithEmailAndPassword(targetEmail.toLowerCase(), loginPassword)
+    
+    window.firebase.auth().signInWithEmailAndPassword(targetEmail, loginPassword)
       .then(() => { pop("Login Success! 🎉"); setLoading(false); })
-      .catch(() => { setAuthErr("Invalid credentials. Please try again."); setLoading(false); });
+      .catch(() => { setAuthErr("Invalid credentials. Please check your password."); setLoading(false); });
   };
 
-  // 🔥 2. FORGOT PASSWORD (GMAIL LINK) 🔥
-  const handleForgotEmail=()=>{ 
+  // 🔥 3. FORGOT PASSWORD (LINK TO GMAIL) 🔥
+  const handleForgotPass = () => { 
     setAuthErr(""); 
-    if(!fEmail.includes("@")) return setAuthErr("Enter a valid registered Gmail address."); 
+    if (!fEmail.includes("@")) return setAuthErr("Enter a valid registered Gmail address."); 
     setLoading(true);
     window.firebase.auth().sendPasswordResetEmail(fEmail.toLowerCase().trim())
-      .then(() => { pop("✅ Password Reset Link sent to your Gmail!"); setAuthTab("login"); setLoading(false); })
+      .then(() => { 
+        pop("✅ Password Reset Link sent to your Gmail successfully!"); 
+        setAuthTab("login"); 
+        setLoading(false); 
+      })
       .catch(err => { setAuthErr("Error: " + err.message); setLoading(false); });
   };
 
-  const handleAdminLogin=()=>{ const a=admins.find(x=>x.username===adminUsername&&x.password===adminPw&&x.active); if(!a){pop("Wrong admin credentials!",true);return;} setAdminUser(a);setIsAdmin(true);setModal(null);setTab("admin");setAdminUsername("");setAdminPw("");pop(`Welcome ${a.name}! 🎉`); };
-  const handleSignOut=()=>{ window.firebase.auth().signOut().then(()=>{ setScr("auth"); setUser(null); setCart([]); setNotifs([]); setIsAdmin(false); setAdminUser(null); setTab("home"); setLoginId(""); setLoginPassword(""); setAuthTab("login"); setAuthErr(""); }); };
+  const handleAdminLogin = () => { 
+    const a = INIT_ADMINS.find(x => x.username === adminUsername && x.password === adminPw); 
+    if (a) { setIsAdmin(true); setAdminUser(a); setScr("app"); setTab("admin"); setModal(null); pop(`Welcome Admin ${a.name}! 🎉`); } 
+    else { pop("Invalid Admin Credentials!", true); } 
+  };
 
-  // ── CART & ORDER (WITH REAL-TIME DB SYNC) ──
-  const addToCart=item=>{setCart(p=>{const e=p.find(c=>c.id===item.id);return e?p.map(c=>c.id===item.id?{...c,qty:c.qty+1}:c):[...p,{...item,qty:1}];});pop(`${item.emoji} Added to cart!`);setModal(null);};
-  const chgQty=(id,d)=>setCart(p=>p.map(c=>c.id===id?{...c,qty:Math.max(0,c.qty+d)}:c).filter(c=>c.qty>0));
-  const getQty=id=>cart.find(c=>c.id===id)?.qty||0;
+  const handleSignOut = () => { 
+    window.firebase.auth().signOut().then(() => { 
+      setScr("auth"); setUser(null); setCart([]); setNotifs([]); setIsAdmin(false); setAdminUser(null); setTab("home"); 
+    }); 
+  };
+
+  // ── CART & ORDERS ──
+  const addToCart = item => { setCart(p => { const e = p.find(c => c.id === item.id); return e ? p.map(c => c.id === item.id ? { ...c, qty: c.qty + 1 } : c) : [...p, { ...item, qty: 1 }]; }); pop(`${item.emoji} Added to Cart!`); setModal(null); };
+  const chgQty = (id, d) => setCart(p => p.map(c => c.id === id ? { ...c, qty: Math.max(0, c.qty + d) } : c).filter(c => c.qty > 0));
+  const getQty = id => cart.find(c => c.id === id)?.qty || 0;
   
-  const placeOrder=()=>{
-    if(!cart.length)return;
-    const o={ id:Date.now(), userId:user.id,userName:user.name,userUsername:user.username||"—", userPhone:user.phone,userAddress:user.address||"No address provided", items:[...cart],subtotal:cartSub,delivery,gst:gstAmt,platformFee:settings.platformFee, total:orderTotal,statusIdx:0,paymentStatus:"Cash on Delivery", time:new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'}), date:new Date().toLocaleDateString('en-IN'),ts:Date.now() };
-    syncOrders([o,...orders]); addNotif("Your order is confirmed!","✅"); 
-    if(isAdmin) addNotif(`New order received from ${user.name}!`,"🔔"); // Admin notif
+  const placeOrder = () => {
+    if (!cart.length) return;
+    const sub = cart.reduce((s, i) => s + i.price * i.qty, 0);
+    const o = { 
+      id: Date.now(), userId: user.id, userName: user.name, userPhone: user.phone, 
+      userAddress: user.address || "No address provided", items: [...cart], 
+      subtotal: sub, delivery: INIT_SETTINGS.deliveryCharge, total: sub + INIT_SETTINGS.deliveryCharge + INIT_SETTINGS.platformFee, 
+      statusIdx: 0, paymentStatus: "Cash on Delivery", time: new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }), 
+      date: new Date().toLocaleDateString('en-IN') 
+    };
+    syncOrdersToDB([o, ...orders]); 
+    addNotif("Your order has been placed successfully!", "✅"); 
     setCart([]); setTab("track"); pop("🎉 Order placed successfully!");
   };
-  
-  const updateOrder=oid=>{ 
-    const newOrders = orders.map(o=>{ if(o.id===oid&&o.statusIdx<4){const ni=o.statusIdx+1; addNotif(`Order #${String(oid).slice(-4)} Status: ${ORDER_STEPS[ni].label}`,"📦"); return{...o,statusIdx:ni};} return o; });
-    syncOrders(newOrders); pop("✅ Status updated!"); 
+
+  const updateOrder = oid => { 
+    const newOrders = orders.map(o => { 
+      if (o.id === oid && o.statusIdx < 4) { 
+        const ni = o.statusIdx + 1; 
+        addNotif(`Order #${String(oid).slice(-4)} Status: ${ORDER_STEPS[ni].label}`, "📦"); 
+        return { ...o, statusIdx: ni }; 
+      } 
+      return o; 
+    });
+    syncOrdersToDB(newOrders); pop("✅ Order Status Updated!"); 
   };
 
-  const saveFood = (gId, meal, item) => {
-    setFoods(prev => {
-      const arr = prev[gId][meal]; const idx = arr.findIndex(x => x.id === item.id);
-      const newFoods = {...prev, [gId]: {...prev[gId], [meal]: idx >= 0 ? arr.map(x => x.id === item.id ? item : x) : [...arr, item]}};
-      syncFoods(newFoods); return newFoods;
-    }); pop("✅ Item saved live to Firebase!"); setModal(null);
-  };
-  
-  const deleteFood = (gId, meal, id, name) => {
-    setFoods(prev => { const newFoods = {...prev, [gId]: {...prev[gId], [meal]: prev[gId][meal].filter(x => x.id !== id)}}; syncFoods(newFoods); return newFoods; });
-    pop(`🗑 "${name}" deleted from Live DB`);
-  };
-  
-  const toggleProp = (gId, meal, id, prop) => {
-    setFoods(prev => { const newFoods = {...prev, [gId]: {...prev[gId], [meal]: prev[gId][meal].map(x => x.id === id ? {...x, [prop]: !x[prop]} : x)}}; syncFoods(newFoods); return newFoods; });
-  };
-
-  const savePlan=p=>{setPlans(prev=>{const idx=prev.findIndex(x=>x.id===p.id);return idx>=0?prev.map(x=>x.id===p.id?p:x):[...prev,p];});pop("✅ Plan saved!");setModal(null);};
-  const deletePlan=id=>{setPlans(p=>p.filter(x=>x.id!==id));pop("🗑 Plan deleted");};
-  const activatePlan=plan=>{ const act={id:nid(),userId:user.id,userName:user.name,userUsername:user.username||"—",userPhone:user.phone,planId:plan.id,planName:plan.label,planPrice:plan.price,planPer:plan.per,activatedAt:new Date().toISOString(),paymentStatus:"Paid",active:true}; setPlanActivations(p=>[act,...p]); const upd={...user,plan:plan.id,planName:plan.label,planActivatedAt:act.activatedAt}; syncUsers(users.map(u=>u.id===user.id?upd:u)); setUser(upd); pop(`✅ ${plan.label} plan activated!`);setModal(null); };
+  // ── CALCULATIONS ──
+  const target = user ? tdee(+user.weight || 70, +user.height || 175, +user.age || 25, user.gender || "m", user.goal || "general") : 2000;
+  const greet = getGreeting(user?.name);
+  const cartSub = cart.reduce((s, i) => s + i.price * i.qty, 0);
+  const orderTotal = cartSub + INIT_SETTINGS.deliveryCharge + INIT_SETTINGS.platformFee;
+  const todayCal = cart.reduce((s, i) => s + i.cal * i.qty, 0);
+  const calP = Math.min(100, Math.round(todayCal / target * 100));
+  const liveOrders = orders.filter(o => o.statusIdx < 4).length;
+  const unread = notifs.filter(n => !n.read).length;
+  const allFlat = Object.values(foods).flatMap(g => Object.values(g).flat());
+  const menuItems = (foods[mGoal]?.[mMeal] || []).filter(i => i.active && i.stock && (!search || i.name.toLowerCase().includes(search.toLowerCase()) || i.tag.toLowerCase().includes(search.toLowerCase())));
 
   // ─────────────────────────────────────────────────────────────
-  // SPLASH
+  // UI SCREENS
   // ─────────────────────────────────────────────────────────────
-  if(scr==="splash") return <div style={{minHeight:"100vh",background:C.bg,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",position:"relative",overflow:"hidden"}}>
-    <div style={{position:"absolute",inset:0,background:"radial-gradient(ellipse 60% 55% at 50% 50%,rgba(74,222,128,.09),transparent)"}}/>
-    <div style={{animation:"pop .7s cubic-bezier(.34,1.56,.64,1) both"}}><div style={{width:100,height:100,background:C.gG,borderRadius:32,display:"flex",alignItems:"center",justifyContent:"center",fontSize:48,boxShadow:"0 0 90px rgba(74,222,128,.45)",margin:"0 auto"}}>🥗</div></div>
-    <div style={{...N,color:C.w,fontSize:44,fontWeight:900,marginTop:20,animation:"up .5s .3s both",letterSpacing:-1.5}}>Cosfit</div>
-    <div style={{color:C.m,fontSize:14,marginTop:5,animation:"up .5s .4s both"}}>Eat Smart · Live Strong</div>
-    <div style={{color:"#263d2a",fontSize:11,marginTop:4,animation:"up .5s .5s both"}}>{COMPANY.brand}</div>
-    <div style={{position:"absolute",bottom:52,display:"flex",gap:8}}>{[0,1,2].map(i=><div key={i} style={{width:8,height:8,borderRadius:"50%",background:i===1?C.g:"#1b2d1f",animation:`dot 1.4s ${i*.22}s infinite`}}/>)}</div>
-  </div>;
 
-  // ─────────────────────────────────────────────────────────────
-  // AUTH SCREEN
-  // ─────────────────────────────────────────────────────────────
-  if(scr==="auth") return <div style={{minHeight:"100vh",background:C.bg,display:"flex",flexDirection:"column",...F}}>
-    {toast&&<Toast t={toast}/>}
-    <div style={{flex:1,overflowY:"auto",padding:"52px 28px 40px",maxWidth:430,margin:"0 auto",width:"100%"}}>
-      <div style={{marginBottom:32,animation:"up .5s both"}}>
-        <div style={{width:64,height:64,background:C.gG,borderRadius:20,display:"flex",alignItems:"center",justifyContent:"center",fontSize:30,boxShadow:"0 0 32px rgba(74,222,128,.3)"}}>🥗</div>
-        <div style={{...N,color:C.w,fontSize:32,fontWeight:900,marginTop:16,lineHeight:1.2,letterSpacing:-.8}}>{authTab==="forgot"?"Reset Password 🔑":authTab==="login"?"Sign In 👋":"Create Account 🚀"}</div>
-        <div style={{color:C.m,fontSize:14,marginTop:6}}>{authTab==="forgot"?"Securely reset your password":authTab==="login"?"Login with Username or Email":"Join the Cosfit family today"}</div>
+  if (scr === "splash") return (
+    <div style={{ height: "100vh", background: C.bg, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
+      <div style={{ animation: "pop 0.6s cubic-bezier(0.34,1.56,0.64,1) both" }}>
+        <div style={{ width: 110, height: 110, background: C.gG, borderRadius: 35, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 55, boxShadow: "0 0 90px rgba(74,222,128,0.4)" }}>🥗</div>
       </div>
-
-      {authTab!=="forgot"&&<div style={{display:"flex",background:C.card,borderRadius:16,padding:4,gap:4,marginBottom:24}}>
-        {[["login","Sign In"],["register","Create Account"]].map(([k,l])=><button key={k} onClick={()=>{setAuthTab(k);setAuthErr("");}} style={{flex:1,padding:"12px",borderRadius:12,border:"none",background:authTab===k?C.gG:"transparent",color:authTab===k?"#060c08":C.m,fontWeight:800,fontSize:14,...N,transition:"all .2s"}}>{l}</button>)}
-      </div>}
-
-      {authErr&&<div style={{background:"rgba(248,113,113,.1)",border:"1px solid rgba(248,113,113,.3)",borderRadius:13,padding:"12px 16px",marginBottom:18,color:C.r,fontSize:13,fontWeight:600,display:"flex",gap:8,alignItems:"center",animation:"up .3s both"}}>⚠️ {authErr}</div>}
-
-      {authTab==="login"&&<div style={{display:"flex",flexDirection:"column",gap:16,animation:"up .4s both"}}>
-        <Field label="Username or Email *" value={loginId} onChange={setLoginId} ph="e.g. arjun or arjun@gmail.com"/>
-        <Field label="Password *" value={loginPassword} onChange={setLoginPassword} type="password" ph="Enter your password"/>
-        <div style={{textAlign:"right",marginTop:-8}}><span style={{color:C.g,fontSize:12,fontWeight:700,cursor:"pointer"}} onClick={()=>{setAuthTab("forgot");setAuthErr("");}}>Forgot Password?</span></div>
-        <button onClick={handleLogin} disabled={loading} style={{padding:"18px",borderRadius:16,border:"none",background:C.gG,color:"#060c08",...N,fontSize:17,fontWeight:900,boxShadow:"0 8px 36px rgba(74,222,128,.4)",marginTop:4}}>{loading?"Logging in...":"Secure Login →"}</button>
-        <div style={{textAlign:"center",padding:"16px 0",borderTop:`1px solid ${C.b}`,marginTop:8}}>
-          <div style={{color:C.m,fontSize:12,marginBottom:8}}>Admin? Access Control Panel</div>
-          <button onClick={()=>setModal({type:"adminLogin"})} style={{background:"rgba(96,165,250,.1)",border:"1px solid rgba(96,165,250,.3)",color:C.blue,padding:"10px 24px",borderRadius:20,fontWeight:700,fontSize:13,...F}}>⚙️ Admin Login</button>
-        </div>
-      </div>}
-
-      {authTab==="register"&&<div style={{display:"flex",flexDirection:"column",gap:16,animation:"up .4s both"}}>
-        <Field label="Full Name *" value={rName} onChange={setRName} ph="e.g. Arjun Kumar"/>
-        <Field label="Username *" value={rUsername} onChange={v=>setRUsername(v.toLowerCase().replace(/\s/g,"_"))} ph="e.g. arjun_kumar"/>
-        <Field label="Gmail Address *" value={rEmail} onChange={setREmail} type="email" ph="e.g. arjun@gmail.com"/>
-        <Field label="Mobile Number *" value={phone} onChange={e=>setPhone(e.replace(/\D/g,""))} type="tel" ph="98765 43210"/>
-        <Field label="Password *" value={rPassword} onChange={setRPassword} type="password" ph="Create a strong password"/>
-        <Field label="Confirm Password *" value={rConfirm} onChange={setRConfirm} type="password" ph="Confirm your password"/>
-        <button onClick={handleRegister} disabled={loading} style={{padding:"18px",borderRadius:16,border:"none",background:C.gG,color:"#060c08",...N,fontSize:17,fontWeight:900,boxShadow:"0 8px 36px rgba(74,222,128,.4)",marginTop:4}}>{loading?"Creating...":"Create Account →"}</button>
-      </div>}
-
-      {authTab==="forgot"&&<div style={{display:"flex",flexDirection:"column",gap:16,animation:"up .4s both"}}>
-        <Field label="Registered Gmail Address *" value={fEmail} onChange={setFEmail} type="email" ph="Enter your email"/>
-        <button onClick={handleForgotEmail} disabled={loading} style={{padding:"18px",borderRadius:16,border:"none",background:C.gG,color:"#060c08",...N,fontSize:16,fontWeight:900,boxShadow:"0 8px 36px rgba(74,222,128,.4)"}}>{loading?"Sending Link...":"Send Password Reset Link"}</button>
-        <button onClick={()=>{setAuthTab("login");setAuthErr("");}} style={{padding:"14px",borderRadius:16,border:`1.5px solid ${C.b}`,background:"transparent",color:C.m,...F,fontWeight:700,fontSize:14}}>← Back to Login</button>
-      </div>}
+      <h1 style={{ ...N, color: C.w, fontSize: 45, fontWeight: 900, marginTop: 25, animation: "up 0.5s 0.3s both" }}>Cosfit</h1>
+      <p style={{ color: C.m, fontSize: 15, marginTop: 5, animation: "up 0.5s 0.4s both" }}>Eat Smart · Live Strong</p>
     </div>
+  );
 
-    {modal?.type==="adminLogin"&&<div style={{position:"fixed",inset:0,background:"rgba(0,0,0,.93)",zIndex:960,display:"flex",alignItems:"center",justifyContent:"center",padding:24}}>
-      <div style={{background:C.surf,borderRadius:24,padding:"28px 24px",width:"100%",maxWidth:340,animation:"up .35s cubic-bezier(.34,1.56,.64,1)"}}>
-        <div style={{fontSize:48,textAlign:"center"}}>🔐</div>
-        <div style={{...N,color:C.w,fontSize:20,fontWeight:900,textAlign:"center",marginTop:12}}>Admin Login</div>
-        <div style={{color:C.m,fontSize:12,textAlign:"center",marginTop:4,marginBottom:20}}>Restricted Access Only</div>
-        <div style={{display:"flex",flexDirection:"column",gap:12,marginBottom:16}}>
-          <input type="text" placeholder="Admin Username" value={adminUsername} onChange={e=>setAdminUsername(e.target.value)} style={{width:"100%",padding:"13px 16px",background:C.card,border:`1.5px solid ${C.b}`,borderRadius:12,color:C.w,fontSize:14,...F,boxSizing:"border-box"}}/>
-          <input type="password" placeholder="Password" value={adminPw} onChange={e=>setAdminPw(e.target.value)} onKeyDown={e=>e.key==="Enter"&&handleAdminLogin()} style={{width:"100%",padding:"13px 16px",background:C.card,border:`1.5px solid ${C.b}`,borderRadius:12,color:C.w,fontSize:14,...F,boxSizing:"border-box"}}/>
+  if (scr === "auth") return (
+    <div style={{ minHeight: "100vh", background: C.bg, display: "flex", flexDirection: "column", ...F }}>
+      {toast && <Toast t={toast} />}
+      <div style={{ flex: 1, overflowY: "auto", padding: "50px 28px 40px", maxWidth: 430, margin: "0 auto", width: "100%" }}>
+        
+        <div style={{ marginBottom: 35, animation: "up 0.5s both" }}>
+          <div style={{ width: 70, height: 70, background: C.gG, borderRadius: 22, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 35, boxShadow: "0 0 35px rgba(74,222,128,0.3)" }}>🥗</div>
+          <div style={{ ...N, color: C.w, fontSize: 34, fontWeight: 900, marginTop: 18, lineHeight: 1.2 }}>
+            {authTab === "forgot" ? "Reset Password 🔑" : authTab === "login" ? "Welcome Back 👋" : "Create Account 🚀"}
+          </div>
+          <div style={{ color: C.m, fontSize: 15, marginTop: 8 }}>
+            {authTab === "forgot" ? "Get a secure link to your Gmail" : authTab === "login" ? "Login with Username or Gmail" : "Join the Cosfit family today!"}
+          </div>
         </div>
-        <div style={{display:"flex",gap:8}}>
-          <button onClick={handleAdminLogin} style={{flex:1,background:C.gG,color:"#060c08",border:"none",padding:"13px",borderRadius:12,fontWeight:800,fontSize:14,...N}}>Enter</button>
-          <button onClick={()=>setModal(null)} style={{flex:1,background:C.card,color:C.m,border:`1px solid ${C.b}`,padding:"13px",borderRadius:12,fontWeight:700,fontSize:14}}>Cancel</button>
+
+        {authTab !== "forgot" && (
+          <div style={{ display: "flex", background: C.card, borderRadius: 18, padding: 5, gap: 5, marginBottom: 25 }}>
+            {[["login", "Sign In"], ["register", "Register"]].map(([k, l]) => (
+              <button key={k} onClick={() => { setAuthTab(k); setAuthErr(""); }} style={{ flex: 1, padding: "14px", borderRadius: 14, background: authTab === k ? C.gG : "transparent", color: authTab === k ? "#000" : C.m, fontWeight: 800, fontSize: 15, ...N, transition: "all 0.2s" }}>{l}</button>
+            ))}
+          </div>
+        )}
+
+        {authErr && <div style={{ background: "rgba(248,113,113,0.1)", border: "1px solid rgba(248,113,113,0.3)", borderRadius: 14, padding: "14px 18px", marginBottom: 20, color: C.r, fontSize: 13, fontWeight: 700, display: "flex", alignItems: "center", animation: "up 0.3s both" }}>⚠️ {authErr}</div>}
+
+        {authTab === "login" && (
+          <div style={{ display: "flex", flexDirection: "column", gap: 5, animation: "up 0.4s both" }}>
+            <Field label="Username or Gmail" value={loginId} onChange={setLoginId} ph="e.g. arjun or arjun@gmail.com" />
+            <Field label="Password" value={loginPassword} onChange={setLoginPassword} type="password" ph="Enter your password" />
+            
+            <div style={{ textAlign: "right", marginTop: -5, marginBottom: 10 }}>
+              <span style={{ color: C.g, fontSize: 13, fontWeight: 700, cursor: "pointer" }} onClick={() => { setAuthTab("forgot"); setAuthErr(""); }}>Forgot Password?</span>
+            </div>
+            
+            <button onClick={handleLogin} disabled={loading} style={{ padding: "18px", borderRadius: 16, background: C.gG, color: "#000", ...N, fontSize: 18, fontWeight: 900, boxShadow: "0 8px 36px rgba(74,222,128,0.3)" }}>
+              {loading ? "Authenticating..." : "Secure Login →"}
+            </button>
+            
+            <div style={{ textAlign: "center", marginTop: 25, borderTop: `1px solid ${C.b}`, paddingTop: 25 }}>
+              <div style={{ color: C.m, fontSize: 12, marginBottom: 10 }}>Admin Control Panel Access</div>
+              <button onClick={() => setModal({ type: "adminLogin" })} style={{ background: "rgba(96,165,250,0.1)", border: "1px solid rgba(96,165,250,0.3)", color: C.blue, padding: "12px 28px", borderRadius: 20, fontWeight: 700, fontSize: 14, ...F }}>⚙️ Admin Login</button>
+            </div>
+          </div>
+        )}
+
+        {authTab === "register" && (
+          <div style={{ display: "flex", flexDirection: "column", gap: 5, animation: "up 0.4s both" }}>
+            <Field label="Full Name *" value={rName} onChange={setRName} ph="e.g. Arjun Kumar" />
+            <Field label="Username *" value={rUsername} onChange={v => setRUsername(v.toLowerCase().replace(/\s/g, ""))} ph="e.g. arjunkumar" />
+            <Field label="Gmail Address *" value={rEmail} onChange={setREmail} type="email" ph="e.g. arjun@gmail.com" />
+            <Field label="Mobile Number *" value={phone} onChange={setPhone} type="tel" ph="9876543210" />
+            <Field label="Password *" value={rPassword} onChange={setRPassword} type="password" ph="Create a strong password" />
+            <Field label="Confirm Password *" value={rConfirm} onChange={setRConfirm} type="password" ph="Confirm your password" />
+            <button onClick={handleRegister} disabled={loading} style={{ padding: "18px", borderRadius: 16, background: C.gG, color: "#000", ...N, fontSize: 18, fontWeight: 900, marginTop: 10, boxShadow: "0 8px 36px rgba(74,222,128,0.3)" }}>
+              {loading ? "Creating..." : "Create Account →"}
+            </button>
+          </div>
+        )}
+
+        {authTab === "forgot" && (
+          <div style={{ display: "flex", flexDirection: "column", gap: 15, animation: "up 0.4s both" }}>
+            <Field label="Registered Gmail Address *" value={fEmail} onChange={setFEmail} type="email" ph="Enter your registered Gmail" />
+            <button onClick={handleForgotPass} disabled={loading} style={{ padding: "18px", borderRadius: 16, background: C.gG, color: "#000", ...N, fontSize: 16, fontWeight: 900, boxShadow: "0 8px 36px rgba(74,222,128,0.3)" }}>
+              {loading ? "Sending Link..." : "Send Password Reset Link"}
+            </button>
+            <button onClick={() => { setAuthTab("login"); setAuthErr(""); }} style={{ padding: "16px", borderRadius: 16, border: `1.5px solid ${C.b}`, background: "transparent", color: C.m, ...F, fontWeight: 700, fontSize: 15, marginTop: 10 }}>← Back to Login</button>
+          </div>
+        )}
+      </div>
+
+      {modal?.type === "adminLogin" && (
+        <Sheet onClose={() => setModal(null)}>
+          <div style={{ fontSize: 50, textAlign: "center" }}>🔐</div>
+          <div style={{ ...N, color: C.w, fontSize: 22, fontWeight: 900, textAlign: "center", marginTop: 15 }}>Admin Login</div>
+          <div style={{ color: C.m, fontSize: 13, textAlign: "center", marginTop: 5, marginBottom: 25 }}>Restricted Control Panel Access</div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 15, marginBottom: 20 }}>
+            <input type="text" placeholder="Admin Username" value={adminUsername} onChange={e => setAdminUsername(e.target.value)} style={{ width: "100%", padding: "16px", background: C.card, border: `1px solid ${C.b}`, borderRadius: 14, color: C.w, fontSize: 15 }} />
+            <input type="password" placeholder="Password" value={adminPw} onChange={e => setAdminPw(e.target.value)} style={{ width: "100%", padding: "16px", background: C.card, border: `1px solid ${C.b}`, borderRadius: 14, color: C.w, fontSize: 15 }} />
+          </div>
+          <div style={{ display: "flex", gap: 10 }}>
+            <button onClick={handleAdminLogin} style={{ flex: 1, background: C.gG, color: "#000", padding: "16px", borderRadius: 14, fontWeight: 900, fontSize: 16, ...N }}>Login</button>
+            <button onClick={() => setModal(null)} style={{ flex: 1, background: C.card, color: C.m, border: `1px solid ${C.b}`, padding: "16px", borderRadius: 14, fontWeight: 700, fontSize: 15 }}>Cancel</button>
+          </div>
+        </Sheet>
+      )}
+    </div>
+  );
+
+  // ── ONBOARDING ──
+  if (scr === "onboard") {
+    const ok = [!!ob.goal, !!ob.weight && !!ob.height && !!ob.age, !!ob.pref][ob.step];
+    return (
+      <div style={{ minHeight: "100vh", background: C.bg, display: "flex", flexDirection: "column", ...F }}>
+        {toast && <Toast t={toast} />}
+        <div style={{ padding: "52px 28px 0" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 12 }}>
+            <span style={{ color: C.m, fontSize: 13, fontWeight: 700 }}>Step {ob.step + 1} of 3</span>
+          </div>
+          <div style={{ background: C.card, borderRadius: 99, height: 6, overflow: "hidden" }}>
+            <div style={{ background: C.gG, height: "100%", width: `${((ob.step + 1) / 3) * 100}%`, transition: "width 0.4s ease" }} />
+          </div>
+        </div>
+        <div style={{ flex: 1, padding: "30px 28px", overflowY: "auto" }}>
+          <div style={{ ...N, color: C.w, fontSize: 30, fontWeight: 900, marginBottom: 8 }}>{["Your Fitness Goal 🎯", "Body Numbers 📊", "Food Preference 🍽"][ob.step]}</div>
+          <div style={{ color: C.m, fontSize: 14, marginBottom: 30 }}>{["Choose what matters most to you", "Helps us calculate accurate calorie targets", "Show you the meals you love"][ob.step]}</div>
+          
+          {ob.step === 0 && <div style={{ display: "flex", flexDirection: "column", gap: 15 }}>
+            {GOALS.map(g => (
+              <button key={g.id} onClick={() => setOb({ ...ob, goal: g.id })} style={{ background: ob.goal === g.id ? "rgba(74,222,128,0.1)" : C.card, border: `1.5px solid ${ob.goal === g.id ? C.g : C.b}`, borderRadius: 20, padding: "20px", display: "flex", alignItems: "center", gap: 16 }}>
+                <span style={{ fontSize: 35 }}>{g.icon}</span><div style={{ flex: 1, textAlign: "left" }}><div style={{ color: C.w, fontWeight: 800, fontSize: 16, ...N }}>{g.label}</div></div>
+                {ob.goal === g.id && <div style={{ width: 28, height: 28, borderRadius: "50%", background: C.gG, display: "flex", alignItems: "center", justifyContent: "center", color: "#000", fontWeight: 900 }}>✓</div>}
+              </button>
+            ))}
+          </div>}
+
+          {ob.step === 1 && <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
+            <Field label="Age (years) *" value={ob.age} onChange={v => setOb({ ...ob, age: v })} type="number" ph="25" />
+            <Field label="Weight (kg) *" value={ob.weight} onChange={v => setOb({ ...ob, weight: v })} type="number" ph="70" />
+            <Field label="Height (cm) *" value={ob.height} onChange={v => setOb({ ...ob, height: v })} type="number" ph="175" />
+            <div style={{ marginTop: 10 }}>
+              <div style={{ fontSize: 11, fontWeight: 700, color: C.m, marginBottom: 8, textTransform: "uppercase" }}>Gender</div>
+              <div style={{ display: "flex", gap: 12 }}>
+                {[["m", "👨 Male"], ["f", "👩 Female"]].map(([v, l]) => (
+                  <button key={v} onClick={() => setOb({ ...ob, gender: v })} style={{ flex: 1, padding: "16px", borderRadius: 16, border: `1.5px solid ${ob.gender === v ? C.g : C.b}`, background: ob.gender === v ? "rgba(74,222,128,0.1)" : C.card, color: ob.gender === v ? C.g : C.m, fontWeight: 800, fontSize: 15 }}>{l}</button>
+                ))}
+              </div>
+            </div>
+          </div>}
+
+          {ob.step === 2 && <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 15 }}>
+            {PREFS.map(p => (
+              <button key={p.id} onClick={() => setOb({ ...ob, pref: p.id })} style={{ background: ob.pref === p.id ? "rgba(74,222,128,0.1)" : C.card, border: `1.5px solid ${ob.pref === p.id ? C.g : C.b}`, borderRadius: 20, padding: "30px 16px", textAlign: "center" }}>
+                <div style={{ fontSize: 45 }}>{p.icon}</div><div style={{ color: ob.pref === p.id ? C.g : C.w, fontWeight: 800, fontSize: 16, marginTop: 15, ...N }}>{p.label}</div>
+              </button>
+            ))}
+          </div>}
+        </div>
+        <div style={{ padding: "0 28px 40px", display: "flex", gap: 12 }}>
+          {ob.step > 0 && <button onClick={() => setOb(p => ({ ...p, step: p.step - 1 }))} style={{ flex: 1, padding: "18px", borderRadius: 16, border: `1.5px solid ${C.b}`, background: "transparent", color: C.w, ...N, fontSize: 16, fontWeight: 800 }}>← Back</button>}
+          <button disabled={!ok} onClick={() => { if (ob.step < 2) { setOb(p => ({ ...p, step: p.step + 1 })); } else { const u = { ...user, ...ob }; syncUsersToDB(users.map(x => x.id === u.id ? u : x)); setUser(u); setMGoal(ob.goal); setScr("app"); pop("🎉 Profile setup complete!"); } }} style={{ flex: 2, padding: "18px", borderRadius: 16, border: "none", background: ok ? C.gG : C.card, color: ok ? "#000" : C.m, ...N, fontSize: 16, fontWeight: 900 }}>{ob.step < 2 ? "Continue →" : "Start Cosfit 🚀"}</button>
         </div>
       </div>
-    </div>}
-  </div>;
-
-  // ─────────────────────────────────────────────────────────────
-  // ONBOARDING
-  // ─────────────────────────────────────────────────────────────
-  if(scr==="onboard"){
-    const prog=((ob.step+1)/3)*100;
-    const bmi=ob.weight&&ob.height&&+ob.height>0?(+ob.weight/((+ob.height/100)**2)).toFixed(1):null;
-    const ok=[!!ob.goal,!!ob.weight&&!!ob.height&&!!ob.age,!!ob.pref][ob.step];
-    return <div style={{minHeight:"100vh",background:C.bg,display:"flex",flexDirection:"column",...F}}>
-      {toast&&<Toast t={toast}/>}
-      <div style={{padding:"52px 28px 0"}}><div style={{display:"flex",justifyContent:"space-between",marginBottom:10}}><span style={{color:C.m,fontSize:12,fontWeight:600}}>Step {ob.step+1} of 3</span><span style={{color:C.g,fontSize:12,fontWeight:700}}>{Math.round(prog)}%</span></div><div style={{background:C.card,borderRadius:99,height:5,overflow:"hidden"}}><div style={{background:C.gG,height:"100%",width:`${prog}%`,borderRadius:99,transition:"width .4s ease"}}/></div></div>
-      <div style={{flex:1,padding:"26px 28px",overflowY:"auto"}}>
-        <div style={{...N,color:C.w,fontSize:28,fontWeight:900,marginBottom:4}}>{["Your Fitness Goal 🎯","Body Numbers 📊","Food Preference 🍽"][ob.step]}</div>
-        <div style={{color:C.m,fontSize:13,marginBottom:24}}>{["Choose what matters most","For accurate calorie targets","Show you meals you love"][ob.step]}</div>
-        {ob.step===0&&<div style={{display:"flex",flexDirection:"column",gap:12}}>{GOALS.map(g=><button key={g.id} onClick={()=>setOb(p=>({...p,goal:g.id}))} style={{background:ob.goal===g.id?"rgba(74,222,128,.08)":C.card,border:`1.5px solid ${ob.goal===g.id?C.g:C.b}`,borderRadius:18,padding:"18px",cursor:"pointer",textAlign:"left",display:"flex",alignItems:"center",gap:14,width:"100%",boxSizing:"border-box"}}><span style={{fontSize:32}}>{g.icon}</span><div style={{flex:1}}><div style={{color:C.w,fontWeight:800,fontSize:15,...N}}>{g.label}</div></div>{ob.goal===g.id&&<div style={{width:24,height:24,borderRadius:"50%",background:C.gG,display:"flex",alignItems:"center",justifyContent:"center",color:"#060c08",fontSize:12,fontWeight:900,flexShrink:0}}>✓</div>}</button>)}</div>}
-        {ob.step===1&&<div style={{display:"flex",flexDirection:"column",gap:14}}>{[["Age (years)","age"],["Weight (kg)","weight"],["Height (cm)","height"]].map(([l,k])=><Field key={k} label={l+" *"} value={ob[k]} onChange={v=>setOb(p=>({...p,[k]:v}))} type="number" ph="—"/>)}<div><div style={{fontSize:10,fontWeight:700,color:C.m,textTransform:"uppercase",letterSpacing:1.2,marginBottom:10}}>Gender</div><div style={{display:"flex",gap:10}}>{[["m","👨 Male"],["f","👩 Female"]].map(([v,l])=><button key={v} onClick={()=>setOb(p=>({...p,gender:v}))} style={{flex:1,padding:"14px",borderRadius:14,border:`1.5px solid ${ob.gender===v?C.g:C.b}`,background:ob.gender===v?"rgba(74,222,128,.1)":C.card,color:ob.gender===v?C.g:C.m,fontWeight:700,fontSize:14}}>{l}</button>)}</div></div>{bmi&&<div style={{background:"rgba(74,222,128,.07)",border:"1px solid rgba(74,222,128,.2)",borderRadius:14,padding:"14px 16px"}}><div style={{color:C.g,fontSize:13,fontWeight:700,...N}}>📊 BMI: {bmi} — {(+bmi)<18.5?"Underweight":(+bmi)<25?"Healthy":(+bmi)<30?"Overweight":"Obese"}</div><div style={{color:C.m,fontSize:12,marginTop:3}}>Daily target ≈ {tdee(+ob.weight,+ob.height,+ob.age||25,ob.gender,ob.goal||"general")} kcal</div></div>}</div>}
-        {ob.step===2&&<div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>{PREFS.map(p=><button key={p.id} onClick={()=>setOb(prev=>({...prev,pref:p.id}))} style={{background:ob.pref===p.id?"rgba(74,222,128,.1)":C.card,border:`1.5px solid ${ob.pref===p.id?C.g:C.b}`,borderRadius:18,padding:"24px 16px",cursor:"pointer",textAlign:"center"}}><div style={{fontSize:40}}>{p.icon}</div><div style={{color:ob.pref===p.id?C.g:C.w,fontWeight:800,fontSize:14,marginTop:12,...N}}>{p.label}</div>{ob.pref===p.id&&<div style={{color:C.g,fontSize:11,marginTop:5,fontWeight:700}}>✓ Selected</div></button>)}</div>}
-      </div>
-      <div style={{padding:"0 28px 40px",display:"flex",gap:12}}>{ob.step>0&&<button onClick={()=>setOb(p=>({...p,step:p.step-1}))} style={{flex:1,padding:"15px",borderRadius:15,border:`1.5px solid ${C.b}`,background:"transparent",color:C.w,...N,fontSize:15,fontWeight:700}}>← Back</button>}<button disabled={!ok} onClick={()=>{if(ob.step<2){setOb(p=>({...p,step:p.step+1}));}else{const u={...user,...ob};syncUsers(users.map(x=>x.id===u.id?u:x));setUser(u);setMGoal(ob.goal);setScr("app");pop("🎉 Profile complete! Welcome to Cosfit!");}}} style={{flex:2,padding:"15px",borderRadius:15,border:"none",cursor:ok?"pointer":"default",background:ok?C.gG:"#1a1a1a",color:ok?"#060c08":C.m,...N,fontSize:15,fontWeight:800,boxShadow:ok?"0 8px 32px rgba(74,222,128,.35)":"none"}}>{ob.step<2?"Continue →":"🚀 Start Cosfit!"}</button></div>
-    </div>;
+    );
   }
 
-  if(scr!=="app")return null;
+  if (scr !== "app") return null;
 
-  // ═══════════════════════ MAIN APP ════════════════════════════
-  const NavBtn=(k,ic,l,b=0)=><button key={k} onClick={()=>setTab(k)} style={{flex:1,background:"none",border:"none",display:"flex",flexDirection:"column",alignItems:"center",gap:4,padding:"4px 0",position:"relative"}}><div style={{background:tab===k?"rgba(74,222,128,.13)":"transparent",borderRadius:14,padding:"7px 14px",position:"relative",transition:"background .25s"}}><span style={{fontSize:18}}>{ic}</span>{b>0&&<span style={{position:"absolute",top:-4,right:-4,background:C.r,color:"#fff",borderRadius:"50%",width:17,height:17,display:"flex",alignItems:"center",justifyContent:"center",fontSize:8,fontWeight:900,animation:"pulse 1.5s infinite"}}>{b}</span>}</div><span style={{fontSize:9,fontWeight:tab===k?800:500,color:tab===k?C.g:C.m,...F}}>{l}</span></button>;
-  const curPlan=plans.find(p=>p.id===user?.plan);
+  // ── MAIN APP TABS & UI ──
+  return (
+    <div style={{ minHeight: "100vh", background: C.bg, position: "relative", overflow: "hidden", ...F, paddingBottom: 100 }}>
+      {toast && <Toast t={toast} />}
+      {banner && <NBanner n={banner} onClose={() => setBanner(null)} />}
 
-  return <div style={{minHeight:"100vh",maxWidth:430,margin:"0 auto",background:C.bg,position:"relative",overflow:"hidden",...F}}>
-    {toast&&<Toast t={toast}/>} {banner&&<NBanner n={banner} onClose={()=>setBanner(null)}/>}
+      {/* ── MODALS ── */}
+      {modal?.type === "item" && (
+        <Sheet onClose={() => setModal(null)}>
+          <div style={{ textAlign: "center" }}>
+            <div style={{ fontSize: 80 }}>{modal.d.emoji}</div>
+            <div style={{ ...N, color: C.w, fontSize: 24, fontWeight: 900, marginTop: 15 }}>{modal.d.name}</div>
+            <div style={{ color: C.m, fontSize: 14, marginTop: 8, lineHeight: 1.6 }}>{modal.d.desc}</div>
+            <div style={{ display: "inline-flex", gap: 8, background: "rgba(74,222,128,0.1)", border: "1px solid rgba(74,222,128,0.2)", borderRadius: 20, padding: "6px 16px", marginTop: 15 }}>
+              <span style={{ color: C.g, fontSize: 13, fontWeight: 800 }}>{modal.d.tag}</span><span style={{ color: C.m, fontSize: 12 }}>· ⏱ {modal.d.time}</span>
+            </div>
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 10, marginTop: 25, background: C.card, borderRadius: 18, padding: "16px 8px" }}>
+            {[["🔥", modal.d.cal, "kcal"], ["🥩", modal.d.p + "g", "Protein"], ["🌾", modal.d.c + "g", "Carbs"], ["💧", modal.d.f + "g", "Fat"]].map(([ic, v, l]) => (
+              <div key={l} style={{ textAlign: "center" }}>
+                <div style={{ fontSize: 22 }}>{ic}</div>
+                <div style={{ ...N, fontWeight: 900, fontSize: 15, color: C.w, marginTop: 4 }}>{v}</div>
+                <div style={{ fontSize: 10, color: C.m, marginTop: 3 }}>{l}</div>
+              </div>
+            ))}
+          </div>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 30 }}>
+            <div>
+              <div style={{ ...N, fontSize: 32, fontWeight: 900, color: C.o }}>₹{modal.d.price}</div>
+            </div>
+            <div style={{ display: "flex", gap: 12 }}>
+              <button onClick={() => setModal(null)} style={{ background: C.card, color: C.m, border: `1px solid ${C.b}`, padding: "14px 20px", borderRadius: 14, fontWeight: 800, fontSize: 14 }}>Cancel</button>
+              <button onClick={() => addToCart(modal.d)} style={{ background: C.gO, color: "#fff", border: "none", padding: "14px 26px", borderRadius: 14, fontWeight: 900, fontSize: 15, ...N, boxShadow: "0 8px 25px rgba(249,115,22,0.4)" }}>Add to Cart 🛒</button>
+            </div>
+          </div>
+        </Sheet>
+      )}
 
-    {showInstall&&<div style={{position:"fixed",top:0,left:"50%",transform:"translateX(-50%)",width:"100%",maxWidth:430,zIndex:9980,background:"linear-gradient(135deg,#1a3020,#0c1610)",borderBottom:`1px solid ${C.g}30`,padding:"12px 16px",display:"flex",alignItems:"center",gap:12,boxShadow:"0 4px 24px rgba(0,0,0,.5)"}}><div style={{fontSize:28,animation:"install 2s infinite"}}>📲</div><div style={{flex:1}}><div style={{color:C.g,fontWeight:800,fontSize:13,...N}}>Install Cosfit App</div><div style={{color:C.m,fontSize:11,marginTop:2}}>Add to home screen for the best experience</div></div><button onClick={async()=>{if(!installPrompt)return;installPrompt.prompt();await installPrompt.userChoice;setShowInstall(false);}} style={{background:C.gG,color:"#060c08",border:"none",padding:"8px 16px",borderRadius:20,fontWeight:800,fontSize:12,...N}}>Install</button><button onClick={()=>setShowInstall(false)} style={{background:"transparent",border:"none",color:C.m,fontSize:22,flexShrink:0}}>×</button></div>}
+      {/* ── HOME TAB ── */}
+      {tab === "home" && (
+        <div style={{ overflowY: "auto", height: "100%" }}>
+          <div style={{ padding: "50px 24px 20px", background: "linear-gradient(180deg, #0c1610 0%, transparent 100%)" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+              <div>
+                <div style={{ color: C.m, fontSize: 14, fontWeight: 700 }}>{greet.icon} {greet.greeting}</div>
+                <div style={{ ...N, color: C.w, fontSize: 32, fontWeight: 900, marginTop: 5 }}>{user?.name.split(" ")[0]}</div>
+              </div>
+              <div style={{ display: "flex", gap: 10 }}>
+                <button onClick={() => setTab("notifs")} style={{ width: 48, height: 48, borderRadius: "50%", background: "rgba(74,222,128,0.1)", border: "1px solid rgba(74,222,128,0.25)", fontSize: 20, position: "relative" }}>
+                  🔔{unread > 0 && <span style={{ position: "absolute", top: -2, right: -2, background: C.r, color: "#fff", borderRadius: "50%", width: 18, height: 18, fontSize: 10, fontWeight: 900, display: "flex", alignItems: "center", justifyContent: "center" }}>{unread}</span>}
+                </button>
+                <div onClick={() => setTab("profile")} style={{ width: 48, height: 48, borderRadius: "50%", background: C.card, border: `1.5px solid ${C.b}`, fontSize: 24, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }}>{user?.avatar}</div>
+              </div>
+            </div>
+          </div>
 
-    {/* ── MODALS ────────────────────────────────────────────────── */}
-    {modal?.type==="item"&&<Sheet onClose={()=>setModal(null)}>
-      <div style={{textAlign:"center"}}><div style={{fontSize:72}}>{modal.d.emoji}</div><div style={{...N,color:C.w,fontSize:20,fontWeight:900,marginTop:10}}>{modal.d.name}</div><div style={{color:C.m,fontSize:12,marginTop:5,lineHeight:1.6}}>{modal.d.desc}</div><div style={{display:"inline-flex",gap:8,background:"rgba(74,222,128,.1)",border:"1px solid rgba(74,222,128,.2)",borderRadius:20,padding:"5px 14px",marginTop:10}}><span style={{color:C.g,fontSize:12,fontWeight:700}}>{modal.d.tag}</span><span style={{color:C.m,fontSize:11}}>· ⏱ {modal.d.time}</span></div></div>
-      <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:8,marginTop:18,background:C.card,borderRadius:16,padding:"14px 6px"}}>{[["🔥",modal.d.cal,"kcal"],["🥩",modal.d.p+"g","Protein"],["🌾",modal.d.c+"g","Carbs"],["💧",modal.d.f+"g","Fat"]].map(([ic,v,l])=><div key={l} style={{textAlign:"center"}}><div style={{fontSize:18}}>{ic}</div><div style={{...N,fontWeight:800,fontSize:14,color:C.w,marginTop:2}}>{v}</div><div style={{fontSize:9,color:C.m,marginTop:2}}>{l}</div></div>)}</div>
-      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginTop:22}}><div><div style={{...N,fontSize:28,fontWeight:900,color:C.o}}>₹{modal.d.price}</div><div style={{fontSize:11,color:C.m}}>⏱ {modal.d.time} prep time</div></div><div style={{display:"flex",gap:10}}><button onClick={()=>setModal(null)} style={{background:C.card,color:C.m,border:`1px solid ${C.b}`,padding:"12px 18px",borderRadius:13,fontWeight:700,fontSize:13}}>Cancel</button><button onClick={()=>addToCart(modal.d)} style={{background:C.gO,color:"#fff",border:"none",padding:"12px 22px",borderRadius:13,fontWeight:800,fontSize:13,...N,boxShadow:"0 4px 20px rgba(249,115,22,.4)"}}>Add to Cart 🛒</button></div></div>
-    </Sheet>}
+          <div style={{ margin: "0 24px 20px", background: C.card, borderRadius: 26, padding: "24px", border: `1px solid ${C.b}` }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
+              <div style={{ position: "relative", width: 90, height: 90 }}>
+                <svg width={90} height={90} style={{ transform: "rotate(-90deg)" }}>
+                  <circle cx={45} cy={45} r={38} fill="none" stroke={C.b} strokeWidth={8} />
+                  <circle cx={45} cy={45} r={38} fill="none" stroke={calP > 100 ? C.r : C.g} strokeWidth={8} strokeDasharray={238} strokeDashoffset={238 * (1 - calP / 100)} strokeLinecap="round" style={{ transition: "stroke-dashoffset 1s ease" }} />
+                </svg>
+                <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center" }}><div style={{ ...N, color: C.w, fontSize: 16, fontWeight: 900 }}>{calP}%</div></div>
+              </div>
+              <div style={{ flex: 1 }}>
+                <div style={{ color: C.m, fontSize: 11, fontWeight: 800, textTransform: "uppercase", letterSpacing: 1.5 }}>Today's Intake</div>
+                <div style={{ ...N, color: C.w, fontSize: 28, fontWeight: 900, marginTop: 4 }}>{todayCal} <span style={{ fontSize: 14, color: C.m }}>kcal</span></div>
+                <div style={{ color: C.m, fontSize: 13, marginTop: 4 }}>Goal: {target} kcal</div>
+              </div>
+            </div>
+            <div style={{ display: "flex", justifyContent: "space-around", marginTop: 20, paddingTop: 20, borderTop: `1px solid ${C.b}` }}>
+              {[["🥩", "Protein", cart.reduce((s, i) => s + i.p * i.qty, 0) + "g"], ["🌾", "Carbs", cart.reduce((s, i) => s + i.c * i.qty, 0) + "g"], ["💧", "Fat", cart.reduce((s, i) => s + i.f * i.qty, 0) + "g"]].map(([ic, l, v]) => (
+                <div key={l} style={{ textAlign: "center" }}>
+                  <div style={{ fontSize: 18 }}>{ic}</div>
+                  <div style={{ ...N, color: C.w, fontSize: 15, fontWeight: 900, marginTop: 5 }}>{v}</div>
+                  <div style={{ color: C.m, fontSize: 11, marginTop: 2 }}>{l}</div>
+                </div>
+              ))}
+            </div>
+          </div>
 
-    {modal?.type==="sub"&&<Sheet onClose={()=>setModal(null)} tall>
-      <div style={{...N,color:C.w,fontSize:22,fontWeight:900,marginBottom:5}}>Upgrade Your Plan ⚡</div><div style={{color:C.m,fontSize:13,marginBottom:20}}>Unlock personalization + priority delivery</div>
-      {plans.map(plan=><div key={plan.id} onClick={()=>activatePlan(plan)} style={{background:plan.hot?"rgba(74,222,128,.07)":C.card,border:`1.5px solid ${user?.plan===plan.id?C.g:plan.hot?C.g:C.b}`,borderRadius:18,padding:"18px",cursor:"pointer",position:"relative",marginBottom:12}}>{plan.hot&&<div style={{position:"absolute",top:-10,right:16,background:C.gG,color:"#060c08",fontSize:9,fontWeight:900,padding:"3px 12px",borderRadius:99}}>POPULAR</div>}{user?.plan===plan.id&&<div style={{position:"absolute",top:10,left:16,background:"rgba(74,222,128,.15)",color:C.g,fontSize:9,fontWeight:900,padding:"2px 10px",borderRadius:99}}>✓ ACTIVE</div>}<div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:12,marginTop:user?.plan===plan.id?14:0}}><div><div style={{color:C.w,fontWeight:800,fontSize:16,...N}}>{plan.label}</div>{plan.save&&<div style={{color:C.g,fontSize:12,fontWeight:700,marginTop:3}}>{plan.save}</div>}</div><div style={{textAlign:"right"}}><div style={{...N,color:C.o,fontSize:22,fontWeight:900}}>₹{plan.price}</div><div style={{color:C.m,fontSize:11}}>/{plan.per}</div></div></div>{plan.features.map((f,i)=><div key={i} style={{display:"flex",gap:8,alignItems:"center",marginBottom:6}}><span style={{color:C.g,fontSize:12}}>✓</span><span style={{color:C.m,fontSize:12}}>{f}</span></div>)}</div>)}
-      <button onClick={()=>setModal(null)} style={{width:"100%",marginTop:4,background:"transparent",border:`1px solid ${C.b}`,color:C.m,padding:"13px",borderRadius:14,fontWeight:600,fontSize:14}}>Maybe Later</button>
-    </Sheet>}
+          <div style={{ padding: "0 24px", marginBottom: 20 }}>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 15 }}>
+              <button onClick={() => setTab("menu")} style={{ background: C.gG, borderRadius: 22, padding: "20px", textAlign: "left", boxShadow: "0 10px 30px rgba(74,222,128,0.25)" }}>
+                <div style={{ fontSize: 32 }}>🍽</div>
+                <div style={{ ...N, color: "#000", fontWeight: 900, fontSize: 17, marginTop: 10 }}>Order Food</div>
+                <div style={{ color: "rgba(0,0,0,0.6)", fontSize: 12, marginTop: 4, fontWeight: 700 }}>{allFlat.filter(i => i.active && i.stock).length} items</div>
+              </button>
+              <button onClick={() => setTab("track")} style={{ background: C.card, borderRadius: 22, padding: "20px", textAlign: "left", border: `1px solid ${liveOrders > 0 ? C.g : C.b}`, position: "relative" }}>
+                <div style={{ fontSize: 32 }}>🛵</div>
+                <div style={{ ...N, color: C.w, fontWeight: 900, fontSize: 17, marginTop: 10 }}>Track Order</div>
+                <div style={{ color: C.m, fontSize: 12, marginTop: 4, fontWeight: 700 }}>{orders.filter(o=>o.userId===user.id).length} orders</div>
+                {liveOrders > 0 && <div style={{ position: "absolute", top: 15, right: 15, background: C.r, color: "#fff", borderRadius: 99, fontSize: 10, fontWeight: 900, padding: "3px 10px", animation: "pulse 1.5s infinite" }}>● LIVE</div>}
+              </button>
+            </div>
+          </div>
 
-    {modal?.type==="avatar"&&<Sheet onClose={()=>setModal(null)}>
-      <div style={{...N,color:C.w,fontSize:18,fontWeight:900,marginBottom:16}}>Choose Profile Picture</div>
-      <div style={{display:"grid",gridTemplateColumns:"repeat(5,1fr)",gap:10}}>{AVATARS.map(em=><button key={em} onClick={()=>{const u={...user,avatar:em};syncUsers(users.map(x=>x.id===u.id?u:x));setUser(u);setModal(null);pop("✅ Avatar updated!");}} style={{background:user?.avatar===em?"rgba(74,222,128,.15)":C.card,border:`1.5px solid ${user?.avatar===em?C.g:C.b}`,borderRadius:14,padding:"12px 0",fontSize:24,textAlign:"center"}}>{em}{user?.avatar===em&&<div style={{fontSize:9,color:C.g,fontWeight:700,marginTop:3}}>✓</div>}</button>)}</div>
-    </Sheet>}
-
-    {modal?.type==="editFood"&&<FoodModal food={modal.food} goalId={modal.gId} meal={modal.meal} onSave={d=>saveFood(modal.gId,modal.meal,d)} onClose={()=>setModal(null)}/>}
-    {modal?.type==="editPlan"&&<PlanModal plan={modal.plan} onSave={savePlan} onClose={()=>setModal(null)}/>}
-
-    {modal?.type==="orderDetail"&&<Sheet onClose={()=>setModal(null)} tall>
-      <div style={{...N,color:C.w,fontWeight:900,fontSize:18,marginBottom:16}}>📦 Order Details</div>
-      <div style={{display:"flex",flexDirection:"column",gap:12}}>
-        {[["Order ID",`#${String(modal.o.id).slice(-10)}`],["Customer",modal.o.userName],["Username","@"+(modal.o.userUsername||"—")],["Phone","📞 +91 "+modal.o.userPhone],["Date/Time",`${modal.o.date} · ${modal.o.time}`]].map(([l,v])=><div key={l} style={{display:"flex",justifyContent:"space-between",padding:"10px 0",borderBottom:`1px solid ${C.b}`}}><span style={{color:C.m,fontSize:13}}>{l}</span><span style={{color:C.w,fontSize:13,fontWeight:700,...N}}>{v}</span></div>)}
-        <div><div style={{color:C.m,fontSize:13,marginBottom:8}}>Delivery Address</div><div style={{background:C.card,borderRadius:12,padding:"12px 14px",color:C.w,fontSize:13,lineHeight:1.6}}>{modal.o.userAddress||"No address"}</div></div>
-        <div><div style={{color:C.m,fontSize:13,marginBottom:8}}>Order Items</div>{modal.o.items.map(i=><div key={i.id} style={{display:"flex",gap:10,alignItems:"center",padding:"8px 0",borderBottom:`1px solid ${C.b}`}}><span style={{fontSize:20}}>{i.emoji}</span><div style={{flex:1}}><div style={{color:C.w,fontSize:13,...N,fontWeight:700}}>{i.name}</div><div style={{color:C.m,fontSize:11}}>×{i.qty} · ₹{i.price*i.qty}</div></div></div>)}</div>
-        <div style={{background:C.card,borderRadius:14,padding:"14px"}}>{[["Subtotal",`₹${modal.o.subtotal}`],["Delivery",modal.o.delivery===0?"🎁 Free":`₹${modal.o.delivery}`],["GST",`₹${modal.o.gst}`],["Platform Fee",`₹${modal.o.platformFee}`]].map(([l,v])=><div key={l} style={{display:"flex",justifyContent:"space-between",marginBottom:8,fontSize:13}}><span style={{color:C.m}}>{l}</span><span style={{color:C.w}}>{v}</span></div>)<div style={{display:"flex",justifyContent:"space-between",paddingTop:10,borderTop:`1px solid ${C.b}`}}><span style={{...N,color:C.w,fontWeight:900,fontSize:16}}>Total</span><span style={{...N,color:C.o,fontWeight:900,fontSize:18}}>₹{modal.o.total}</span></div></div>
-        <div style={{display:"flex",gap:10}}><div style={{flex:1,background:"rgba(74,222,128,.1)",borderRadius:12,padding:"10px 14px",textAlign:"center"}}><div style={{color:C.m,fontSize:10,marginBottom:4}}>PAYMENT</div><div style={{color:C.g,fontWeight:800,fontSize:13,...N}}>{modal.o.paymentStatus}</div></div><div style={{flex:1,background:"rgba(96,165,250,.1)",borderRadius:12,padding:"10px 14px",textAlign:"center"}}><div style={{color:C.m,fontSize:10,marginBottom:4}}>STATUS</div><div style={{color:C.blue,fontWeight:800,fontSize:12,...N}}>{ORDER_STEPS[modal.o.statusIdx]?.label}</div></div></div>
-      </div>
-    </Sheet>}
-
-    {/* ══ HOME ════════════════════════════════════════════════════ */}
-    {tab==="home"&&<div style={{paddingBottom:90,height:"100vh",overflowY:"auto"}}>
-      <div style={{padding:`${showInstall?76:52}px 22px 18px`,background:"linear-gradient(180deg,#0c1610 0%,transparent 100%)"}}>
-        <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start"}}>
-          <div><div style={{color:C.m,fontSize:13,fontWeight:600}}>{greet.icon} {greet.greeting}</div><div style={{...N,color:C.w,fontSize:28,fontWeight:900,marginTop:4,letterSpacing:-.8}}>{greet.fn}</div>{curPlan&&<div style={{display:"inline-flex",alignItems:"center",gap:6,background:"rgba(251,191,36,.1)",border:"1px solid rgba(251,191,36,.3)",borderRadius:20,padding:"4px 12px",marginTop:6}}><span style={{color:C.gold,fontSize:11,fontWeight:800,...N}}>⚡ {curPlan.label} Pro Active</span></div>}</div>
-          <div style={{display:"flex",gap:8}}><button onClick={()=>setTab("notifs")} style={{width:42,height:42,borderRadius:"50%",background:"rgba(74,222,128,.1)",border:"1px solid rgba(74,222,128,.25)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:18,position:"relative"}}>🔔{unread>0&&<span style={{position:"absolute",top:-2,right:-2,background:C.r,color:"#fff",borderRadius:"50%",width:17,height:17,display:"flex",alignItems:"center",justifyContent:"center",fontSize:8,fontWeight:900,animation:"pulse 1.2s infinite"}}>{unread}</span>}</button><button onClick={()=>setTab("profile")} style={{width:42,height:42,borderRadius:"50%",background:C.card,border:`1.5px solid ${C.b}`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:20}}>{user?.avatar||"😊"}</button></div>
+          <div style={{ padding: "0 24px" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 15 }}>
+              <div style={{ ...N, color: C.w, fontSize: 18, fontWeight: 900 }}>{greet.sticker} {greet.meal.charAt(0).toUpperCase() + greet.meal.slice(1)} for You</div>
+              <button onClick={() => setTab("menu")} style={{ background: "none", color: C.g, fontSize: 13, fontWeight: 800, ...N }}>See All →</button>
+            </div>
+            <div style={{ display: "flex", gap: 15, overflowX: "auto", paddingBottom: 10 }}>
+              {(foods[user?.goal || "general"]?.[greet.meal] || []).filter(i => i.active && i.stock).slice(0, 5).map(item => {
+                const q = getQty(item.id);
+                return (
+                  <div key={item.id} onClick={() => setModal({ type: "item", d: item })} style={{ minWidth: 180, background: C.card, borderRadius: 22, overflow: "hidden", cursor: "pointer", border: `1px solid ${C.b}`, flexShrink: 0 }}>
+                    <div style={{ background: "linear-gradient(135deg, #0c1610, #101a13)", padding: "20px", textAlign: "center", position: "relative" }}>
+                      <div style={{ fontSize: 50 }}>{item.emoji}</div>
+                    </div>
+                    <div style={{ padding: "15px" }}>
+                      <div style={{ ...N, fontWeight: 900, fontSize: 14, color: C.w, lineHeight: 1.3 }}>{item.name}</div>
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 12 }}>
+                        <div>
+                          <div style={{ ...N, color: C.o, fontWeight: 900, fontSize: 16 }}>₹{item.price}</div>
+                          <div style={{ fontSize: 10, color: C.m, marginTop: 2, fontWeight: 700 }}>🔥{item.cal} kcal</div>
+                        </div>
+                        {q > 0 ? (
+                          <div style={{ display: "flex", alignItems: "center", gap: 6, background: C.surf, borderRadius: 10, padding: "5px 8px" }}>
+                            <button onClick={e => { e.stopPropagation(); chgQty(item.id, -1); }} style={{ background: "none", color: C.g, fontWeight: 900, fontSize: 18 }}>−</button>
+                            <span style={{ color: C.w, fontWeight: 900, fontSize: 14, ...N }}>{q}</span>
+                            <button onClick={e => { e.stopPropagation(); addToCart(item); }} style={{ background: "none", color: C.g, fontWeight: 900, fontSize: 18 }}>+</button>
+                          </div>
+                        ) : (
+                          <button onClick={e => { e.stopPropagation(); addToCart(item); }} style={{ background: C.gO, color: "#fff", padding: "8px 16px", borderRadius: 12, fontWeight: 900, fontSize: 12, ...N }}>+ Add</button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
         </div>
+      )}
+
+      {/* ── MENU TAB ── */}
+      {tab === "menu" && (
+        <div style={{ overflowY: "auto", height: "100%", padding: "50px 0 20px" }}>
+          <div style={{ padding: "0 24px 15px" }}>
+            <div style={{ ...N, color: C.w, fontSize: 30, fontWeight: 900 }}>Menu 🍽</div>
+            <div style={{ display: "flex", alignItems: "center", gap: 12, background: C.card, borderRadius: 16, padding: "14px 18px", marginTop: 18, border: `1px solid ${C.b}` }}>
+              <span style={{ fontSize: 18 }}>🔍</span>
+              <input type="text" value={search} onChange={e => setSearch(e.target.value)} placeholder="Search meals..." style={{ flex: 1, background: "none", color: C.w, fontSize: 15, ...F }} />
+            </div>
+          </div>
+          <div style={{ padding: "0 24px 15px", display: "flex", gap: 10, overflowX: "auto" }}>
+            {GOALS.map(g => (
+              <button key={g.id} onClick={() => setMGoal(g.id)} style={{ background: mGoal === g.id ? "rgba(74,222,128,0.15)" : C.card, border: `1.5px solid ${mGoal === g.id ? C.g : C.b}`, color: mGoal === g.id ? C.g : C.m, padding: "10px 20px", borderRadius: 22, fontWeight: 800, fontSize: 13, whiteSpace: "nowrap", ...F }}>
+                {g.icon} {g.label}
+              </button>
+            ))}
+          </div>
+          <div style={{ padding: "0 24px 15px" }}>
+            <div style={{ display: "flex", background: C.card, borderRadius: 18, padding: 5, gap: 4 }}>
+              {MEALS.map(m => (
+                <button key={m} onClick={() => setMMeal(m)} style={{ flex: 1, padding: "12px 10px", borderRadius: 14, background: mMeal === m ? C.g : "transparent", color: mMeal === m ? "#000" : C.m, fontWeight: 800, fontSize: 13, ...F }}>
+                  {MIC[m]} {m.charAt(0).toUpperCase() + m.slice(1)}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div style={{ padding: "0 24px" }}>
+            {menuItems.map((item) => {
+              const q = getQty(item.id);
+              return (
+                <div key={item.id} style={{ background: C.card, borderRadius: 22, marginBottom: 15, border: `1px solid ${C.b}`, overflow: "hidden", display: "flex" }}>
+                  <div onClick={() => setModal({ type: "item", d: item })} style={{ width: 100, background: "linear-gradient(135deg, #0c1610, #101a13)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 45, cursor: "pointer", flexShrink: 0 }}>{item.emoji}</div>
+                  <div style={{ flex: 1, padding: "16px", minWidth: 0 }}>
+                    <div style={{ ...N, fontWeight: 900, fontSize: 15, color: C.w }}>{item.name}</div>
+                    <div style={{ fontSize: 12, color: C.m, marginTop: 4, lineHeight: 1.4 }}>{item.desc}</div>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 12 }}>
+                      <span style={{ ...N, fontWeight: 900, fontSize: 18, color: C.o }}>₹{item.price}</span>
+                      {q > 0 ? (
+                        <div style={{ display: "flex", alignItems: "center", gap: 10, background: C.surf, borderRadius: 12, padding: "8px 14px" }}>
+                          <button onClick={() => chgQty(item.id, -1)} style={{ background: "none", color: C.g, fontWeight: 900, fontSize: 20 }}>−</button>
+                          <span style={{ color: C.w, fontWeight: 900, ...N }}>{q}</span>
+                          <button onClick={() => addToCart(item)} style={{ background: "none", color: C.g, fontWeight: 900, fontSize: 20 }}>+</button>
+                        </div>
+                      ) : (
+                        <button onClick={() => addToCart(item)} style={{ background: C.gO, color: "#fff", padding: "10px 20px", borderRadius: 12, fontWeight: 900, fontSize: 13, ...N }}>+ Add</button>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* ── CART TAB ── */}
+      {tab === "cart" && (
+        <div style={{ overflowY: "auto", height: "100%", padding: "50px 24px 20px" }}>
+          <div style={{ ...N, color: C.w, fontSize: 30, fontWeight: 900, marginBottom: 20 }}>Your Cart 🛒</div>
+          {cart.length === 0 ? (
+            <div style={{ textAlign: "center", padding: "60px 0" }}>
+              <div style={{ fontSize: 80 }}>🛒</div><div style={{ ...N, color: C.w, fontSize: 22, fontWeight: 900, marginTop: 20 }}>Cart is empty</div>
+              <button onClick={() => setTab("menu")} style={{ background: C.gG, color: "#000", padding: "16px 36px", borderRadius: 18, fontWeight: 900, fontSize: 16, marginTop: 25, ...N }}>Explore Menu</button>
+            </div>
+          ) : (
+            <div>
+              {cart.map(item => (
+                <div key={item.id} style={{ background: C.card, borderRadius: 20, padding: 18, marginBottom: 12, display: "flex", gap: 15, alignItems: "center", border: `1px solid ${C.b}` }}>
+                  <div style={{ fontSize: 40, width: 50, textAlign: "center", flexShrink: 0 }}>{item.emoji}</div>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ ...N, fontWeight: 900, color: C.w, fontSize: 15 }}>{item.name}</div>
+                    <div style={{ ...N, color: C.o, fontWeight: 900, fontSize: 16, marginTop: 5 }}>₹{item.price * item.qty}</div>
+                  </div>
+                  <div style={{ display: "flex", alignItems: "center", gap: 10, background: C.surf, borderRadius: 14, padding: "10px 14px" }}>
+                    <button onClick={() => chgQty(item.id, -1)} style={{ background: "none", color: C.g, fontWeight: 900, fontSize: 20 }}>−</button>
+                    <span style={{ color: C.w, fontWeight: 900, ...N }}>{item.qty}</span>
+                    <button onClick={() => chgQty(item.id, 1)} style={{ background: "none", color: C.g, fontWeight: 900, fontSize: 20 }}>+</button>
+                  </div>
+                </div>
+              ))}
+
+              <div style={{ background: C.card, borderRadius: 22, padding: 22, marginTop: 20, border: `1px solid ${C.b}` }}>
+                <div style={{ ...N, color: C.w, fontWeight: 900, fontSize: 16, marginBottom: 15 }}>Bill Summary</div>
+                {[["Subtotal", `₹${cartSub}`], ["Delivery", delivery === 0 ? "🎁 Free" : `₹${delivery}`], [`GST (${INIT_SETTINGS.gst}%)`, `₹${gstAmt}`], ["Platform Fee", `₹${INIT_SETTINGS.platformFee}`]].map(([l, v]) => (
+                  <div key={l} style={{ display: "flex", justifyContent: "space-between", marginBottom: 12, fontSize: 14 }}>
+                    <span style={{ color: C.m, fontWeight: 600 }}>{l}</span><span style={{ color: v === "🎁 Free" ? C.g : C.w, fontWeight: 800 }}>{v}</span>
+                  </div>
+                ))}
+                <div style={{ borderTop: `1px solid ${C.b}`, paddingTop: 15, marginTop: 5, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <span style={{ ...N, color: C.w, fontWeight: 900, fontSize: 18 }}>Total</span>
+                  <span style={{ ...N, color: C.o, fontWeight: 900, fontSize: 24 }}>₹{orderTotal}</span>
+                </div>
+              </div>
+
+              <div style={{ background: C.card, borderRadius: 22, padding: 22, marginTop: 15, border: `1px solid ${C.b}` }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 15 }}>
+                  <div style={{ ...N, fontWeight: 900, color: C.w, fontSize: 15 }}>📍 Delivery Address</div>
+                  <button onClick={() => setTab("profile")} style={{ background: "none", color: C.g, fontSize: 13, fontWeight: 800, ...N }}>Edit</button>
+                </div>
+                {user?.address ? <div style={{ color: C.m, fontSize: 14, lineHeight: 1.6 }}>{user.address}</div> : <div style={{ color: C.r, fontSize: 13, fontWeight: 700 }}>Please add an address in Profile</div>}
+              </div>
+
+              <button onClick={placeOrder} style={{ width: "100%", background: C.gO, color: "#fff", padding: "20px", borderRadius: 20, fontWeight: 900, fontSize: 18, marginTop: 25, ...N, boxShadow: "0 10px 40px rgba(249,115,22,0.4)" }}>Place Order 🚀</button>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ── TRACK TAB ── */}
+      {tab === "track" && (
+        <div style={{ overflowY: "auto", height: "100%", padding: "50px 24px 20px" }}>
+          <div style={{ ...N, color: C.w, fontSize: 30, fontWeight: 900 }}>Track Orders 🛵</div>
+          <div style={{ color: C.m, fontSize: 14, marginTop: 5, fontWeight: 700 }}>{orders.filter(o => o.userId === user?.id).length} total · {liveOrders} live</div>
+          
+          <div style={{ marginTop: 25 }}>
+            {orders.filter(o => o.userId === user?.id).map(order => (
+              <div key={order.id} style={{ background: C.card, borderRadius: 24, marginBottom: 18, border: `1px solid ${order.statusIdx < 4 ? "rgba(74,222,128,0.4)" : C.b}`, overflow: "hidden" }}>
+                <div style={{ background: "linear-gradient(135deg, #0c1610, #101a13)", padding: "18px 20px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <div>
+                    <div style={{ ...N, color: C.w, fontWeight: 900, fontSize: 15 }}>#{String(order.id).slice(-6)}</div>
+                    <div style={{ color: C.m, fontSize: 12, marginTop: 4, fontWeight: 600 }}>{order.date} · {order.time}</div>
+                  </div>
+                  <div style={{ textAlign: "right" }}>
+                    <div style={{ ...N, color: C.o, fontWeight: 900, fontSize: 20 }}>₹{order.total}</div>
+                    {order.statusIdx < 4 ? <div style={{ background: "rgba(74,222,128,0.15)", color: C.g, borderRadius: 99, fontSize: 10, fontWeight: 900, padding: "4px 12px", marginTop: 6, display: "inline-block", animation: "pulse 1.5s infinite" }}>● LIVE</div> : <div style={{ color: C.g, fontSize: 12, fontWeight: 800, marginTop: 6 }}>✅ Delivered</div>}
+                  </div>
+                </div>
+                <div style={{ padding: "20px" }}>
+                  {ORDER_STEPS.map((step, i) => (
+                    <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 15, marginBottom: i < 4 ? 18 : 0 }}>
+                      <div style={{ width: 34, height: 34, borderRadius: "50%", background: i < order.statusIdx ? "rgba(74,222,128,0.15)" : i === order.statusIdx ? "rgba(74,222,128,0.1)" : "transparent", border: `2px solid ${i <= order.statusIdx ? C.g : C.b}`, display: "flex", alignItems: "center", justifyContent: "center", transition: "all 0.5s" }}>
+                        {i < order.statusIdx ? <span style={{ color: C.g, fontWeight: 900, fontSize: 14 }}>✓</span> : i === order.statusIdx ? <span style={{ fontSize: 18 }}>{step.icon}</span> : <span style={{ color: C.m, fontSize: 12, fontWeight: 800 }}>{i + 1}</span>}
+                      </div>
+                      <div style={{ flex: 1, paddingTop: 4 }}>
+                        <div style={{ fontSize: 14, fontWeight: i === order.statusIdx ? 900 : 700, color: i <= order.statusIdx ? C.w : C.m, ...N }}>{step.label}</div>
+                        {i === order.statusIdx && <div style={{ fontSize: 12, color: C.m, marginTop: 4, lineHeight: 1.5 }}>{step.msg}</div>}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* ── PROFILE TAB ── */}
+      {tab === "profile" && (
+        <div style={{ overflowY: "auto", height: "100%", paddingBottom: 20 }}>
+          <div style={{ padding: "60px 24px 30px", background: "linear-gradient(180deg, #0c1610 0%, transparent 100%)", textAlign: "center" }}>
+            <div style={{ fontSize: 90, background: C.gG, width: 130, height: 130, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto", boxShadow: "0 0 40px rgba(74,222,128,0.3)" }}>{user?.avatar}</div>
+            <div style={{ ...N, color: C.w, fontSize: 26, fontWeight: 900, marginTop: 20 }}>{user?.name}</div>
+            <div style={{ color: C.m, fontSize: 14, marginTop: 6, fontWeight: 600 }}>@{user?.username} · {user?.email}</div>
+          </div>
+          <div style={{ padding: "0 24px" }}>
+            <div style={{ background: C.card, borderRadius: 22, padding: 20, border: `1px solid ${C.b}`, marginBottom: 20 }}>
+              <div style={{ ...N, color: C.w, fontWeight: 900, fontSize: 16, marginBottom: 15 }}>📍 Delivery Address</div>
+              <Field value={user?.address || ""} onChange={v => setUser(p => ({ ...p, address: v }))} rows={3} ph="Enter Full Address" />
+              <button onClick={() => { syncUsersToDB(users.map(u => u.id === user.id ? { ...u, address: user.address } : u)); pop("✅ Address Saved!"); }} style={{ width: "100%", padding: "16px", background: C.gG, color: "#000", borderRadius: 14, fontWeight: 900, fontSize: 15, ...N }}>Save Address</button>
+            </div>
+            
+            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+              <button onClick={handleSignOut} style={{ background: "rgba(248,113,113,0.1)", border: "1px solid rgba(248,113,113,0.3)", color: C.r, padding: "18px 20px", borderRadius: 18, fontWeight: 900, fontSize: 15, display: "flex", alignItems: "center", gap: 15 }}><span style={{ fontSize: 24 }}>🚪</span> Sign Out securely</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── ADMIN TAB ── */}
+      {tab === "admin" && isAdmin && (
+        <div style={{ overflowY: "auto", height: "100%", padding: "50px 24px 20px" }}>
+          <div style={{ ...N, color: C.blue, fontSize: 30, fontWeight: 900, marginBottom: 20 }}>Control Panel ⚙️</div>
+          <div style={{ display: "flex", gap: 10, marginBottom: 25 }}>
+            {["orders", "users"].map(t => (
+              <button key={t} onClick={() => setAdminTab(t)} style={{ flex: 1, padding: "14px", borderRadius: 14, background: adminTab === t ? C.blue : C.card, color: "#fff", fontWeight: 800, textTransform: "capitalize", ...N }}>{t}</button>
+            ))}
+          </div>
+
+          {adminTab === "orders" && (
+            <div>
+              {orders.length === 0 ? <p style={{ color: C.m, textAlign: "center", marginTop: 40 }}>No Orders Yet.</p> : orders.map(o => (
+                <div key={o.id} style={{ background: C.card, borderRadius: 20, padding: 20, marginBottom: 15, border: `1px solid ${C.b}` }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
+                    <div style={{ ...N, color: C.w, fontWeight: 900, fontSize: 16 }}>Order #{String(o.id).slice(-6)}</div>
+                    <div style={{ color: C.o, fontWeight: 900, fontSize: 18, ...N }}>₹{o.total}</div>
+                  </div>
+                  <div style={{ color: C.m, fontSize: 13, marginBottom: 15, fontWeight: 600 }}>Customer: {o.userName} · {o.userPhone}</div>
+                  <div style={{ color: C.blue, fontSize: 13, fontWeight: 800, marginBottom: 15 }}>Current Status: {ORDER_STEPS[o.statusIdx]?.label}</div>
+                  
+                  {o.statusIdx < 4 ? (
+                    <button onClick={() => updateOrder(o.id)} style={{ width: "100%", background: C.gG, color: "#000", padding: "14px", borderRadius: 14, fontWeight: 900, fontSize: 14, ...N }}>
+                      Update Status to → {ORDER_STEPS[o.statusIdx + 1]?.label}
+                    </button>
+                  ) : (
+                    <div style={{ textAlign: "center", padding: "14px", background: "rgba(74,222,128,0.1)", color: C.g, borderRadius: 14, fontWeight: 800, ...N }}>✅ Order Completely Delivered</div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+
+          {adminTab === "users" && (
+            <div>
+              {users.map(u => (
+                <div key={u.id} style={{ background: C.card, borderRadius: 18, padding: 18, marginBottom: 12, border: `1px solid ${C.b}`, display: "flex", alignItems: "center", gap: 15 }}>
+                  <div style={{ fontSize: 35 }}>{u.avatar}</div>
+                  <div>
+                    <div style={{ ...N, color: C.w, fontWeight: 900, fontSize: 16 }}>{u.name}</div>
+                    <div style={{ color: C.m, fontSize: 12, marginTop: 4, fontWeight: 600 }}>{u.email} · {u.phone}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ── BOTTOM NAVIGATION ── */}
+      <div style={{ position: "fixed", bottom: 0, left: "50%", transform: "translateX(-50%)", width: "100%", maxWidth: 430, background: "rgba(6,12,8,0.97)", backdropFilter: "blur(20px)", borderTop: `1px solid ${C.b}`, display: "flex", justifyContent: "space-around", padding: "15px 0 25px", zIndex: 900 }}>
+        {[["home", "🏠", "Home"], ["menu", "🍽", "Menu"], ["cart", "🛒", "Cart", cartCount], ["track", "🛵", "Track", liveOrders], ["profile", "👤", "Profile"]].map(([k, ic, l, b = 0]) => (
+          <button key={k} onClick={() => setTab(k)} style={{ background: "none", display: "flex", flexDirection: "column", alignItems: "center", gap: 6, position: "relative" }}>
+            <div style={{ fontSize: 24, opacity: tab === k ? 1 : 0.4, transition: "0.2s", transform: tab === k ? "scale(1.1)" : "scale(1)" }}>{ic}</div>
+            {b > 0 && <div style={{ position: "absolute", top: -5, right: -10, background: C.r, color: "#fff", width: 18, height: 18, borderRadius: "50%", fontSize: 10, fontWeight: 900, display: "flex", alignItems: "center", justifyContent: "center" }}>{b}</div>}
+            <div style={{ fontSize: 10, fontWeight: tab === k ? 800 : 600, color: tab === k ? C.g : C.m, ...F }}>{l}</div>
+          </button>
+        ))}
+        {isAdmin && <button onClick={() => setTab("admin")} style={{ background: "none", display: "flex", flexDirection: "column", alignItems: "center", gap: 6 }}>
+          <div style={{ fontSize: 24, opacity: tab === "admin" ? 1 : 0.4, transition: "0.2s" }}>⚙️</div>
+          <div style={{ fontSize: 10, fontWeight: tab === "admin" ? 800 : 600, color: tab === "admin" ? C.blue : C.m, ...F }}>Admin</div>
+        </button>}
       </div>
-      <div style={{margin:"0 22px 16px",background:"rgba(74,222,128,.07)",border:"1px solid rgba(74,222,128,.2)",borderRadius:18,padding:"14px 16px",display:"flex",gap:12,alignItems:"flex-start"}}><span style={{fontSize:26}}>{greet.sticker}</span><div style={{flex:1}}><div style={{color:C.g,fontSize:12,fontWeight:800,...N}}>{greet.greeting} tip!</div><div style={{color:C.m,fontSize:12,marginTop:3,lineHeight:1.5}}>{greet.tip}</div>{greet.loyalty&&<div style={{color:C.gold,fontSize:11,fontWeight:700,marginTop:4}}>{greet.loyalty}</div>}</div></div>
-      {aiTips.length>0&&<div style={{padding:"0 22px",marginBottom:16}}><div style={{...N,color:C.w,fontSize:15,fontWeight:800,marginBottom:10}}>🤖 Smart Suggestions</div><div style={{display:"flex",gap:10,overflowX:"auto",paddingBottom:4}}>{aiTips.map((t,i)=><div key={i} style={{minWidth:190,background:C.card,borderRadius:16,padding:"12px 14px",border:`1px solid ${C.b}`,flexShrink:0,animation:`cIn .4s ease ${i*.08}s both`}><div style={{display:"flex",gap:8,alignItems:"flex-start"}}><span style={{fontSize:20,flexShrink:0}}>{t.icon}</span><div style={{fontSize:11,color:C.m,lineHeight:1.5}}>{t.text}</div></div></div>)}</div></div>}
-      <div style={{margin:"0 22px 16px",background:C.card,borderRadius:24,padding:"18px",border:`1px solid ${C.b}`}}><div style={{display:"flex",alignItems:"center",gap:18}}><div style={{position:"relative",width:84,height:84,flexShrink:0}}><svg width={84} height={84} style={{transform:"rotate(-90deg)"}}><circle cx={42} cy={42} r={34} fill="none" stroke={C.b} strokeWidth={8}/><circle cx={42} cy={42} r={34} fill="none" stroke={calP>100?C.r:C.g} strokeWidth={8} strokeDasharray={214} strokeDashoffset={214*(1-calP/100)} strokeLinecap="round" style={{transition:"stroke-dashoffset .8s ease"}}/></svg><div style={{position:"absolute",inset:0,display:"flex",alignItems:"center",justifyContent:"center"}}><div style={{...N,color:C.w,fontSize:14,fontWeight:900}}>{calP}%</div></div></div><div style={{flex:1}}><div style={{color:C.m,fontSize:10,fontWeight:700,textTransform:"uppercase",letterSpacing:1.2}}>Today's Intake</div><div style={{...N,color:C.w,fontSize:24,fontWeight:900,marginTop:3}}>{todayCal} <span style={{fontSize:12,color:C.m}}>kcal</span></div><div style={{color:C.m,fontSize:12,marginTop:2}}>Goal: {target} kcal</div><div style={{background:C.b,borderRadius:99,height:4,marginTop:8,overflow:"hidden"}}><div style={{background:calP>100?C.r:C.gG,height:"100%",width:`${Math.min(100,calP)}%`,borderRadius:99,transition:"width .8s ease"}}/></div></div></div><div style={{display:"flex",justifyContent:"space-around",marginTop:14,paddingTop:14,borderTop:`1px solid ${C.b}`}}>{[["🥩","Protein",cart.reduce((s,i)=>s+i.p*i.qty,0)+"g"],["🌾","Carbs",cart.reduce((s,i)=>s+i.c*i.qty,0)+"g"],["💧","Fat",cart.reduce((s,i)=>s+i.f*i.qty,0)+"g"]].map(([ic,l,v])=><div key={l} style={{textAlign:"center"}}><div style={{fontSize:15}}>{ic}</div><div style={{...N,color:C.w,fontSize:14,fontWeight:800,marginTop:3}}>{v}</div><div style={{color:C.m,fontSize:10}}>{l}</div></div>)}</div></div>
-      <div style={{padding:"0 22px",marginBottom:16}}><div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}><button onClick={()=>setTab("menu")} style={{background:C.gG,borderRadius:20,padding:"16px",border:"none",textAlign:"left",boxShadow:"0 8px 28px rgba(74,222,128,.25)"}}><div style={{fontSize:28}}>🍽</div><div style={{...N,color:"#060c08",fontWeight:900,fontSize:15,marginTop:8}}>Order Food</div><div style={{color:"rgba(6,12,8,.55)",fontSize:11,marginTop:3}}>{allFlat.filter(i=>i.active&&i.stock).length} items</div></button><button onClick={()=>setTab("track")} style={{background:C.card,borderRadius:20,padding:"16px",border:`1px solid ${liveOrders>0?C.g:C.b}`,textAlign:"left",position:"relative"}}><div style={{fontSize:28}}>🛵</div><div style={{...N,color:C.w,fontWeight:900,fontSize:15,marginTop:8}}>Track Order</div><div style={{color:C.m,fontSize:11,marginTop:3}}>{orders.length} orders</div>{liveOrders>0&&<div style={{position:"absolute",top:10,right:10,background:C.r,color:"#fff",borderRadius:99,fontSize:9,fontWeight:900,padding:"2px 8px",animation:"pulse 1.5s infinite"}}>● LIVE</div>}</button></div></div>
-      <div style={{padding:"0 22px"}}><div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}><div style={{...N,color:C.w,fontSize:16,fontWeight:800}}>{greet.sticker} {(greet.meal||"breakfast").charAt(0).toUpperCase()+(greet.meal||"breakfast").slice(1)} for You</div><button onClick={()=>setTab("menu")} style={{background:"none",border:"none",color:C.g,fontSize:12,fontWeight:700,...N}}>See All →</button></div><div style={{display:"flex",gap:12,overflowX:"auto",paddingBottom:8}}>{(foods[user?.goal||"general"]?.[greet.meal||"breakfast"]||[]).filter(i=>i.active&&i.stock).slice(0,5).map((item,i)=>{const q=getQty(item.id);return <div key={item.id} onClick={()=>setModal({type:"item",d:item})} style={{minWidth:165,background:C.card,borderRadius:20,overflow:"hidden",cursor:"pointer",border:`1px solid ${C.b}`,flexShrink:0,animation:`cIn .4s ease ${i*.08}s both`}}><div style={{background:"linear-gradient(135deg,#0c1610,#101a13)",padding:"18px 14px 12px",textAlign:"center",position:"relative"}}><div style={{fontSize:46}}>{item.emoji}</div><div style={{position:"absolute",top:8,right:8,background:"rgba(74,222,128,.14)",border:"1px solid rgba(74,222,128,.2)",borderRadius:7,padding:"2px 6px",fontSize:9,fontWeight:700,color:C.g}}>{item.tag}</div></div><div style={{padding:"10px 12px 12px"}}><div style={{...N,fontWeight:800,fontSize:12,color:C.w,lineHeight:1.3}}>{item.name}</div><div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginTop:8}}><div><div style={{...N,color:C.o,fontWeight:900,fontSize:14}}>₹{item.price}</div><div style={{fontSize:9,color:C.m}}>🔥{item.cal}</div></div>{q>0?<div style={{display:"flex",alignItems:"center",gap:4,background:C.surf,borderRadius:9,padding:"4px 7px"}}><button onClick={e=>{e.stopPropagation();chgQty(item.id,-1);}} style={{background:"none",border:"none",color:C.g,fontWeight:900,fontSize:16,width:20,height:20,display:"flex",alignItems:"center",justifyContent:"center"}}>−</button><span style={{color:C.w,fontWeight:800,minWidth:14,textAlign:"center",fontSize:12,...N}}>{q}</span><button onClick={e=>{e.stopPropagation();addToCart(item);}} style={{background:"none",border:"none",color:C.g,fontWeight:900,fontSize:16,width:20,height:20,display:"flex",alignItems:"center",justifyContent:"center"}}>+</button></div>:<button onClick={e=>{e.stopPropagation();addToCart(item);}} style={{background:C.gO,color:"#fff",border:"none",padding:"6px 12px",borderRadius:9,fontWeight:800,fontSize:11,...N}}>+ Add</button>}</div></div></div>;})}</div></div>
-      {!curPlan&&<div style={{margin:"16px 22px 0",background:"linear-gradient(135deg,#0c1610,#101a13)",border:"1px solid rgba(74,222,128,.15)",borderRadius:20,padding:"18px",cursor:"pointer"}} onClick={()=>setModal({type:"sub"})}>
-        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}><div><div style={{fontSize:10,fontWeight:700,color:C.g,letterSpacing:1.5,textTransform:"uppercase"}}>⚡ Cosfit Pro</div><div style={{...N,color:C.w,fontSize:17,fontWeight:900,marginTop:4,lineHeight:1.3}}>Smart Meal Plans<br/>Just for You</div><div style={{color:C.m,fontSize:12,marginTop:4}}>From ₹{plans[0]?.price}/{plans[0]?.per}</div></div><div style={{background:C.gG,width:54,height:54,borderRadius:16,display:"flex",alignItems:"center",justifyContent:"center",fontSize:26,boxShadow:"0 4px 24px rgba(74,222,128,.35)"}}>⚡</div></div>
-      </div>}
-    </div>}
-
-    {/* ══ MENU ════════════════════════════════════════════════════ */}
-    {tab==="menu"&&<div style={{paddingBottom:90,height:"100vh",overflowY:"auto"}}>
-      <div style={{padding:`${showInstall?76:52}px 22px 14px`,background:"linear-gradient(180deg,#0c1610 0%,transparent 100%)"}}>
-        <div style={{...N,color:C.w,fontSize:26,fontWeight:900,letterSpacing:-.8}}>Menu 🍽</div>
-        <div style={{display:"flex",alignItems:"center",gap:10,background:C.card,borderRadius:14,padding:"12px 16px",marginTop:14,border:`1px solid ${C.b}`}}><span>🔍</span><input type="text" value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search meals or tags..." style={{flex:1,background:"none",border:"none",color:C.w,fontSize:14,...F,width:"100%"}}/>{search&&<button onClick={()=>setSearch("")} style={{background:"none",border:"none",color:C.m,fontSize:22}}>×</button>}</div>
-      </div>
-      <div style={{padding:"0 22px 12px",display:"flex",gap:8,overflowX:"auto"}}>{GOALS.map(g=><button key={g.id} onClick={()=>setMGoal(g.id)} style={{background:mGoal===g.id?"rgba(74,222,128,.14)":C.card,border:`1.5px solid ${mGoal===g.id?C.g:C.b}`,color:mGoal===g.id?C.g:C.m,padding:"8px 16px",borderRadius:20,fontWeight:700,fontSize:12,whiteSpace:"nowrap",flexShrink:0,...F}}>{g.icon} {g.label}</button>)}</div>
-      <div style={{padding:"0 22px 14px"}}><div style={{display:"flex",background:C.card,borderRadius:16,padding:4,gap:3}}>{MEALS.map(m=><button key={m} onClick={()=>setMMeal(m)} style={{flex:1,padding:"10px 8px",borderRadius:12,border:"none",background:mMeal===m?C.g:"transparent",color:mMeal===m?"#060c08":C.m,fontWeight:700,fontSize:12,...F}}>{MIC[m]} {m.charAt(0).toUpperCase()+m.slice(1)}</button>)}</div></div>
-      <div style={{margin:"0 22px 14px",background:C.card,borderRadius:14,padding:"11px 16px",border:`1px solid ${C.b}`,display:"flex",justifyContent:"space-between",alignItems:"center"}}><span style={{fontSize:12,color:C.m}}>🎯 Daily target</span><span style={{...N,color:C.g,fontSize:14,fontWeight:800}}>{target} kcal</span></div>
-      <div style={{padding:"0 22px"}}>
-        {menuItems.length===0&&<div style={{textAlign:"center",padding:"48px 0"}}><div style={{fontSize:52}}>🔍</div><div style={{color:C.m,fontSize:14,marginTop:12,...N}}>No meals found</div></div>}
-        {menuItems.map((item,i)=>{const q=getQty(item.id);return <div key={item.id} style={{background:C.card,borderRadius:20,marginBottom:12,border:`1px solid ${C.b}`,overflow:"hidden",display:"flex",animation:`cIn .3s ease ${i*.05}s both`}}><div onClick={()=>setModal({type:"item",d:item})} style={{width:88,background:"linear-gradient(135deg,#0c1610,#101a13)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:40,cursor:"pointer",flexShrink:0}}>{item.emoji}</div><div style={{flex:1,padding:"13px 14px 13px 12px",minWidth:0}}><div style={{...N,fontWeight:800,fontSize:14,color:C.w}}>{item.name}</div><div style={{fontSize:11,color:C.m,marginTop:3,lineHeight:1.4}}>{item.desc}</div><div style={{display:"flex",gap:5,marginTop:7,flexWrap:"wrap"}}><span style={{background:"rgba(251,146,60,.12)",color:C.o,fontSize:10,fontWeight:700,padding:"3px 8px",borderRadius:99}}>🔥{item.cal}</span><span style={{background:"rgba(74,222,128,.1)",color:C.g,fontSize:9,fontWeight:700,padding:"3px 8px",borderRadius:99}}>{item.tag}</span><span style={{background:"rgba(96,165,250,.1)",color:C.blue,fontSize:9,fontWeight:700,padding:"3px 8px",borderRadius:99}}>P:{item.p}g</span></div><div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginTop:10}}><span style={{...N,fontWeight:900,fontSize:16,color:C.o}}>₹{item.price}</span>{q>0?<div style={{display:"flex",alignItems:"center",gap:8,background:C.surf,borderRadius:10,padding:"6px 12px"}}><button onClick={()=>chgQty(item.id,-1)} style={{background:"none",border:"none",color:C.g,fontWeight:900,fontSize:20,width:22,height:22,display:"flex",alignItems:"center",justifyContent:"center"}}>−</button><span style={{color:C.w,fontWeight:800,minWidth:16,textAlign:"center",...N}}>{q}</span><button onClick={()=>addToCart(item)} style={{background:"none",border:"none",color:C.g,fontWeight:900,fontSize:20,width:22,height:22,display:"flex",alignItems:"center",justifyContent:"center"}}>+</button></div>:<button onClick={()=>addToCart(item)} style={{background:C.gO,color:"#fff",border:"none",padding:"8px 16px",borderRadius:10,fontWeight:800,fontSize:12,...N}}>+ Add</button>}</div></div></div>;})}
-      </div>
-    </div>}
-
-    {/* ══ CART ════════════════════════════════════════════════════ */}
-    {tab==="cart"&&<div style={{paddingBottom:90,height:"100vh",overflowY:"auto"}}>
-      <div style={{padding:"52px 22px 20px"}}><div style={{...N,color:C.w,fontSize:26,fontWeight:900}}>Your Cart 🛒</div>{cart.length>0&&<div style={{color:C.m,fontSize:13,marginTop:4}}>{cartCount} items · {cart.reduce((s,i)=>s+i.cal*i.qty,0)} kcal</div>}</div>
-      {cart.length===0?<div style={{textAlign:"center",padding:"60px 24px"}}><div style={{fontSize:74}}>🛒</div><div style={{...N,color:C.w,fontSize:20,fontWeight:900,marginTop:16}}>Cart is empty</div><button onClick={()=>setTab("menu")} style={{background:C.gG,color:"#060c08",border:"none",padding:"14px 32px",borderRadius:16,fontWeight:800,fontSize:14,marginTop:24,...N}}>Explore Menu →</button></div>:<div style={{padding:"0 22px"}}>
-        {cart.map(item=><div key={item.id} style={{background:C.card,borderRadius:18,padding:14,marginBottom:10,display:"flex",gap:12,alignItems:"center",border:`1px solid ${C.b}`}}><div style={{fontSize:32,width:44,textAlign:"center",flexShrink:0}}>{item.emoji}</div><div style={{flex:1,minWidth:0}}><div style={{...N,fontWeight:800,color:C.w,fontSize:13}}>{item.name}</div><div style={{fontSize:11,color:C.m,marginTop:2}}>🔥 {item.cal*item.qty} kcal</div><div style={{...N,color:C.o,fontWeight:900,fontSize:14,marginTop:3}}>₹{item.price*item.qty}</div></div><div style={{display:"flex",alignItems:"center",gap:7,background:C.surf,borderRadius:11,padding:"7px 10px",flexShrink:0}}><button onClick={()=>chgQty(item.id,-1)} style={{background:"none",border:"none",color:C.g,fontWeight:900,fontSize:18,width:20,height:20,display:"flex",alignItems:"center",justifyContent:"center"}}>−</button><span style={{color:C.w,fontWeight:800,minWidth:16,textAlign:"center",...N}}>{item.qty}</span><button onClick={()=>chgQty(item.id,1)} style={{background:"none",border:"none",color:C.g,fontWeight:900,fontSize:18,width:20,height:20,display:"flex",alignItems:"center",justifyContent:"center"}}>+</button></div></div>)}
-        <div style={{background:C.card,borderRadius:18,padding:18,marginTop:6,border:`1px solid ${C.b}`,marginBottom:14}}><div style={{...N,color:C.w,fontWeight:800,fontSize:15,marginBottom:14}}>Bill Summary</div>{[["Subtotal",`₹${cartSub}`],["Delivery",delivery===0?"🎁 Free":`₹${delivery}`],[`GST (${settings.gst}%)`,`₹${gstAmt}`],["Platform Fee",`₹${settings.platformFee}`]].map(([l,v])=><div key={l} style={{display:"flex",justifyContent:"space-between",marginBottom:10,fontSize:13}}><span style={{color:C.m}}>{l}</span><span style={{color:v==="🎁 Free"?C.g:C.w,fontWeight:600}}>{v}</span></div>)}<div style={{borderTop:`1px solid ${C.b}`,paddingTop:12,marginTop:4,display:"flex",justifyContent:"space-between"}}><span style={{...N,color:C.w,fontWeight:900,fontSize:17}}>Total</span><span style={{...N,color:C.o,fontWeight:900,fontSize:20}}>₹{orderTotal}</span></div>{cartSub>=settings.freeDeliveryMin&&<div style={{background:"rgba(74,222,128,.08)",border:"1px solid rgba(74,222,128,.2)",borderRadius:10,padding:"8px 12px",marginTop:12,color:C.g,fontSize:11,fontWeight:700,textAlign:"center"}}>🎁 Free delivery on orders ₹{settings.freeDeliveryMin}+!</div>}</div>
-        <div style={{background:C.card,borderRadius:18,padding:18,marginBottom:16,border:`1px solid ${C.b}`}}><div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}><div style={{...N,fontWeight:800,color:C.w,fontSize:14}}>📍 Delivery Address</div><button onClick={()=>setTab("profile")} style={{background:"none",border:"none",color:C.g,fontSize:12,fontWeight:700,...N}}>Edit →</button></div>{user?.address?<div style={{color:C.m,fontSize:13,lineHeight:1.6}}>{user.address}</div>:<button onClick={()=>setTab("profile")} style={{width:"100%",background:"rgba(74,222,128,.07)",border:"1px dashed rgba(74,222,128,.3)",color:C.g,padding:"12px",borderRadius:12,fontWeight:700,fontSize:13}}>+ Add Delivery Address</button>}</div>
-        <button onClick={placeOrder} style={{width:"100%",background:C.gO,color:"#fff",border:"none",padding:18,borderRadius:18,fontWeight:900,fontSize:16,...N,boxShadow:"0 8px 36px rgba(249,115,22,.42)"}}>🚀 Place Order</button>
-      </div>}
-    </div>}
-
-    {/* ══ TRACK ═══════════════════════════════════════════════════ */}
-    {tab==="track"&&<div style={{paddingBottom:90,height:"100vh",overflowY:"auto"}}>
-      <div style={{padding:"52px 22px 22px"}}><div style={{...N,color:C.w,fontSize:26,fontWeight:900}}>Track Orders 🛵</div><div style={{color:C.m,fontSize:13,marginTop:4}}>{orders.filter(o=>o.userId===user?.id).length} total · {liveOrders} live</div></div>
-      {orders.filter(o=>o.userId===user?.id).length===0?<div style={{textAlign:"center",padding:"60px 24px"}}><div style={{fontSize:72}}>📦</div><div style={{...N,color:C.w,fontSize:20,fontWeight:900,marginTop:16}}>No orders yet</div><button onClick={()=>setTab("menu")} style={{background:C.gG,color:"#060c08",border:"none",padding:"14px 32px",borderRadius:16,fontWeight:800,fontSize:14,marginTop:24,...N}}>Order Now →</button></div>:<div style={{padding:"0 22px"}}>
-        {orders.filter(o=>o.userId===user?.id).map(order=><div key={order.id} style={{background:C.card,borderRadius:22,marginBottom:16,border:`1px solid ${order.statusIdx<4?"rgba(74,222,128,.35)":C.b}`,overflow:"hidden"}}><div style={{background:"linear-gradient(135deg,#080f1c,#0c1610)",padding:"16px 18px",display:"flex",justifyContent:"space-between",alignItems:"center"}}><div><div style={{...N,color:C.w,fontWeight:800,fontSize:14}}>#{String(order.id).slice(-8)}</div><div style={{color:C.m,fontSize:11,marginTop:2}}>{order.date} · {order.time}</div></div><div style={{textAlign:"right"}}><div style={{...N,color:C.o,fontWeight:900,fontSize:18}}>₹{order.total}</div>{order.statusIdx<4?<div style={{background:"rgba(74,222,128,.15)",color:C.g,borderRadius:99,fontSize:9,fontWeight:900,padding:"3px 10px",marginTop:4,display:"inline-block",animation:"pulse 1.5s infinite"}}>● LIVE</div>:<div style={{color:C.g,fontSize:11,fontWeight:700,marginTop:4}}>✅ Done</div>}</div></div><div style={{padding:"18px"}}>{ORDER_STEPS.map((step,i)=><div key={i} style={{display:"flex",alignItems:"flex-start",gap:12,marginBottom:i<4?14:0}}><div style={{width:30,height:30,borderRadius:"50%",flexShrink:0,background:i<order.statusIdx?"rgba(74,222,128,.18)":i===order.statusIdx?"rgba(74,222,128,.12)":"transparent",border:`2px solid ${i<=order.statusIdx?C.g:C.b}`,display:"flex",alignItems:"center",justifyContent:"center",transition:"all .5s"}}>{i<order.statusIdx?<span style={{fontSize:11,color:C.g,fontWeight:900}}>✓</span>:i===order.statusIdx?<span style={{fontSize:15,animation:"pulse 1.5s infinite"}}>{step.icon}</span>:<span style={{color:C.m,fontSize:10,fontWeight:800}}>{i+1}</span>}</div><div style={{flex:1,paddingTop:3}}><div style={{fontSize:12,fontWeight:i===order.statusIdx?800:500,color:i<=order.statusIdx?C.w:C.m,...N,display:"flex",alignItems:"center",gap:8}}>{step.label}{i===order.statusIdx&&<span style={{background:"rgba(74,222,128,.15)",color:C.g,fontSize:9,fontWeight:800,padding:"2px 8px",borderRadius:99}}>NOW</span>}</div>{i===order.statusIdx&&<div style={{fontSize:11,color:C.m,marginTop:3,lineHeight:1.5}}>{step.msg}</div>}</div></div>)}<div style={{display:"flex",flexWrap:"wrap",gap:6,paddingTop:12,marginTop:4,borderTop:`1px solid ${C.b}`}}>{order.items.map(i=><span key={i.id} style={{background:C.surf,color:C.m,padding:"3px 10px",borderRadius:99,fontSize:11}}>{i.emoji} {i.name} ×{i.qty}</span>)}</div></div></div>)}
-      </div>}
-    </div>}
-
-    {/* ══ NOTIFS ══════════════════════════════════════════════════ */}
-    {tab==="notifs"&&<div style={{paddingBottom:90,height:"100vh",overflowY:"auto"}}>
-      <div style={{padding:"52px 22px 20px",display:"flex",justifyContent:"space-between",alignItems:"flex-end"}}><div><div style={{...N,color:C.w,fontSize:26,fontWeight:900}}>Notifications 🔔</div><div style={{color:C.m,fontSize:13,marginTop:4}}>{unread} unread</div></div>{unread>0&&<button onClick={()=>setNotifs(p=>p.map(n=>({...n,read:true})))} style={{background:"none",border:"none",color:C.g,fontSize:12,fontWeight:700,...N}}>Mark all read</button>}</div>
-      {notifs.length===0?<div style={{textAlign:"center",padding:"60px 24px"}}><div style={{fontSize:72}}>🔔</div><div style={{...N,color:C.w,fontSize:20,fontWeight:900,marginTop:16}}>No notifications yet</div><div style={{color:C.m,fontSize:13,marginTop:8}}>Order food to get live updates!</div></div>:<div style={{padding:"0 22px"}}>{notifs.map((n,i)=><div key={n.id} onClick={()=>setNotifs(p=>p.map(x=>x.id===n.id?{...x,read:true}:x))} style={{background:n.read?C.card:"rgba(74,222,128,.06)",borderRadius:18,padding:"16px",marginBottom:10,border:`1px solid ${n.read?C.b:"rgba(74,222,128,.25)"}`,display:"flex",gap:12,cursor:"pointer",animation:`cIn .3s ease ${i*.05}s both`}}><div style={{width:44,height:44,background:n.read?"rgba(74,222,128,.07)":"rgba(74,222,128,.14)",borderRadius:14,display:"flex",alignItems:"center",justifyContent:"center",fontSize:22,flexShrink:0}}>{n.icon}</div><div style={{flex:1}}><div style={{...N,fontWeight:800,color:C.w,fontSize:13}}>{n.label}</div><div style={{fontSize:12,color:C.m,marginTop:3,lineHeight:1.5}}>{n.msg}</div><div style={{fontSize:10,color:C.m2,marginTop:6}}>{n.time}</div></div>{!n.read&&<div style={{width:9,height:9,borderRadius:"50%",background:C.g,flexShrink:0,marginTop:5,animation:"pulse 1.5s infinite"}}/>}</div>)}</div>}
-    </div>}
-
-    {/* ══ PROFILE ═════════════════════════════════════════════════ */}
-    {tab==="profile"&&<div style={{paddingBottom:90,height:"100vh",overflowY:"auto"}}>
-      <div style={{padding:"52px 22px 28px",background:"linear-gradient(180deg,#0c1610 0%,transparent 100%)",textAlign:"center"}}><div style={{position:"relative",display:"inline-block"}}><div style={{width:88,height:88,background:C.gG,borderRadius:"50%",display:"flex",alignItems:"center",justifyContent:"center",fontSize:42,margin:"0 auto",boxShadow:"0 0 36px rgba(74,222,128,.32)",cursor:"pointer"}} onClick={()=>setModal({type:"avatar"})}>{user?.avatar||"😊"}</div><div style={{position:"absolute",bottom:0,right:0,background:C.gG,borderRadius:"50%",width:26,height:26,display:"flex",alignItems:"center",justifyContent:"center",fontSize:13,cursor:"pointer",border:`2px solid ${C.bg}`}} onClick={()=>setModal({type:"avatar"})}>✏️</div></div><div style={{...N,color:C.w,fontSize:22,fontWeight:900,marginTop:12}}>{user?.name}</div><div style={{color:C.m,fontSize:13,marginTop:4}}>@{user?.username} · +91 {user?.phone}</div>{curPlan&&<div style={{display:"inline-flex",gap:6,background:"rgba(251,191,36,.1)",border:"1px solid rgba(251,191,36,.3)",borderRadius:20,padding:"6px 14px",marginTop:10}}><span style={{color:C.gold,fontSize:12,fontWeight:800,...N}}>⚡ {curPlan.label} Pro</span></div>}</div>
-      <div style={{padding:"0 22px"}}>
-        <div style={{background:C.card,borderRadius:20,padding:16,border:`1px solid ${C.b}`,marginBottom:14}}><div style={{...N,color:C.w,fontWeight:800,fontSize:14,marginBottom:14}}>📊 Body Stats</div><div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:10}}>{[["⚖️",(user?.weight||"—")+"kg","Weight"],["📏",(user?.height||"—")+"cm","Height"],["📅",(user?.age||"—")+" yrs","Age"],["🔥",target+" kcal","Target"],["🧬",user?.gender==="m"?"Male":"Female","Gender"],["📊",user?.weight&&user?.height&&+user.height>0?(+user.weight/((+user.height/100)**2)).toFixed(0):"—","BMI"]].map(([ic,v,l])=><div key={l} style={{background:C.surf,borderRadius:13,padding:"12px 8px",textAlign:"center"}}><div style={{fontSize:16}}>{ic}</div><div style={{...N,color:C.w,fontWeight:800,fontSize:12,marginTop:4,lineHeight:1.2}}>{v}</div><div style={{color:C.m,fontSize:9,marginTop:3}}>{l}</div></div>)}</div></div>
-        <div style={{background:C.card,borderRadius:20,padding:16,border:`1px solid ${C.b}`,marginBottom:14}}><div style={{...N,color:C.w,fontWeight:800,fontSize:14,marginBottom:12}}>📍 Delivery Address</div><Field value={user?.address||""} onChange={v=>setUser(p=>({...p,address:v}))} ph="Enter your full delivery address..." rows={3}/><button onClick={()=>{syncUsers(users.map(u=>u.id===user.id?{...u,address:user.address}:u));pop("✅ Address saved!");}} style={{width:"100%",marginTop:10,background:C.gG,color:"#060c08",border:"none",padding:13,borderRadius:12,fontWeight:800,fontSize:14,...N}}>Save Address</button></div>
-        <div style={{display:"flex",flexDirection:"column",gap:10,marginBottom:20}}>{[{ic:"🖼",l:"Change Profile Picture",fn:()=>setModal({type:"avatar"}),col:C.g,bg:"rgba(74,222,128,.08)",bd:"rgba(74,222,128,.25)"},{ic:"⚡",l:curPlan?`Active: ${curPlan.label} Pro`:"Upgrade to Pro",fn:()=>setModal({type:"sub"}),col:C.gold,bg:"rgba(251,191,36,.08)",bd:"rgba(251,191,36,.25)"},{ic:"⚙️",l:isAdmin?"Admin Panel →":"Admin Login",fn:()=>isAdmin?setTab("admin"):setModal({type:"adminLogin"}),col:isAdmin?C.g:C.m,bg:C.card,bd:C.b},{ic:"🚪",l:"Sign Out",fn:handleSignOut,col:C.r,bg:"rgba(248,113,113,.1)",bd:"rgba(248,113,113,.25)"}].map(b=><button key={b.l} onClick={b.fn} style={{background:b.bg,border:`1px solid ${b.bd}`,color:b.col,padding:"14px 16px",borderRadius:16,fontWeight:700,fontSize:14,textAlign:"left",display:"flex",alignItems:"center",gap:12}}><span style={{fontSize:20}}>{b.ic}</span><span>{b.l}</span></button>)}</div><div style={{textAlign:"center",color:"#1b2d1f",fontSize:11,paddingBottom:8,lineHeight:1.8}}>Cosfit v6.0 · {COMPANY.name}</div>
-      </div>
-    </div>}
-
-    {/* ══ ADMIN PANEL ═════════════════════════════════════════════ */}
-    {tab==="admin"&&isAdmin&&<div style={{paddingBottom:90,height:"100vh",overflowY:"auto"}}>
-      <div style={{padding:"52px 22px 16px",background:"linear-gradient(135deg,#080f1c,#0c1610)"}}><div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start"}}><div><div style={{color:C.blue,fontSize:10,fontWeight:700,letterSpacing:1.5,textTransform:"uppercase"}}>⚙️ Admin Panel</div><div style={{...N,color:C.w,fontSize:22,fontWeight:900,marginTop:4}}>Control Centre</div><div style={{color:C.m,fontSize:12,marginTop:2}}>{adminUser?.name} · {adminUser?.role}</div></div><button onClick={()=>{setIsAdmin(false);setAdminUser(null);setTab("profile");pop("Exited admin");}} style={{background:"rgba(248,113,113,.15)",border:"1px solid rgba(248,113,113,.3)",color:C.r,padding:"8px 14px",borderRadius:20,fontSize:12,fontWeight:700,...N}}>Exit</button></div><div style={{display:"flex",gap:8,marginTop:14,flexWrap:"wrap"}}>{[[`${orders.length} Orders`,C.g],[`₹${orders.reduce((s,o)=>s+o.total,0)} Rev`,C.o],[`${users.length} Users`,C.pur],[`${planActivations.length} Plans`,C.gold],[`${allFlat.filter(i=>i.active&&i.stock).length} Items`,C.blue]].map(([l,c])=><div key={l} style={{background:"rgba(255,255,255,.04)",border:"1px solid rgba(255,255,255,.08)",borderRadius:99,padding:"4px 12px",fontSize:10,fontWeight:700,color:c}}>{l}</div>)}</div></div>
-      <div style={{padding:"0 22px 14px"}}><div style={{display:"flex",background:C.card,borderRadius:14,padding:4,gap:2,overflowX:"auto"}}>{[["orders","📦"],["foods","🍽"],["plans","⚡"],["activations","🏅"],["customers","👥"],["settings","⚙️"],["stats","📊"]].map(([k,ic])=><button key={k} onClick={()=>setAdminTab(k)} style={{flexShrink:0,padding:"9px 10px",borderRadius:10,border:"none",background:adminTab===k?C.blue:"transparent",color:adminTab===k?"#fff":C.m,fontWeight:700,fontSize:11,...F,whiteSpace:"nowrap"}}>{ic} {k.charAt(0).toUpperCase()+k.slice(1)}</button>)}</div></div>
-
-      {adminTab==="orders"&&<div style={{padding:"0 22px"}}>
-        <div style={{background:"rgba(96,165,250,.08)",border:"1px solid rgba(96,165,250,.2)",borderRadius:12,padding:"12px 14px",marginBottom:14,fontSize:12,color:C.blue,lineHeight:1.6}}>💡 Tap <b>"View Details"</b> to see full customer info. Tap <b>"Update →"</b> to advance order status.</div>
-        {orders.length===0?<div style={{textAlign:"center",padding:"40px 0"}}><div style={{fontSize:52}}>📦</div><div style={{color:C.m,fontWeight:700,marginTop:12,...N}}>No orders yet</div></div>:orders.map(order=><div key={order.id} style={{background:C.card,borderRadius:20,marginBottom:14,border:`1px solid ${order.statusIdx<4?"rgba(74,222,128,.3)":C.b}`,overflow:"hidden"}}><div style={{background:"linear-gradient(135deg,#080f1c,#0c1610)",padding:"14px 16px"}}><div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:8}}><div><div style={{...N,color:C.w,fontWeight:800,fontSize:13}}>#{String(order.id).slice(-8)}</div><div style={{fontSize:11,color:C.m,marginTop:2}}>{order.date} · {order.time}</div></div><div style={{textAlign:"right"}}><div style={{...N,color:C.o,fontWeight:900,fontSize:16}}>₹{order.total}</div><div style={{fontSize:10,color:C.m}}>{order.paymentStatus}</div></div></div><div style={{background:"rgba(255,255,255,.04)",borderRadius:10,padding:"10px 12px"}}><div style={{display:"flex",gap:16,flexWrap:"wrap"}}><div style={{fontSize:12,color:C.m}}>👤 <span style={{color:C.w,fontWeight:700}}>{order.userName}</span></div><div style={{fontSize:12,color:C.m}}>📞 <span style={{color:C.g,fontWeight:700}}>+91 {order.userPhone}</span></div><div style={{fontSize:12,color:C.m}}>@<span style={{color:C.pur}}>{order.userUsername||"—"}</span></div></div><div style={{fontSize:11,color:C.m,marginTop:6}}>📍 {order.userAddress||"No address"}</div></div></div><div style={{display:"flex",gap:3,padding:"10px 16px 0"}}>{ORDER_STEPS.map((_,i)=><div key={i} style={{flex:1,height:4,borderRadius:99,background:i<=order.statusIdx?C.g:C.b,transition:"background .5s"}}/>)}</div><div style={{padding:"10px 16px 14px"}}><div style={{color:C.g,fontSize:11,fontWeight:700,marginBottom:8}}>{ORDER_STEPS[order.statusIdx]?.icon} {ORDER_STEPS[order.statusIdx]?.label}</div><div style={{display:"flex",flexWrap:"wrap",gap:5,marginBottom:12}}>{order.items.map(i=><span key={i.id} style={{background:C.surf,color:C.m,padding:"3px 10px",borderRadius:99,fontSize:11}}>{i.emoji} {i.name} ×{i.qty}</span>)}</div><div style={{display:"flex",gap:8}}><button onClick={()=>setModal({type:"orderDetail",o:order})} style={{flex:1,background:"rgba(96,165,250,.1)",border:"1px solid rgba(96,165,250,.3)",color:C.blue,padding:"10px",borderRadius:12,fontWeight:700,fontSize:12,...F}}>View Details</button>{order.statusIdx<4?<button onClick={()=>updateOrder(order.id)} style={{flex:2,background:C.gG,color:"#060c08",border:"none",padding:"10px",borderRadius:12,fontWeight:900,fontSize:12,...N}}>Update → {ORDER_STEPS[order.statusIdx+1]?.icon} {ORDER_STEPS[order.statusIdx+1]?.label}</button>:<div style={{flex:2,background:"rgba(74,222,128,.07)",border:"1px solid rgba(74,222,128,.2)",borderRadius:12,padding:"10px",textAlign:"center",color:C.g,fontSize:12,fontWeight:700,...N}}>✅ Delivered!</div>}</div></div></div>)}
-      </div>}
-
-      {adminTab==="foods"&&<div style={{padding:"0 22px"}}>
-        <div style={{background:"rgba(96,165,250,.08)",border:"1px solid rgba(96,165,250,.2)",borderRadius:12,padding:"11px 14px",marginBottom:14,fontSize:12,color:C.blue}}>💡 <b>➕</b> Add · <b>✏️</b> Edit · <b>👁/🙈</b> Show/Hide · <b>📦/🚫</b> Stock · <b>🗑</b> Delete</div>
-        {GOALS.map(goal=><div key={goal.id} style={{marginBottom:22}}><div style={{...N,color:C.w,fontWeight:900,fontSize:14,marginBottom:10,display:"flex",alignItems:"center",gap:8}}><span>{goal.icon}</span><span>{goal.label}</span><span style={{color:C.m,fontSize:11,fontWeight:600,marginLeft:"auto"}}>{Object.values(foods[goal.id]||{}).flat().length} items</span></div>{MEALS.map(meal=><div key={meal} style={{marginBottom:12}}><div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8}}><div style={{fontSize:10,fontWeight:700,color:C.m,textTransform:"uppercase",letterSpacing:1.2}}>{MIC[meal]} {meal} ({(foods[goal.id]?.[meal]||[]).length})</div><button onClick={()=>setModal({type:"editFood",gId:goal.id,meal,food:null})} style={{background:"rgba(74,222,128,.1)",border:"1px solid rgba(74,222,128,.25)",color:C.g,padding:"5px 14px",borderRadius:20,fontWeight:700,fontSize:11,...F}}>+ Add</button></div>{(foods[goal.id]?.[meal]||[]).length===0&&<div style={{background:"rgba(255,255,255,.02)",border:`1px dashed ${C.b}`,borderRadius:12,padding:"12px",textAlign:"center",color:C.m,fontSize:12}}>No items · Tap + Add</div>}{(foods[goal.id]?.[meal]||[]).map(item=><div key={item.id} style={{background:C.card,borderRadius:13,padding:"10px 12px",marginBottom:7,border:`1px solid ${!item.stock?"rgba(248,113,113,.25)":!item.active?"rgba(255,255,255,.04)":C.b}`,display:"flex",alignItems:"center",gap:9,opacity:!item.active?0.45:1}}><span style={{fontSize:20,flexShrink:0}}>{item.emoji}</span><div style={{flex:1,minWidth:0}}><div style={{...N,fontWeight:700,color:C.w,fontSize:13,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{item.name}</div><div style={{fontSize:10,color:C.m}}>₹{item.price} · {item.cal}kcal · P:{item.p}g</div>{!item.stock&&<div style={{fontSize:9,fontWeight:800,color:C.r,marginTop:2}}>● OUT OF STOCK</div>}</div><div style={{display:"flex",gap:4,flexShrink:0}}><button onClick={()=>toggleProp(goal.id,meal,item.id,"stock")} style={{background:item.stock?"rgba(74,222,128,.12)":"rgba(248,113,113,.12)",border:"none",color:item.stock?C.g:C.r,width:28,height:28,borderRadius:8,fontSize:12}}>{item.stock?"📦":"🚫"}</button><button onClick={()=>toggleProp(goal.id,meal,item.id,"active")} style={{background:item.active?"rgba(74,222,128,.12)":"rgba(100,100,100,.1)",border:"none",color:item.active?C.g:C.m,width:28,height:28,borderRadius:8,fontSize:13}}>{item.active?"👁":"🙈"}</button><button onClick={()=>setModal({type:"editFood",gId:goal.id,meal,food:item})} style={{background:"rgba(96,165,250,.12)",border:"none",color:C.blue,width:28,height:28,borderRadius:8,fontSize:13}}>✏️</button><button onClick={()=>deleteFood(goal.id,meal,item.id,item.name)} style={{background:"rgba(248,113,113,.12)",border:"none",color:C.r,width:28,height:28,borderRadius:8,fontSize:12}}>🗑</button></div></div>)}</div>)}</div>)}
-      </div>}
-
-      {adminTab==="plans"&&<div style={{padding:"0 22px"}}>
-        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14}}><div style={{color:C.m,fontSize:12}}>Manage subscription plans</div><button onClick={()=>setModal({type:"editPlan",plan:null})} style={{background:C.gG,color:"#060c08",border:"none",padding:"8px 18px",borderRadius:20,fontWeight:800,fontSize:12,...N}}>+ New Plan</button></div>
-        {plans.map(plan=><div key={plan.id} style={{background:plan.hot?"rgba(74,222,128,.07)":C.card,border:`1.5px solid ${plan.hot?C.g:C.b}`,borderRadius:18,padding:"18px",marginBottom:14,position:"relative"}}>{plan.hot&&<div style={{position:"absolute",top:-10,right:16,background:C.gG,color:"#060c08",fontSize:9,fontWeight:900,padding:"3px 12px",borderRadius:99}}>POPULAR</div>}<div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:12}}><div><div style={{...N,color:C.w,fontWeight:900,fontSize:18}}>{plan.label}</div><div style={{...N,color:C.o,fontWeight:900,fontSize:20,marginTop:4}}>₹{plan.price}<span style={{color:C.m,fontSize:13,fontWeight:600}}>/{plan.per}</span></div>{plan.save&&<div style={{color:C.g,fontSize:12,fontWeight:700,marginTop:2}}>{plan.save}</div>}<div style={{color:C.m,fontSize:11,marginTop:4}}>Activations: <span style={{color:C.w,fontWeight:700}}>{planActivations.filter(a=>a.planId===plan.id&&a.active).length}</span></div></div><div style={{display:"flex",flexDirection:"column",gap:8}}><button onClick={()=>setModal({type:"editPlan",plan})} style={{background:C.blue,color:"#fff",border:"none",padding:"9px 18px",borderRadius:12,fontWeight:700,fontSize:12,...N}}>✏️ Edit</button><button onClick={()=>deletePlan(plan.id)} style={{background:"rgba(248,113,113,.12)",border:"none",color:C.r,padding:"9px 18px",borderRadius:12,fontWeight:700,fontSize:12,...F}}>🗑 Delete</button></div></div>{plan.features.map((f,i)=><div key={i} style={{display:"flex",gap:8,alignItems:"center",marginBottom:6}}><span style={{color:C.g,fontSize:12}}>✓</span><span style={{color:C.m,fontSize:12}}>{f}</span></div>)}</div>)}
-      </div>}
-
-      {adminTab==="activations"&&<div style={{padding:"0 22px"}}>
-        <div style={{...N,color:C.w,fontWeight:800,fontSize:15,marginBottom:14}}>🏅 Plan Activations ({planActivations.length})</div>
-        {planActivations.length===0?<div style={{textAlign:"center",padding:"40px 0"}}><div style={{fontSize:52}}>🏅</div><div style={{color:C.m,fontWeight:700,marginTop:12,...N}}>No plan activations yet</div></div>:planActivations.map(act=><div key={act.id} style={{background:C.card,borderRadius:18,padding:"16px",marginBottom:12,border:`1px solid rgba(74,222,128,.25)`}}><div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:10}}><div><div style={{...N,color:C.g,fontWeight:900,fontSize:15}}>⚡ {act.planName}</div><div style={{color:C.o,fontSize:13,fontWeight:700,marginTop:2}}>₹{act.planPrice}/{act.planPer}</div></div><div style={{background:"rgba(74,222,128,.12)",border:"1px solid rgba(74,222,128,.3)",borderRadius:99,padding:"3px 12px",fontSize:11,fontWeight:700,color:C.g}}>{act.paymentStatus}</div></div>{[["Customer",act.userName],["Username","@"+act.userUsername],["Phone","+91 "+act.userPhone],["Activated",fmt(act.activatedAt)]].map(([l,v])=><div key={l} style={{display:"flex",justifyContent:"space-between",marginBottom:6,fontSize:12}}><span style={{color:C.m}}>{l}</span><span style={{color:C.w,fontWeight:600,...N}}>{v}</span></div>)}</div>)}
-      </div>}
-
-      {adminTab==="customers"&&<div style={{padding:"0 22px"}}>
-        <div style={{...N,color:C.w,fontWeight:800,fontSize:15,marginBottom:14}}>👥 Customers ({users.length})</div>
-        {users.length===0?<div style={{textAlign:"center",padding:"40px 0"}}><div style={{fontSize:52}}>👥</div><div style={{color:C.m,fontWeight:700,marginTop:12,...N}}>No customers yet</div></div>:users.map(u=><div key={u.id} style={{background:C.card,borderRadius:18,padding:"16px",marginBottom:12,border:`1px solid ${C.b}`}}><div style={{display:"flex",gap:12,alignItems:"flex-start"}}><div style={{width:46,height:46,background:C.gG,borderRadius:"50%",display:"flex",alignItems:"center",justifyContent:"center",fontSize:22,flexShrink:0}}>{u.avatar||"😊"}</div><div style={{flex:1}}><div style={{...N,color:C.w,fontWeight:800,fontSize:14}}>{u.name}</div><div style={{color:C.m,fontSize:12,marginTop:2}}>@{u.username||"—"} · +91 {u.phone}</div><div style={{display:"flex",gap:8,marginTop:8,flexWrap:"wrap"}}><span style={{background:"rgba(74,222,128,.1)",color:C.g,fontSize:10,fontWeight:700,padding:"3px 10px",borderRadius:99}}>{GOALS.find(g=>g.id===u.goal)?.label||"Not set"}</span>{u.plan&&<span style={{background:"rgba(251,191,36,.1)",color:C.gold,fontSize:10,fontWeight:700,padding:"3px 10px",borderRadius:99}}>⚡ {plans.find(p=>p.id===u.plan)?.label||""} Pro</span>}<span style={{background:"rgba(96,165,250,.1)",color:C.blue,fontSize:10,fontWeight:700,padding:"3px 10px",borderRadius:99}}>{orders.filter(o=>o.userId===u.id).length} orders</span></div>{u.address&&<div style={{color:C.m,fontSize:11,marginTop:6}}>📍 {u.address}</div>}</div></div></div>)}
-      </div>}
-
-      {adminTab==="settings"&&<div style={{padding:"0 22px"}}>
-        <div style={{background:C.card,borderRadius:20,padding:18,border:`1px solid ${C.b}`,marginBottom:14}}><div style={{...N,color:C.w,fontWeight:800,fontSize:15,marginBottom:18}}>🚚 Delivery & Pricing</div><div style={{display:"flex",flexDirection:"column",gap:14}}>{[["Delivery Charge (₹)","deliveryCharge","Charged when below free threshold"],["Free Delivery Min (₹)","freeDeliveryMin","Orders above this = free delivery"],["Platform Fee (₹)","platformFee","Fixed fee per order"],["GST (%)","gst","Tax percentage on subtotal"]].map(([label,key,hint])=><div key={key}><div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8}}><div><div style={{color:C.w,fontWeight:700,fontSize:13,...N}}>{label}</div><div style={{color:C.m,fontSize:11,marginTop:2}}>{hint}</div></div><div style={{...N,color:C.g,fontWeight:900,fontSize:16}}>{key==="gst"?`${settings[key]}%`:`₹${settings[key]}`}</div></div><input type="number" value={settings[key]} onChange={e=>setSettings(p=>({...p,[key]:+e.target.value}))} min={0} style={{width:"100%",padding:"12px 16px",background:C.surf,border:`1.5px solid ${C.b}`,borderRadius:12,color:C.w,fontSize:14,...F,boxSizing:"border-box"}}/></div>)}</div><div style={{background:"rgba(74,222,128,.07)",border:"1px solid rgba(74,222,128,.2)",borderRadius:14,padding:"14px 16px",marginTop:16,marginBottom:14}}><div style={{...N,color:C.g,fontWeight:800,fontSize:13,marginBottom:10}}>Preview for ₹300 order:</div>{[["Subtotal","₹300"],["Delivery",300<settings.freeDeliveryMin?`₹${settings.deliveryCharge}`:"🎁 Free"],["GST",`₹${Math.round(300*settings.gst/100)}`],["Platform Fee",`₹${settings.platformFee}`],["Total",`₹${300+(300<settings.freeDeliveryMin?settings.deliveryCharge:0)+Math.round(300*settings.gst/100)+settings.platformFee}`]].map(([l,v])=><div key={l} style={{display:"flex",justifyContent:"space-between",fontSize:12,marginBottom:5}}><span style={{color:C.m}}>{l}</span><span style={{color:C.w,fontWeight:600}}>{v}</span></div>)}</div><button onClick={()=>pop("✅ Settings saved!")} style={{width:"100%",background:C.gG,color:"#060c08",border:"none",padding:"14px",borderRadius:14,fontWeight:800,fontSize:14,...N}}>Save Settings ✓</button></div>
-        <div style={{background:C.card,borderRadius:20,padding:18,border:`1px solid ${C.b}`,marginBottom:14}}><div style={{...N,color:C.w,fontWeight:800,fontSize:15,marginBottom:14}}>👥 Admin Accounts</div>{admins.map(a=><div key={a.id} style={{background:C.surf,borderRadius:14,padding:"14px",marginBottom:10,border:`1px solid ${a.active?"rgba(74,222,128,.3)":C.b}`,opacity:a.active?1:.5}}><div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start"}}><div><div style={{...N,color:C.w,fontWeight:800,fontSize:14}}>{a.name}</div><div style={{color:C.g,fontSize:11,fontWeight:700,marginTop:2}}>{a.role}</div><div style={{color:C.m,fontSize:11,marginTop:2}}>@{a.username}</div></div><button onClick={()=>setAdmins(p=>p.map(x=>x.id===a.id?{...x,active:!x.active}:x))} style={{background:a.active?"rgba(74,222,128,.12)":"rgba(248,113,113,.12)",border:"none",color:a.active?C.g:C.r,padding:"8px 14px",borderRadius:20,fontWeight:700,fontSize:11,...F}}>{a.active?"✓ Active":"✗ Inactive"}</button></div></div>)}</div>
-      </div>}
-
-      {adminTab==="stats"&&<div style={{padding:"0 22px"}}>
-        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12,marginBottom:18}}>{[["📦","Orders",orders.length,C.g],["💰","Revenue","₹"+orders.reduce((s,o)=>s+o.total,0),C.o],["👥","Customers",users.length,C.pur],["🏅","Activations",planActivations.length,C.gold],["🍽","Items",allFlat.length,C.blue],["✅","Active",allFlat.filter(i=>i.active&&i.stock).length,C.g]].map(([ic,l,v,col])=><div key={l} style={{background:C.card,borderRadius:18,padding:"16px",border:`1px solid ${C.b}`}}><div style={{fontSize:22}}>{ic}</div><div style={{...N,color:col,fontSize:24,fontWeight:900,marginTop:6}}>{v}</div><div style={{color:C.m,fontSize:11,marginTop:3}}>{l}</div></div>)}</div>
-        <div style={{background:C.card,borderRadius:18,padding:18,border:`1px solid ${C.b}`,marginBottom:14}}><div style={{...N,color:C.w,fontWeight:800,marginBottom:14}}>💳 Revenue Breakdown</div>{[["Total Revenue","₹"+orders.reduce((s,o)=>s+o.total,0)],["Avg Order Value","₹"+(orders.length?Math.round(orders.reduce((s,o)=>s+o.total,0)/orders.length):0)],["Pro Plan Revenue","₹"+planActivations.reduce((s,a)=>s+a.planPrice,0)],["Delivery Collected","₹"+(orders.reduce((s,o)=>s+o.delivery,0))],["Platform Fees","₹"+(orders.reduce((s,o)=>s+o.platformFee,0))]].map(([l,v])=><div key={l} style={{display:"flex",justifyContent:"space-between",marginBottom:10,fontSize:13}}><span style={{color:C.m}}>{l}</span><span style={{color:C.w,fontWeight:700}}>{v}</span></div>)}</div>
-      </div>}
-    </div>}
-
-    {/* ══ BOTTOM NAV ══════════════════════════════════════════════ */}
-    <div style={{position:"fixed",bottom:0,left:"50%",transform:"translateX(-50%)",width:"100%",maxWidth:430,background:"rgba(6,12,8,.97)",backdropFilter:"blur(24px)",borderTop:`1px solid ${C.b}`,display:"flex",padding:"10px 0 24px",zIndex:200}}>
-      {NavBtn("home","🏠","Home",0)}
-      {NavBtn("menu","🍽","Menu",0)}
-      {NavBtn("cart","🛒","Cart",cartCount)}
-      {NavBtn("track","🛵","Track",liveOrders)}
-      {NavBtn("notifs","🔔","Alerts",unread)}
     </div>
-  </div>;
+  );
 }
 
-ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
-</script>
-<script>
-if("serviceWorker"in navigator&&location.hostname.includes("github.io")){
-  navigator.serviceWorker.register("sw.js").then(()=>console.log("✅ SW")).catch(e=>console.log("SW:",e));
-}
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
 </script>
 </body>
 </html>
