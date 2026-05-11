@@ -29,7 +29,6 @@ html,body{background:#060c08;overflow-x:hidden;width:100%;font-family:'Inter',sa
 #root{width:100%;max-width:430px;margin:0 auto;overflow-x:hidden;position:relative}
 ::-webkit-scrollbar{display:none}
 input,textarea,select{font-family:'Inter',sans-serif;box-sizing:border-box;-webkit-appearance:none;outline:none;border:none}
-input[type=tel].otp-box{flex:1 1 0!important;min-width:0!important;max-width:56px!important;padding:14px 2px!important;font-size:22px!important;text-align:center!important;border-radius:14px!important}
 button{cursor:pointer;border:none;outline:none}
 button:active{transform:scale(.92)!important;transition:transform .08s!important}
 @keyframes pop{from{opacity:0;transform:scale(.15)}to{opacity:1;transform:scale(1)}}
@@ -50,7 +49,6 @@ button:active{transform:scale(.92)!important;transition:transform .08s!important
 <script type="text/babel">
 const {useState,useEffect,useRef,useCallback}=React;
 
-// ── DESIGN TOKENS ────────────────────────────────────────────────
 const N={fontFamily:"'Nunito',sans-serif"};
 const F={fontFamily:"'Inter',sans-serif"};
 const C={
@@ -64,7 +62,6 @@ const C={
 
 const COMPANY={name:"Coscoom Creative Tech Solutions",brand:"Idappadi Creators",email:"anantharajeinstein@gmail.com",phone:"8778148899",addr:"21/AJ,68,New Street,Kavandampatti,Idappadi,Salem-637101",state:"Tamilnadu"};
 
-// ── INITIAL DATA (MODIFIED ADMINS) ───────────────────────────────
 const INIT_ADMINS=[
   {id:1,name:"Anantharaj",username:"Anantharajmech",role:"Super Admin",password:"ananthaarthi160893",active:true},
   {id:2,name:"Aarthi",username:"Aarthimech",role:"Admin",password:"aarthiananth160893",active:true},
@@ -133,7 +130,6 @@ const INIT_FOODS={
   },
 };
 
-// ── HELPERS ──────────────────────────────────────────────────────
 const tdee=(w,h,a,g,goal)=>{
   const bmr=g==="f"?10*w+6.25*h-5*a-161:10*w+6.25*h-5*a+5;
   return Math.round(bmr*1.55)+((GOALS.find(x=>x.id===goal))||{calMod:0}).calMod;
@@ -168,7 +164,6 @@ let NID=800;
 const nid=()=>++NID;
 const fmt=(d)=>new Date(d).toLocaleString('en-IN',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});
 
-// ── MINI COMPONENTS ──────────────────────────────────────────────
 function Toast({t}){
   return <div style={{position:"fixed",top:22,left:"50%",transform:"translateX(-50%)",background:t.err?"rgba(248,113,113,.15)":"rgba(74,222,128,.12)",border:`1px solid ${t.err?"rgba(248,113,113,.5)":"rgba(74,222,128,.5)"}`,color:t.err?"#fca5a5":"#4ade80",padding:"12px 22px",borderRadius:50,fontWeight:700,fontSize:13,zIndex:9999,whiteSpace:"nowrap",maxWidth:"88vw",...F,animation:"toast .35s cubic-bezier(.34,1.56,.64,1) both",boxShadow:"0 8px 32px rgba(0,0,0,.5)"}}>
     {t.msg}
@@ -205,7 +200,6 @@ function Field({label,value,onChange,type="text",ph="",rows,min,note}){
   </div>;
 }
 
-// ── PLAN EDIT MODAL ──────────────────────────────────────────────
 function PlanModal({plan,onSave,onClose}){
   const blank={id:"p"+Date.now(),label:"",price:0,per:"month",save:"",hot:false,color:C.g,features:[""]};
   const[d,setD]=useState(plan?{...plan,features:[...plan.features]}:blank);
@@ -244,7 +238,6 @@ function PlanModal({plan,onSave,onClose}){
   </Sheet>;
 }
 
-// ── ADD/EDIT FOOD MODAL ──────────────────────────────────────────
 function FoodModal({food,goalId,meal,onSave,onClose}){
   const blank={name:"",desc:"",cal:0,p:0,c:0,f:0,price:0,emoji:"🍱",tag:"New",time:"15m",active:true,stock:true};
   const[d,setD]=useState(food?{...food}:blank);
@@ -271,7 +264,6 @@ function FoodModal({food,goalId,meal,onSave,onClose}){
       <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
         {[["📦 In Stock","stock"],["👁 Visible","active"]].map(([l,k])=><button key={k} onClick={()=>setD(p=>({...p,[k]:!p[k]}))} style={{padding:"12px",borderRadius:12,border:`1.5px solid ${d[k]?C.g:C.b}`,background:d[k]?"rgba(74,222,128,.1)":"transparent",color:d[k]?C.g:C.m,fontWeight:700,fontSize:13,...F}}>{d[k]?`✓ ${l}`:`✗ ${l}`}</button>)}
       </div>
-      {/* Preview */}
       <div style={{background:C.b2,borderRadius:14,padding:"12px 14px",border:`1px solid ${C.b}`}}>
         <div style={{fontSize:9,color:C.m,textTransform:"uppercase",letterSpacing:1.2,marginBottom:8}}>Preview</div>
         <div style={{display:"flex",gap:10,alignItems:"center"}}>
@@ -296,12 +288,11 @@ function FoodModal({food,goalId,meal,onSave,onClose}){
 
 // ═══════════════ MAIN APP ════════════════════════════════════════
 function App(){
-  // ── SCREEN & AUTH ──
   const[scr,setScr]=useState("splash");
   const[authTab,setAuthTab]=useState("login"); 
   const[authErr,setAuthErr]=useState("");
+  const[loading,setLoading]=useState(false);
 
-  // ── AUTH FIELDS ──
   const[rName,setRName]=useState("");
   const[rUsername,setRUsername]=useState("");
   const[rEmail,setREmail]=useState("");
@@ -312,7 +303,6 @@ function App(){
   const[loginPassword,setLoginPassword]=useState("");
   const[fEmail,setFEmail]=useState("");
 
-  // ── USERS & SESSION ──
   const[user,setUser]=useState(null);
   const[users,setUsers]=useState([]);
   const[isAdmin,setIsAdmin]=useState(false);
@@ -321,7 +311,6 @@ function App(){
   const[adminUsername,setAdminUsername]=useState("");
   const[adminPw,setAdminPw]=useState("");
 
-  // ── APP DATA ──
   const[foods,setFoods]=useState(INIT_FOODS);
   const[plans,setPlans]=useState(INIT_PLANS);
   const[planActivations,setPlanActivations]=useState([]);
@@ -332,7 +321,6 @@ function App(){
   const[banner,setBanner]=useState(null);
   const[toast,setToast]=useState(null);
 
-  // ── UI STATE ──
   const[tab,setTab]=useState("home");
   const[adminTab,setAdminTab]=useState("orders");
   const[modal,setModal]=useState(null);
@@ -341,8 +329,6 @@ function App(){
   const[search,setSearch]=useState("");
   const[installPrompt,setInstallPrompt]=useState(null);
   const[showInstall,setShowInstall]=useState(false);
-
-  // ── ONBOARD ──
   const[ob,setOb]=useState({step:0,goal:"",pref:"",age:"",weight:"",height:"",gender:"m"});
 
   // 🔥 FIREBASE INITIALIZATION & SYNC LOGIC (FIXED) 🔥
@@ -377,7 +363,6 @@ function App(){
     };
     initFirebase();
   }, []);
-
 
   const syncToFirebase = async (newFoodsData) => {
     try {
@@ -415,28 +400,27 @@ function App(){
   const aiTips=user?getAITips(user,orders):[];
   const menuItems=(foods[mGoal]?.[mMeal]||[]).filter(i=>i.active&&i.stock&&(!search||i.name.toLowerCase().includes(search.toLowerCase())||i.tag.toLowerCase().includes(search.toLowerCase())));
 
-  // ── AUTH HANDLERS WITH FIREBASE ──
+  // ── AUTH HANDLERS ──
   const handleRegister=()=>{
     setAuthErr("");
     if(!rName || !rUsername || !rEmail || !phone || !rPassword) return setAuthErr("All fields are required");
     if(rPassword !== rConfirm) return setAuthErr("Passwords do not match");
     if(rPassword.length < 6) return setAuthErr("Password must be at least 6 characters");
     if(!rEmail.includes("@")) return setAuthErr("Enter a valid Gmail address");
-    
+    setLoading(true);
     window.firebase.auth().createUserWithEmailAndPassword(rEmail.toLowerCase().trim(), rPassword)
       .then((userCredential) => {
         const nu={ id:userCredential.user.uid, name:rName.trim(), username:rUsername.toLowerCase().trim(), email:rEmail.toLowerCase().trim(), phone, password:rPassword, avatar:"😊", plan:null, planActivatedAt:null, address:"", goal:"general", pref:"all", age:"25", weight:"70", height:"175", gender:"m", joinedAt:new Date().toISOString() };
         setUsers(p=>[...p,nu]); setUser(nu); setScr("onboard"); pop("Account created successfully! 🎉");
+        setLoading(false);
       })
-      .catch((error) => {
-        setAuthErr(error.message);
-      });
+      .catch((error) => { setLoading(false); setAuthErr(error.message); });
   };
 
   const handleLogin=()=>{
     setAuthErr("");
     if(!loginId || !loginPassword) return setAuthErr("Enter Email and Password");
-    
+    setLoading(true);
     window.firebase.auth().signInWithEmailAndPassword(loginId.toLowerCase().trim(), loginPassword)
       .then((userCredential) => {
         let u = users.find(x=>(x.email===loginId.toLowerCase() || x.username===loginId.toLowerCase()));
@@ -445,33 +429,26 @@ function App(){
             setUsers(p=>[...p,u]);
         }
         setUser(u); setMGoal(u.goal||"general"); setScr("app"); pop(`Welcome back, ${u.name.split(" ")[0]}! 👋`);
+        setLoading(false);
       })
-      .catch((error) => {
-        setAuthErr("Invalid credentials. Please try again.");
-      });
+      .catch((error) => { setLoading(false); setAuthErr("Invalid credentials. Please try again."); });
   };
 
-  // 🔥 FIREBASE NATIVE PASSWORD RESET (No Custom OTP Needed) 🔥
   const handleForgotEmail = () => {
     setAuthErr("");
     if(!fEmail.includes("@")) return setAuthErr("Enter a valid registered Gmail address.");
-    
+    setLoading(true);
     window.firebase.auth().sendPasswordResetEmail(fEmail)
       .then(() => {
+        setLoading(false);
         pop("✅ பாஸ்வேர்ட் ரீசெட் செய்ய லிங்க் உங்கள் ஜிமெயிலுக்கு அனுப்பப்பட்டுள்ளது!");
         setAuthTab("login");
       })
-      .catch((error) => {
-        setAuthErr("Error: " + error.message);
-      });
+      .catch((error) => { setLoading(false); setAuthErr("Error: " + error.message); });
   };
 
   const handleAdminLogin=()=>{ const a=admins.find(x=>x.username===adminUsername&&x.password===adminPw&&x.active); if(!a){pop("Wrong admin credentials!",true);return;} setAdminUser(a);setIsAdmin(true);setModal(null);setTab("admin");setAdminUsername("");setAdminPw("");pop(`Welcome ${a.name}! 🎉`); };
-  const handleSignOut=()=>{ 
-    window.firebase.auth().signOut().then(()=>{
-      setScr("auth"); setUser(null); setCart([]); setNotifs([]); setIsAdmin(false); setAdminUser(null); setTab("home"); setLoginId(""); setLoginPassword(""); setAuthTab("login"); setAuthErr(""); 
-    });
-  };
+  const handleSignOut=()=>{ window.firebase.auth().signOut().then(()=>{ setScr("auth"); setUser(null); setCart([]); setNotifs([]); setIsAdmin(false); setAdminUser(null); setTab("home"); setLoginId(""); setLoginPassword(""); setAuthTab("login"); setAuthErr(""); }); };
 
   // ── CART & ORDER ──
   const addToCart=item=>{setCart(p=>{const e=p.find(c=>c.id===item.id);return e?p.map(c=>c.id===item.id?{...c,qty:c.qty+1}:c):[...p,{...item,qty:1}];});pop(`${item.emoji} Added to cart!`);setModal(null);};
@@ -484,13 +461,12 @@ function App(){
   };
   const updateOrder=oid=>{ setOrders(p=>p.map(o=>{ if(o.id===oid&&o.statusIdx<4){const ni=o.statusIdx+1;addNotif(ni,{});return{...o,statusIdx:ni};}return o; }));pop("✅ Status updated!"); };
 
-  // 🔥 FIREBASE MODIFIED FOOD HANDLERS 🔥
   const saveFood = (gId, meal, item) => {
     setFoods(prev => {
       const arr = prev[gId][meal];
       const idx = arr.findIndex(x => x.id === item.id);
       const newFoods = {...prev, [gId]: {...prev[gId], [meal]: idx >= 0 ? arr.map(x => x.id === item.id ? item : x) : [...arr, item]}};
-      syncToFirebase(newFoods); // Sync to DB
+      syncToFirebase(newFoods); 
       return newFoods;
     });
     pop("✅ Item saved live to Firebase!"); setModal(null);
@@ -499,7 +475,7 @@ function App(){
   const deleteFood = (gId, meal, id, name) => {
     setFoods(prev => {
       const newFoods = {...prev, [gId]: {...prev[gId], [meal]: prev[gId][meal].filter(x => x.id !== id)}};
-      syncToFirebase(newFoods); // Sync to DB
+      syncToFirebase(newFoods); 
       return newFoods;
     });
     pop(`🗑 "${name}" deleted from Live DB`);
@@ -508,12 +484,11 @@ function App(){
   const toggleProp = (gId, meal, id, prop) => {
     setFoods(prev => {
       const newFoods = {...prev, [gId]: {...prev[gId], [meal]: prev[gId][meal].map(x => x.id === id ? {...x, [prop]: !x[prop]} : x)}};
-      syncToFirebase(newFoods); // Sync to DB
+      syncToFirebase(newFoods); 
       return newFoods;
     });
   };
 
-  // ── PLAN HANDLERS ──
   const savePlan=p=>{setPlans(prev=>{const idx=prev.findIndex(x=>x.id===p.id);return idx>=0?prev.map(x=>x.id===p.id?p:x):[...prev,p];});pop("✅ Plan saved!");setModal(null);};
   const deletePlan=id=>{setPlans(p=>p.filter(x=>x.id!==id));pop("🗑 Plan deleted");};
   const activatePlan=plan=>{ const act={id:nid(),userId:user.id,userName:user.name,userUsername:user.username||"—",userPhone:user.phone,planId:plan.id,planName:plan.label,planPrice:plan.price,planPer:plan.per,activatedAt:new Date().toISOString(),paymentStatus:"Paid",active:true}; setPlanActivations(p=>[act,...p]); const upd={...user,plan:plan.id,planName:plan.label,planActivatedAt:act.activatedAt}; setUser(upd);setUsers(p=>p.map(u=>u.id===user.id?upd:u)); pop(`✅ ${plan.label} plan activated!`);setModal(null); };
@@ -535,7 +510,7 @@ function App(){
   </div>;
 
   // ─────────────────────────────────────────────────────────────
-  // AUTH SCREEN (WITH FIREBASE FORGOT PASSWORD LINK)
+  // AUTH SCREEN 
   // ─────────────────────────────────────────────────────────────
   if(scr==="auth") return <div style={{minHeight:"100vh",background:C.bg,display:"flex",flexDirection:"column",...F}}>
     {toast&&<Toast t={toast}/>}
@@ -546,7 +521,7 @@ function App(){
           {authTab==="forgot"?"Reset Password 🔑":authTab==="login"?"Sign In 👋":"Create Account 🚀"}
         </div>
         <div style={{color:C.m,fontSize:14,marginTop:6}}>
-          {authTab==="forgot"?"Securely reset your password":authTab==="login"?"Login with Username or Email":"Join the Cosfit family today"}
+          {authTab==="forgot"?"Securely reset your password":authTab==="login"?"Login with Username or Gmail":"Join the Cosfit family today"}
         </div>
       </div>
 
@@ -562,7 +537,7 @@ function App(){
         <div style={{textAlign:"right",marginTop:-8}}>
           <span style={{color:C.g,fontSize:12,fontWeight:700,cursor:"pointer"}} onClick={()=>{setAuthTab("forgot");setAuthErr("");}}>Forgot Password?</span>
         </div>
-        <button onClick={handleLogin} style={{padding:"18px",borderRadius:16,border:"none",background:C.gG,color:"#060c08",...N,fontSize:17,fontWeight:900,boxShadow:"0 8px 36px rgba(74,222,128,.4)",marginTop:4}}>Secure Login →</button>
+        <button onClick={handleLogin} disabled={loading} style={{padding:"18px",borderRadius:16,border:"none",background:C.gG,color:"#060c08",...N,fontSize:17,fontWeight:900,boxShadow:"0 8px 36px rgba(74,222,128,.4)",marginTop:4}}>{loading?"Logging in...":"Secure Login →"}</button>
         <div style={{textAlign:"center",padding:"16px 0",borderTop:`1px solid ${C.b}`,marginTop:8}}>
           <div style={{color:C.m,fontSize:12,marginBottom:8}}>Admin? Access Control Panel</div>
           <button onClick={()=>setModal({type:"adminLogin"})} style={{background:"rgba(96,165,250,.1)",border:"1px solid rgba(96,165,250,.3)",color:C.blue,padding:"10px 24px",borderRadius:20,fontWeight:700,fontSize:13,...F}}>⚙️ Admin Login</button>
@@ -576,12 +551,12 @@ function App(){
         <Field label="Mobile Number *" value={phone} onChange={e=>setPhone(e.replace(/\D/g,""))} type="tel" ph="98765 43210"/>
         <Field label="Password *" value={rPassword} onChange={setRPassword} type="password" ph="Create a strong password"/>
         <Field label="Confirm Password *" value={rConfirm} onChange={setRConfirm} type="password" ph="Confirm your password"/>
-        <button onClick={handleRegister} style={{padding:"18px",borderRadius:16,border:"none",background:C.gG,color:"#060c08",...N,fontSize:17,fontWeight:900,boxShadow:"0 8px 36px rgba(74,222,128,.4)",marginTop:4}}>Create Account →</button>
+        <button onClick={handleRegister} disabled={loading} style={{padding:"18px",borderRadius:16,border:"none",background:C.gG,color:"#060c08",...N,fontSize:17,fontWeight:900,boxShadow:"0 8px 36px rgba(74,222,128,.4)",marginTop:4}}>{loading?"Creating...":"Create Account →"}</button>
       </div>}
 
       {authTab==="forgot"&&<div style={{display:"flex",flexDirection:"column",gap:16,animation:"up .4s both"}}>
         <Field label="Registered Gmail Address *" value={fEmail} onChange={setFEmail} type="email" ph="Enter your registered Gmail"/>
-        <button onClick={handleForgotEmail} style={{padding:"18px",borderRadius:16,border:"none",background:C.gG,color:"#060c08",...N,fontSize:16,fontWeight:900,boxShadow:"0 8px 36px rgba(74,222,128,.4)"}}>Send Password Reset Link</button>
+        <button onClick={handleForgotEmail} disabled={loading} style={{padding:"18px",borderRadius:16,border:"none",background:C.gG,color:"#060c08",...N,fontSize:16,fontWeight:900,boxShadow:"0 8px 36px rgba(74,222,128,.4)"}}>{loading?"Sending...":"Send Password Reset Link"}</button>
         <button onClick={()=>{setAuthTab("login");setAuthErr("");}} style={{padding:"14px",borderRadius:16,border:`1.5px solid ${C.b}`,background:"transparent",color:C.m,...F,fontWeight:700,fontSize:14}}>← Back to Login</button>
       </div>}
     </div>
@@ -1227,189 +1202,4 @@ function App(){
 
       {adminTab==="foods"&&<div style={{padding:"0 22px"}}>
         <div style={{background:"rgba(96,165,250,.08)",border:"1px solid rgba(96,165,250,.2)",borderRadius:12,padding:"11px 14px",marginBottom:14,fontSize:12,color:C.blue}}>
-          💡 <b>➕</b> Add · <b>✏️</b> Edit · <b>👁/🙈</b> Show/Hide · <b>📦/🚫</b> Stock · <b>🗑</b> Delete
-        </div>
-        {GOALS.map(goal=><div key={goal.id} style={{marginBottom:22}}>
-          <div style={{...N,color:C.w,fontWeight:900,fontSize:14,marginBottom:10,display:"flex",alignItems:"center",gap:8}}>
-            <span>{goal.icon}</span><span>{goal.label}</span>
-            <span style={{color:C.m,fontSize:11,fontWeight:600,marginLeft:"auto"}}>{Object.values(foods[goal.id]||{}).flat().length} items</span>
-          </div>
-          {MEALS.map(meal=><div key={meal} style={{marginBottom:12}}>
-            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8}}>
-              <div style={{fontSize:10,fontWeight:700,color:C.m,textTransform:"uppercase",letterSpacing:1.2}}>{MIC[meal]} {meal} ({(foods[goal.id]?.[meal]||[]).length})</div>
-              <button onClick={()=>setModal({type:"editFood",gId:goal.id,meal,food:null})} style={{background:"rgba(74,222,128,.1)",border:"1px solid rgba(74,222,128,.25)",color:C.g,padding:"5px 14px",borderRadius:20,fontWeight:700,fontSize:11,...F}}>+ Add</button>
-            </div>
-            {(foods[goal.id]?.[meal]||[]).length===0&&<div style={{background:"rgba(255,255,255,.02)",border:`1px dashed ${C.b}`,borderRadius:12,padding:"12px",textAlign:"center",color:C.m,fontSize:12}}>No items · Tap + Add</div>}
-            {(foods[goal.id]?.[meal]||[]).map(item=><div key={item.id} style={{background:C.card,borderRadius:13,padding:"10px 12px",marginBottom:7,border:`1px solid ${!item.stock?"rgba(248,113,113,.25)":!item.active?"rgba(255,255,255,.04)":C.b}`,display:"flex",alignItems:"center",gap:9,opacity:!item.active?0.45:1}}>
-              <span style={{fontSize:20,flexShrink:0}}>{item.emoji}</span>
-              <div style={{flex:1,minWidth:0}}>
-                <div style={{...N,fontWeight:700,color:C.w,fontSize:13,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{item.name}</div>
-                <div style={{fontSize:10,color:C.m}}>₹{item.price} · {item.cal}kcal · P:{item.p}g</div>
-                {!item.stock&&<div style={{fontSize:9,fontWeight:800,color:C.r,marginTop:2}}>● OUT OF STOCK</div>}
-              </div>
-              <div style={{display:"flex",gap:4,flexShrink:0}}>
-                <button onClick={()=>toggleProp(goal.id,meal,item.id,"stock")} style={{background:item.stock?"rgba(74,222,128,.12)":"rgba(248,113,113,.12)",border:"none",color:item.stock?C.g:C.r,width:28,height:28,borderRadius:8,fontSize:12}}>{item.stock?"📦":"🚫"}</button>
-                <button onClick={()=>toggleProp(goal.id,meal,item.id,"active")} style={{background:item.active?"rgba(74,222,128,.12)":"rgba(100,100,100,.1)",border:"none",color:item.active?C.g:C.m,width:28,height:28,borderRadius:8,fontSize:13}}>{item.active?"👁":"🙈"}</button>
-                <button onClick={()=>setModal({type:"editFood",gId:goal.id,meal,food:item})} style={{background:"rgba(96,165,250,.12)",border:"none",color:C.blue,width:28,height:28,borderRadius:8,fontSize:13}}>✏️</button>
-                <button onClick={()=>deleteFood(goal.id,meal,item.id,item.name)} style={{background:"rgba(248,113,113,.12)",border:"none",color:C.r,width:28,height:28,borderRadius:8,fontSize:12}}>🗑</button>
-              </div>
-            </div>)}
-          </div>)}
-        </div>)}
-      </div>}
-
-      {adminTab==="plans"&&<div style={{padding:"0 22px"}}>
-        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14}}>
-          <div style={{color:C.m,fontSize:12}}>Manage subscription plans</div>
-          <button onClick={()=>setModal({type:"editPlan",plan:null})} style={{background:C.gG,color:"#060c08",border:"none",padding:"8px 18px",borderRadius:20,fontWeight:800,fontSize:12,...N}}>+ New Plan</button>
-        </div>
-        {plans.map(plan=><div key={plan.id} style={{background:plan.hot?"rgba(74,222,128,.07)":C.card,border:`1.5px solid ${plan.hot?C.g:C.b}`,borderRadius:18,padding:"18px",marginBottom:14,position:"relative"}}>
-          {plan.hot&&<div style={{position:"absolute",top:-10,right:16,background:C.gG,color:"#060c08",fontSize:9,fontWeight:900,padding:"3px 12px",borderRadius:99}}>POPULAR</div>}
-          <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:12}}>
-            <div>
-              <div style={{...N,color:C.w,fontWeight:900,fontSize:18}}>{plan.label}</div>
-              <div style={{...N,color:C.o,fontWeight:900,fontSize:20,marginTop:4}}>₹{plan.price}<span style={{color:C.m,fontSize:13,fontWeight:600}}>/{plan.per}</span></div>
-              {plan.save&&<div style={{color:C.g,fontSize:12,fontWeight:700,marginTop:2}}>{plan.save}</div>}
-              <div style={{color:C.m,fontSize:11,marginTop:4}}>Activations: <span style={{color:C.w,fontWeight:700}}>{planActivations.filter(a=>a.planId===plan.id&&a.active).length}</span></div>
-            </div>
-            <div style={{display:"flex",flexDirection:"column",gap:8}}>
-              <button onClick={()=>setModal({type:"editPlan",plan})} style={{background:C.blue,color:"#fff",border:"none",padding:"9px 18px",borderRadius:12,fontWeight:700,fontSize:12,...N}}>✏️ Edit</button>
-              <button onClick={()=>deletePlan(plan.id)} style={{background:"rgba(248,113,113,.12)",border:"none",color:C.r,padding:"9px 18px",borderRadius:12,fontWeight:700,fontSize:12,...F}}>🗑 Delete</button>
-            </div>
-          </div>
-          {plan.features.map((f,i)=><div key={i} style={{display:"flex",gap:8,alignItems:"center",marginBottom:6}}>
-            <span style={{color:C.g,fontSize:12}}>✓</span>
-            <span style={{color:C.m,fontSize:12}}>{f}</span>
-          </div>)}
-        </div>)}
-      </div>}
-
-      {adminTab==="activations"&&<div style={{padding:"0 22px"}}>
-        <div style={{...N,color:C.w,fontWeight:800,fontSize:15,marginBottom:14}}>🏅 Plan Activations ({planActivations.length})</div>
-        {planActivations.length===0?<div style={{textAlign:"center",padding:"40px 0"}}><div style={{fontSize:52}}>🏅</div><div style={{color:C.m,fontWeight:700,marginTop:12,...N}}>No plan activations yet</div></div>:
-        planActivations.map(act=><div key={act.id} style={{background:C.card,borderRadius:18,padding:"16px",marginBottom:12,border:`1px solid rgba(74,222,128,.25)`}}>
-          <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:10}}>
-            <div>
-              <div style={{...N,color:C.g,fontWeight:900,fontSize:15}}>⚡ {act.planName}</div>
-              <div style={{color:C.o,fontSize:13,fontWeight:700,marginTop:2}}>₹{act.planPrice}/{act.planPer}</div>
-            </div>
-            <div style={{background:"rgba(74,222,128,.12)",border:"1px solid rgba(74,222,128,.3)",borderRadius:99,padding:"3px 12px",fontSize:11,fontWeight:700,color:C.g}}>{act.paymentStatus}</div>
-          </div>
-          {[["Customer",act.userName],["Username","@"+act.userUsername],["Phone","+91 "+act.userPhone],["Activated",fmt(act.activatedAt)]].map(([l,v])=><div key={l} style={{display:"flex",justifyContent:"space-between",marginBottom:6,fontSize:12}}>
-            <span style={{color:C.m}}>{l}</span>
-            <span style={{color:C.w,fontWeight:600,...N}}>{v}</span>
-          </div>)}
-        </div>)}
-      </div>}
-
-      {adminTab==="customers"&&<div style={{padding:"0 22px"}}>
-        <div style={{...N,color:C.w,fontWeight:800,fontSize:15,marginBottom:14}}>👥 Customers ({users.length})</div>
-        {users.length===0?<div style={{textAlign:"center",padding:"40px 0"}}><div style={{fontSize:52}}>👥</div><div style={{color:C.m,fontWeight:700,marginTop:12,...N}}>No customers yet</div></div>:
-        users.map(u=><div key={u.id} style={{background:C.card,borderRadius:18,padding:"16px",marginBottom:12,border:`1px solid ${C.b}`}}>
-          <div style={{display:"flex",gap:12,alignItems:"flex-start"}}>
-            <div style={{width:46,height:46,background:C.gG,borderRadius:"50%",display:"flex",alignItems:"center",justifyContent:"center",fontSize:22,flexShrink:0}}>{u.avatar||"😊"}</div>
-            <div style={{flex:1}}>
-              <div style={{...N,color:C.w,fontWeight:800,fontSize:14}}>{u.name}</div>
-              <div style={{color:C.m,fontSize:12,marginTop:2}}>@{u.username||"—"} · +91 {u.phone}</div>
-              <div style={{display:"flex",gap:8,marginTop:8,flexWrap:"wrap"}}>
-                <span style={{background:"rgba(74,222,128,.1)",color:C.g,fontSize:10,fontWeight:700,padding:"3px 10px",borderRadius:99}}>{GOALS.find(g=>g.id===u.goal)?.label||"Not set"}</span>
-                {u.plan&&<span style={{background:"rgba(251,191,36,.1)",color:C.gold,fontSize:10,fontWeight:700,padding:"3px 10px",borderRadius:99}}>⚡ {plans.find(p=>p.id===u.plan)?.label||""} Pro</span>}
-                <span style={{background:"rgba(96,165,250,.1)",color:C.blue,fontSize:10,fontWeight:700,padding:"3px 10px",borderRadius:99}}>{orders.filter(o=>o.userId===u.id).length} orders</span>
-              </div>
-              {u.address&&<div style={{color:C.m,fontSize:11,marginTop:6}}>📍 {u.address}</div>}
-            </div>
-          </div>
-        </div>)}
-      </div>}
-
-      {adminTab==="settings"&&<div style={{padding:"0 22px"}}>
-        <div style={{background:C.card,borderRadius:20,padding:18,border:`1px solid ${C.b}`,marginBottom:14}}>
-          <div style={{...N,color:C.w,fontWeight:800,fontSize:15,marginBottom:18}}>🚚 Delivery & Pricing</div>
-          <div style={{display:"flex",flexDirection:"column",gap:14}}>
-            {[["Delivery Charge (₹)","deliveryCharge","Charged when below free threshold"],["Free Delivery Min (₹)","freeDeliveryMin","Orders above this = free delivery"],["Platform Fee (₹)","platformFee","Fixed fee per order"],["GST (%)","gst","Tax percentage on subtotal"]].map(([label,key,hint])=><div key={key}>
-              <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8}}>
-                <div>
-                  <div style={{color:C.w,fontWeight:700,fontSize:13,...N}}>{label}</div>
-                  <div style={{color:C.m,fontSize:11,marginTop:2}}>{hint}</div>
-                </div>
-                <div style={{...N,color:C.g,fontWeight:900,fontSize:16}}>{key==="gst"?`${settings[key]}%`:`₹${settings[key]}`}</div>
-              </div>
-              <input type="number" value={settings[key]} onChange={e=>setSettings(p=>({...p,[key]:+e.target.value}))} min={0} style={{width:"100%",padding:"12px 16px",background:C.surf,border:`1.5px solid ${C.b}`,borderRadius:12,color:C.w,fontSize:14,...F,boxSizing:"border-box"}}/>
-            </div>)}
-          </div>
-          <div style={{background:"rgba(74,222,128,.07)",border:"1px solid rgba(74,222,128,.2)",borderRadius:14,padding:"14px 16px",marginTop:16,marginBottom:14}}>
-            <div style={{...N,color:C.g,fontWeight:800,fontSize:13,marginBottom:10}}>Preview for ₹300 order:</div>
-            {[["Subtotal","₹300"],["Delivery",300<settings.freeDeliveryMin?`₹${settings.deliveryCharge}`:"🎁 Free"],["GST",`₹${Math.round(300*settings.gst/100)}`],["Platform Fee",`₹${settings.platformFee}`],["Total",`₹${300+(300<settings.freeDeliveryMin?settings.deliveryCharge:0)+Math.round(300*settings.gst/100)+settings.platformFee}`]].map(([l,v])=><div key={l} style={{display:"flex",justifyContent:"space-between",fontSize:12,marginBottom:5}}>
-              <span style={{color:C.m}}>{l}</span><span style={{color:C.w,fontWeight:600}}>{v}</span>
-            </div>)}
-          </div>
-          <button onClick={()=>pop("✅ Settings saved!")} style={{width:"100%",background:C.gG,color:"#060c08",border:"none",padding:"14px",borderRadius:14,fontWeight:800,fontSize:14,...N}}>Save Settings ✓</button>
-        </div>
-
-        <div style={{background:C.card,borderRadius:20,padding:18,border:`1px solid ${C.b}`,marginBottom:14}}>
-          <div style={{...N,color:C.w,fontWeight:800,fontSize:15,marginBottom:14}}>👥 Admin Accounts (Authorized Only)</div>
-          {admins.map(a=><div key={a.id} style={{background:C.surf,borderRadius:14,padding:"14px",marginBottom:10,border:`1px solid ${a.active?"rgba(74,222,128,.3)":C.b}`,opacity:a.active?1:.5}}>
-            <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start"}}>
-              <div>
-                <div style={{...N,color:C.w,fontWeight:800,fontSize:14}}>{a.name}</div>
-                <div style={{color:C.g,fontSize:11,fontWeight:700,marginTop:2}}>{a.role}</div>
-                <div style={{color:C.m,fontSize:11,marginTop:2}}>@{a.username}</div>
-              </div>
-              <button onClick={()=>setAdmins(p=>p.map(x=>x.id===a.id?{...x,active:!x.active}:x))} style={{background:a.active?"rgba(74,222,128,.12)":"rgba(248,113,113,.12)",border:"none",color:a.active?C.g:C.r,padding:"8px 14px",borderRadius:20,fontWeight:700,fontSize:11,...F}}>
-                {a.active?"✓ Active":"✗ Inactive"}
-              </button>
-            </div>
-          </div>)}
-        </div>
-      </div>}
-
-      {adminTab==="stats"&&<div style={{padding:"0 22px"}}>
-        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12,marginBottom:18}}>
-          {[["📦","Orders",orders.length,C.g],["💰","Revenue","₹"+orders.reduce((s,o)=>s+o.total,0),C.o],["👥","Customers",users.length,C.pur],["🏅","Activations",planActivations.length,C.gold],["🍽","Items",allFlat.length,C.blue],["✅","Active",allFlat.filter(i=>i.active&&i.stock).length,C.g]].map(([ic,l,v,col])=><div key={l} style={{background:C.card,borderRadius:18,padding:"16px",border:`1px solid ${C.b}`}}>
-            <div style={{fontSize:22}}>{ic}</div>
-            <div style={{...N,color:col,fontSize:24,fontWeight:900,marginTop:6}}>{v}</div>
-            <div style={{color:C.m,fontSize:11,marginTop:3}}>{l}</div>
-          </div>)}
-        </div>
-        <div style={{background:C.card,borderRadius:18,padding:18,border:`1px solid ${C.b}`,marginBottom:14}}>
-          <div style={{...N,color:C.w,fontWeight:800,marginBottom:14}}>💳 Revenue Breakdown</div>
-          {[["Total Revenue","₹"+orders.reduce((s,o)=>s+o.total,0)],["Avg Order Value","₹"+(orders.length?Math.round(orders.reduce((s,o)=>s+o.total,0)/orders.length):0)],["Pro Plan Revenue","₹"+planActivations.reduce((s,a)=>s+a.planPrice,0)],["Delivery Collected","₹"+(orders.reduce((s,o)=>s+o.delivery,0))],["Platform Fees","₹"+(orders.reduce((s,o)=>s+o.platformFee,0))]].map(([l,v])=><div key={l} style={{display:"flex",justifyContent:"space-between",marginBottom:10,fontSize:13}}>
-            <span style={{color:C.m}}>{l}</span>
-            <span style={{color:C.w,fontWeight:700}}>{v}</span>
-          </div>)}
-        </div>
-        <div style={{background:C.card,borderRadius:18,padding:18,border:`1px solid ${C.b}`}}>
-          <div style={{...N,color:C.w,fontWeight:800,marginBottom:14}}>Goal Distribution</div>
-          {GOALS.map(g=>{const cnt=Object.values(foods[g.id]||{}).flat().length;const tot=allFlat.length||1;return <div key={g.id} style={{marginBottom:14}}>
-            <div style={{display:"flex",justifyContent:"space-between",fontSize:12,marginBottom:6}}>
-              <span style={{color:C.m}}>{g.icon} {g.label}</span>
-              <span style={{color:C.w,fontWeight:700}}>{cnt} items</span>
-            </div>
-            <div style={{background:C.b,borderRadius:99,height:6,overflow:"hidden"}}>
-              <div style={{background:C.gG,height:"100%",width:`${Math.round(cnt/tot*100)}%`,borderRadius:99}}/>
-            </div>
-          </div>;})}
-        </div>
-      </div>}
-    </div>}
-
-    {/* ══ BOTTOM NAV ══════════════════════════════════════════════ */}
-    <div style={{position:"fixed",bottom:0,left:"50%",transform:"translateX(-50%)",width:"100%",maxWidth:430,background:"rgba(6,12,8,.97)",backdropFilter:"blur(24px)",borderTop:`1px solid ${C.b}`,display:"flex",padding:"10px 0 24px",zIndex:200}}>
-      {NavBtn("home","🏠","Home",0)}
-      {NavBtn("menu","🍽","Menu",0)}
-      {NavBtn("cart","🛒","Cart",cartCount)}
-      {NavBtn("track","🛵","Track",liveOrders)}
-      {NavBtn("notifs","🔔","Alerts",unread)}
-    </div>
-  </div>;
-}
-
-ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
-</script>
-<script>
-if("serviceWorker"in navigator&&location.hostname.includes("github.io")){
-  navigator.serviceWorker.register("sw.js").then(()=>console.log("✅ SW")).catch(e=>console.log("SW:",e));
-}
-</script>
-</body>
-</html>
+          💡 <b>➕</b> Add · <b>✏️</b> Edit · <b>👁/🙈</b> Show/Hide
