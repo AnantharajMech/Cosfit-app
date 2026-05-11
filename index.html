@@ -64,7 +64,6 @@ const C={
 
 const COMPANY={name:"Coscoom Creative Tech Solutions",brand:"Idappadi Creators",email:"anantharajeinstein@gmail.com",phone:"8778148899",addr:"21/AJ,68,New Street,Kavandampatti,Idappadi,Salem-637101",state:"Tamilnadu"};
 
-// ── INITIAL DATA (MODIFIED ADMINS) ───────────────────────────────
 const INIT_ADMINS=[
   {id:1,name:"Anantharaj",username:"Anantharajmech",role:"Super Admin",password:"ananthaarthi160893",active:true},
   {id:2,name:"Aarthi",username:"Aarthimech",role:"Admin",password:"aarthiananth160893",active:true},
@@ -308,22 +307,10 @@ function FoodModal({food,goalId,meal,onSave,onClose}){
 function App(){
   // ── SCREEN & AUTH ──
   const[scr,setScr]=useState("splash");
-  const[authTab,setAuthTab]=useState("login"); 
   const[authStep,setAuthStep]=useState("email"); 
   const[otpArr,setOtpArr]=useState(["","","","",""]);
-  const[authErr,setAuthErr]=useState("");
-
-  // ── AUTH FIELDS ──
-  const[rName,setRName]=useState("");
-  const[rUsername,setRUsername]=useState("");
-  const[rEmail,setREmail]=useState("");
-  const[phone,setPhone]=useState("");
-  const[rPassword,setRPassword]=useState("");
-  const[rConfirm,setRConfirm]=useState("");
   const[loginId,setLoginId]=useState("");
-  const[loginPassword,setLoginPassword]=useState("");
-  const[fEmail,setFEmail]=useState("");
-  const[fNewPass,setFNewPass]=useState("");
+  const[loading,setLoading]=useState(false);
 
   // ── USERS & SESSION ──
   const[user,setUser]=useState(null);
@@ -374,7 +361,7 @@ function App(){
         }
         
         const db = window.firebase.firestore();
-        window.fbDB = db; // Global access for sync
+        window.fbDB = db; 
         
         const docRef = db.collection("app_data").doc("foods_menu");
         const snap = await docRef.get();
@@ -382,7 +369,6 @@ function App(){
         if (snap.exists) {
           setFoods(snap.data());
         } else {
-          // Upload INIT_FOODS if database is empty
           await docRef.set(INIT_FOODS);
         }
       } catch (err) { console.error("Firebase Error: ", err); }
@@ -390,7 +376,6 @@ function App(){
     initFirebase();
   }, []);
 
-  // Helper to sync modified foods to Firebase instantly
   const syncToFirebase = async (newFoodsData) => {
     try {
       if (window.fbDB) {
@@ -427,50 +412,41 @@ function App(){
   const aiTips=user?getAITips(user,orders):[];
   const menuItems=(foods[mGoal]?.[mMeal]||[]).filter(i=>i.active&&i.stock&&(!search||i.name.toLowerCase().includes(search.toLowerCase())||i.tag.toLowerCase().includes(search.toLowerCase())));
 
-  // ── AUTH HANDLERS WITH FIREBASE ──
-  const handleRegister=()=>{
-    setAuthErr("");
-    if(!rName || !rUsername || !rEmail || !phone || !rPassword) return setAuthErr("All fields are required");
-    if(rPassword !== rConfirm) return setAuthErr("Passwords do not match");
-    if(rPassword.length < 6) return setAuthErr("Password must be at least 6 characters");
-    if(!rEmail.includes("@")) return setAuthErr("Enter a valid email address");
-    
-    window.firebase.auth().createUserWithEmailAndPassword(rEmail.toLowerCase().trim(), rPassword)
-      .then((userCredential) => {
-        const nu={ id:userCredential.user.uid, name:rName.trim(), username:rUsername.toLowerCase().trim(), email:rEmail.toLowerCase().trim(), phone, password:rPassword, avatar:"😊", plan:null, planActivatedAt:null, address:"", goal:"general", pref:"all", age:"25", weight:"70", height:"175", gender:"m", joinedAt:new Date().toISOString() };
-        setUsers(p=>[...p,nu]); setUser(nu); setScr("onboard"); pop("Account created successfully! 🎉");
-      })
-      .catch((error) => {
-        setAuthErr(error.message);
-      });
+  // 🔥 GMAIL OTP லாஜிக் 🔥
+  const handleSendOTP = () => {
+    if (!loginId.includes("@")) return pop("சரியான ஈமெயில் முகவரியை உள்ளிடவும்!", true);
+    setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
+      setAuthStep("otp");
+      pop("OTP உங்கள் மின்னஞ்சலுக்கு அனுப்பப்பட்டது! (டெமோ: 12345)");
+    }, 1500);
   };
 
-  const handleLogin=()=>{
-    setAuthErr("");
-    if(!loginId || !loginPassword) return setAuthErr("Enter Email and Password");
-    
-    window.firebase.auth().signInWithEmailAndPassword(loginId.toLowerCase().trim(), loginPassword)
-      .then((userCredential) => {
-        let u = users.find(x=>(x.email===loginId.toLowerCase() || x.username===loginId.toLowerCase()));
-        if(!u) {
-            u = { id:userCredential.user.uid, name:loginId.split("@")[0], email:loginId.toLowerCase(), username:loginId.split("@")[0], phone:"-", password:loginPassword, avatar:"😊", plan:null, address:"", goal:"general", pref:"all", age:"25", weight:"70", height:"175", gender:"m" };
-            setUsers(p=>[...p,u]);
-        }
-        setUser(u); setMGoal(u.goal||"general"); setScr("app"); pop(`Welcome back, ${u.name.split(" ")[0]}! 👋`);
-      })
-      .catch((error) => {
-        setAuthErr("Invalid credentials. Please try again.");
-      });
+  const handleVerifyOTP = () => {
+    if (otpArr.join("") === "12345") {
+      setLoading(true);
+      let u = users.find(x => x.email === loginId.toLowerCase());
+      if (!u) {
+          u = { id: Date.now(), name: loginId.split("@")[0], email: loginId.toLowerCase(), username: loginId.split("@")[0], phone: "-", avatar: "😊", plan: null, address: "", goal: "general", pref: "all", age: "25", weight: "70", height: "175", gender: "m" };
+          setUsers(p => [...p, u]);
+          setUser(u);
+          setScr("onboard");
+      } else {
+          setUser(u);
+          setMGoal(u.goal || "general");
+          setScr("app");
+      }
+      pop("வெற்றிகரமாக லாகின் செய்யப்பட்டது! 🎉");
+      setLoading(false);
+    } else {
+      pop("தவறான OTP! மீண்டும் முயற்சிக்கவும்.", true);
+    }
   };
 
-  const handleForgotEmail=()=>{ setAuthErr(""); if(!fEmail.includes("@")) return setAuthErr("Enter a valid email"); if(!users.find(x=>x.email===fEmail.toLowerCase())) return setAuthErr("No account found"); setOtpArr(["","","","",""]); setAuthStep("otp"); pop("OTP sent to your email!"); };
-  const handleForgotOTP=()=>{ setAuthErr(""); if(otpArr.join("")!=="12345") return setAuthErr("Wrong OTP. Try 12345 for demo"); setAuthStep("reset"); pop("OTP Verified!"); };
-  const handleForgotReset=()=>{ setAuthErr(""); if(fNewPass.length<6) return setAuthErr("Password must be at least 6 characters"); setUsers(p=>p.map(u=>u.email===fEmail.toLowerCase()?{...u,password:fNewPass}:u)); setAuthTab("login"); setAuthStep("email"); pop("Password updated successfully!"); };
   const handleAdminLogin=()=>{ const a=admins.find(x=>x.username===adminUsername&&x.password===adminPw&&x.active); if(!a){pop("Wrong admin credentials!",true);return;} setAdminUser(a);setIsAdmin(true);setModal(null);setTab("admin");setAdminUsername("");setAdminPw("");pop(`Welcome ${a.name}! 🎉`); };
   const handleSignOut=()=>{ 
-    window.firebase.auth().signOut().then(()=>{
-      setScr("auth"); setUser(null); setCart([]); setNotifs([]); setIsAdmin(false); setAdminUser(null); setTab("home"); setLoginId(""); setLoginPassword(""); setAuthTab("login"); setAuthErr(""); 
-    });
+      setScr("auth"); setUser(null); setCart([]); setNotifs([]); setIsAdmin(false); setAdminUser(null); setTab("home"); setLoginId(""); setAuthStep("email"); 
   };
 
   // ── CART & ORDER ──
@@ -490,7 +466,7 @@ function App(){
       const arr = prev[gId][meal];
       const idx = arr.findIndex(x => x.id === item.id);
       const newFoods = {...prev, [gId]: {...prev[gId], [meal]: idx >= 0 ? arr.map(x => x.id === item.id ? item : x) : [...arr, item]}};
-      syncToFirebase(newFoods); // Sync to DB
+      syncToFirebase(newFoods); 
       return newFoods;
     });
     pop("✅ Item saved live to Firebase!"); setModal(null);
@@ -499,7 +475,7 @@ function App(){
   const deleteFood = (gId, meal, id, name) => {
     setFoods(prev => {
       const newFoods = {...prev, [gId]: {...prev[gId], [meal]: prev[gId][meal].filter(x => x.id !== id)}};
-      syncToFirebase(newFoods); // Sync to DB
+      syncToFirebase(newFoods); 
       return newFoods;
     });
     pop(`🗑 "${name}" deleted from Live DB`);
@@ -508,7 +484,7 @@ function App(){
   const toggleProp = (gId, meal, id, prop) => {
     setFoods(prev => {
       const newFoods = {...prev, [gId]: {...prev[gId], [meal]: prev[gId][meal].map(x => x.id === id ? {...x, [prop]: !x[prop]} : x)}};
-      syncToFirebase(newFoods); // Sync to DB
+      syncToFirebase(newFoods); 
       return newFoods;
     });
   };
@@ -535,7 +511,7 @@ function App(){
   </div>;
 
   // ─────────────────────────────────────────────────────────────
-  // AUTH SCREEN
+  // AUTH SCREEN (MODIFIED FOR OTP)
   // ─────────────────────────────────────────────────────────────
   if(scr==="auth") return <div style={{minHeight:"100vh",background:C.bg,display:"flex",flexDirection:"column",...F}}>
     {toast&&<Toast t={toast}/>}
@@ -543,48 +519,29 @@ function App(){
       <div style={{marginBottom:32,animation:"up .5s both"}}>
         <div style={{width:64,height:64,background:C.gG,borderRadius:20,display:"flex",alignItems:"center",justifyContent:"center",fontSize:30,boxShadow:"0 0 32px rgba(74,222,128,.3)"}}>🥗</div>
         <div style={{...N,color:C.w,fontSize:32,fontWeight:900,marginTop:16,lineHeight:1.2,letterSpacing:-.8}}>
-          {authTab==="forgot"?"Reset Password 🔑":authTab==="login"?"Sign In 👋":"Create Account 🚀"}
+          OTP Login 👋
         </div>
-        <div style={{color:C.m,fontSize:14,marginTop:6}}>
-          {authTab==="forgot"?"Securely reset your password":authTab==="login"?"Login with Username or Email":"Join the Cosfit family today"}
-        </div>
+        <div style={{color:C.m,fontSize:14,marginTop:6}}>பாஸ்வேர்ட் தேவையில்லை! ஈமெயில் மட்டும் போதும்.</div>
       </div>
 
-      {authTab!=="forgot"&&<div style={{display:"flex",background:C.card,borderRadius:16,padding:4,gap:4,marginBottom:24}}>
-        {[["login","Sign In"],["register","Create Account"]].map(([k,l])=><button key={k} onClick={()=>{setAuthTab(k);setAuthErr("");}} style={{flex:1,padding:"12px",borderRadius:12,border:"none",background:authTab===k?C.gG:"transparent",color:authTab===k?"#060c08":C.m,fontWeight:800,fontSize:14,...N,transition:"all .2s"}}>{l}</button>)}
-      </div>}
-
-      {authErr&&<div style={{background:"rgba(248,113,113,.1)",border:"1px solid rgba(248,113,113,.3)",borderRadius:13,padding:"12px 16px",marginBottom:18,color:C.r,fontSize:13,fontWeight:600,display:"flex",gap:8,alignItems:"center",animation:"up .3s both"}}>⚠️ {authErr}</div>}
-
-      {authTab==="login"&&<div style={{display:"flex",flexDirection:"column",gap:16,animation:"up .4s both"}}>
-        <Field label="Username or Email *" value={loginId} onChange={setLoginId} ph="e.g. arjun or arjun@gmail.com"/>
-        <Field label="Password *" value={loginPassword} onChange={setLoginPassword} type="password" ph="Enter your password"/>
-        <div style={{textAlign:"right",marginTop:-8}}>
-          <span style={{color:C.g,fontSize:12,fontWeight:700,cursor:"pointer"}} onClick={()=>{setAuthTab("forgot");setAuthStep("email");setAuthErr("");}}>Forgot Password?</span>
+      {authStep === "email" ? (
+        <div style={{display:"flex",flexDirection:"column",gap:16,animation:"up .4s both"}}>
+            <Field label="Gmail Address *" value={loginId} onChange={setLoginId} type="email" ph="e.g. arjun@gmail.com"/>
+            <button onClick={handleSendOTP} disabled={loading} style={{padding:"18px",borderRadius:16,border:"none",background:C.gG,color:"#060c08",...N,fontSize:17,fontWeight:900,boxShadow:"0 8px 36px rgba(74,222,128,0.4)",marginTop:4}}>{loading ? "அனுப்பப்படுகிறது..." : "OTP பெறுக →"}</button>
+            <div style={{textAlign:"center",padding:"16px 0",borderTop:`1px solid ${C.b}`,marginTop:8}}>
+              <div style={{color:C.m,fontSize:12,marginBottom:8}}>Admin? Access Control Panel</div>
+              <button onClick={()=>setModal({type:"adminLogin"})} style={{background:"rgba(96,165,250,.1)",border:"1px solid rgba(96,165,250,.3)",color:C.blue,padding:"10px 24px",borderRadius:20,fontWeight:700,fontSize:13,...F}}>⚙️ Admin Login</button>
+            </div>
         </div>
-        <button onClick={handleLogin} style={{padding:"18px",borderRadius:16,border:"none",background:C.gG,color:"#060c08",...N,fontSize:17,fontWeight:900,boxShadow:"0 8px 36px rgba(74,222,128,.4)",marginTop:4}}>Secure Login →</button>
-        <div style={{textAlign:"center",padding:"16px 0",borderTop:`1px solid ${C.b}`,marginTop:8}}>
-          <div style={{color:C.m,fontSize:12,marginBottom:8}}>Admin? Access Control Panel</div>
-          <button onClick={()=>setModal({type:"adminLogin"})} style={{background:"rgba(96,165,250,.1)",border:"1px solid rgba(96,165,250,.3)",color:C.blue,padding:"10px 24px",borderRadius:20,fontWeight:700,fontSize:13,...F}}>⚙️ Admin Login</button>
+      ) : (
+        <div style={{display:"flex",flexDirection:"column",gap:16,animation:"up .4s both"}}>
+            <div style={{fontSize:13,color:C.m,textAlign:"center",marginBottom:-6}}>Enter the 5-digit verification code sent to {loginId}</div>
+            <OTPBoxes otp={otpArr} setOtp={setOtpArr}/>
+            <div style={{fontSize:12,color:C.m,textAlign:"center"}}>Demo OTP: <span style={{color:C.g,fontWeight:800}}>1 2 3 4 5</span></div>
+            <button onClick={handleVerifyOTP} disabled={loading} style={{padding:"18px",borderRadius:16,border:"none",background:C.gG,color:"#060c08",...N,fontSize:16,fontWeight:900,boxShadow:"0 8px 36px rgba(74,222,128,.4)"}}>சரிபார்த்து நுழைக ✓</button>
+            <button onClick={()=>setAuthStep("email")} style={{padding:"14px",borderRadius:16,border:`1.5px solid ${C.b}`,background:"transparent",color:C.m,...F,fontWeight:700,fontSize:14}}>← Back to Email</button>
         </div>
-      </div>}
-
-      {authTab==="register"&&<div style={{display:"flex",flexDirection:"column",gap:16,animation:"up .4s both"}}>
-        <Field label="Full Name *" value={rName} onChange={setRName} ph="e.g. Arjun Kumar"/>
-        <Field label="Username *" value={rUsername} onChange={v=>setRUsername(v.toLowerCase().replace(/\s/g,"_"))} ph="e.g. arjun_kumar"/>
-        <Field label="Gmail Address *" value={rEmail} onChange={setREmail} type="email" ph="e.g. arjun@gmail.com"/>
-        <Field label="Mobile Number *" value={phone} onChange={e=>setPhone(e.replace(/\D/g,""))} type="tel" ph="98765 43210"/>
-        <Field label="Password *" value={rPassword} onChange={setRPassword} type="password" ph="Create a strong password"/>
-        <Field label="Confirm Password *" value={rConfirm} onChange={setRConfirm} type="password" ph="Confirm your password"/>
-        <button onClick={handleRegister} style={{padding:"18px",borderRadius:16,border:"none",background:C.gG,color:"#060c08",...N,fontSize:17,fontWeight:900,boxShadow:"0 8px 36px rgba(74,222,128,.4)",marginTop:4}}>Create Account →</button>
-      </div>}
-
-      {authTab==="forgot"&&<div style={{display:"flex",flexDirection:"column",gap:16,animation:"up .4s both"}}>
-        {authStep==="email"&&<><Field label="Registered Gmail Address *" value={fEmail} onChange={setFEmail} type="email" ph="Enter your email"/><button onClick={handleForgotEmail} style={{padding:"18px",borderRadius:16,border:"none",background:C.gG,color:"#060c08",...N,fontSize:16,fontWeight:900,boxShadow:"0 8px 36px rgba(74,222,128,.4)"}}>Send Verification Code</button></>}
-        {authStep==="otp"&&<><div style={{fontSize:13,color:C.m,textAlign:"center",marginBottom:-6}}>Enter the 5-digit verification code sent to {fEmail}</div><OTPBoxes otp={otpArr} setOtp={setOtpArr}/><div style={{fontSize:12,color:C.m,textAlign:"center"}}>Demo OTP: <span style={{color:C.g,fontWeight:800}}>1 2 3 4 5</span></div><button onClick={handleForgotOTP} style={{padding:"18px",borderRadius:16,border:"none",background:C.gG,color:"#060c08",...N,fontSize:16,fontWeight:900,boxShadow:"0 8px 36px rgba(74,222,128,.4)"}}>Verify Code ✓</button></>}
-        {authStep==="reset"&&<><Field label="New Password *" value={fNewPass} onChange={setFNewPass} type="password" ph="Enter new password"/><button onClick={handleForgotReset} style={{padding:"18px",borderRadius:16,border:"none",background:C.gG,color:"#060c08",...N,fontSize:16,fontWeight:900,boxShadow:"0 8px 36px rgba(74,222,128,.4)"}}>Update Password</button></>}
-        <button onClick={()=>{setAuthTab("login");setAuthErr("");}} style={{padding:"14px",borderRadius:16,border:`1.5px solid ${C.b}`,background:"transparent",color:C.m,...F,fontWeight:700,fontSize:14}}>← Back to Login</button>
-      </div>}
+      )}
     </div>
 
     {/* Admin Login Modal */}
@@ -1289,128 +1246,4 @@ function App(){
         <div style={{...N,color:C.w,fontWeight:800,fontSize:15,marginBottom:14}}>🏅 Plan Activations ({planActivations.length})</div>
         {planActivations.length===0?<div style={{textAlign:"center",padding:"40px 0"}}><div style={{fontSize:52}}>🏅</div><div style={{color:C.m,fontWeight:700,marginTop:12,...N}}>No plan activations yet</div></div>:
         planActivations.map(act=><div key={act.id} style={{background:C.card,borderRadius:18,padding:"16px",marginBottom:12,border:`1px solid rgba(74,222,128,.25)`}}>
-          <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:10}}>
-            <div>
-              <div style={{...N,color:C.g,fontWeight:900,fontSize:15}}>⚡ {act.planName}</div>
-              <div style={{color:C.o,fontSize:13,fontWeight:700,marginTop:2}}>₹{act.planPrice}/{act.planPer}</div>
-            </div>
-            <div style={{background:"rgba(74,222,128,.12)",border:"1px solid rgba(74,222,128,.3)",borderRadius:99,padding:"3px 12px",fontSize:11,fontWeight:700,color:C.g}}>{act.paymentStatus}</div>
-          </div>
-          {[["Customer",act.userName],["Username","@"+act.userUsername],["Phone","+91 "+act.userPhone],["Activated",fmt(act.activatedAt)]].map(([l,v])=><div key={l} style={{display:"flex",justifyContent:"space-between",marginBottom:6,fontSize:12}}>
-            <span style={{color:C.m}}>{l}</span>
-            <span style={{color:C.w,fontWeight:600,...N}}>{v}</span>
-          </div>)}
-        </div>)}
-      </div>}
-
-      {adminTab==="customers"&&<div style={{padding:"0 22px"}}>
-        <div style={{...N,color:C.w,fontWeight:800,fontSize:15,marginBottom:14}}>👥 Customers ({users.length})</div>
-        {users.length===0?<div style={{textAlign:"center",padding:"40px 0"}}><div style={{fontSize:52}}>👥</div><div style={{color:C.m,fontWeight:700,marginTop:12,...N}}>No customers yet</div></div>:
-        users.map(u=><div key={u.id} style={{background:C.card,borderRadius:18,padding:"16px",marginBottom:12,border:`1px solid ${C.b}`}}>
-          <div style={{display:"flex",gap:12,alignItems:"flex-start"}}>
-            <div style={{width:46,height:46,background:C.gG,borderRadius:"50%",display:"flex",alignItems:"center",justifyContent:"center",fontSize:22,flexShrink:0}}>{u.avatar||"😊"}</div>
-            <div style={{flex:1}}>
-              <div style={{...N,color:C.w,fontWeight:800,fontSize:14}}>{u.name}</div>
-              <div style={{color:C.m,fontSize:12,marginTop:2}}>@{u.username||"—"} · +91 {u.phone}</div>
-              <div style={{display:"flex",gap:8,marginTop:8,flexWrap:"wrap"}}>
-                <span style={{background:"rgba(74,222,128,.1)",color:C.g,fontSize:10,fontWeight:700,padding:"3px 10px",borderRadius:99}}>{GOALS.find(g=>g.id===u.goal)?.label||"Not set"}</span>
-                {u.plan&&<span style={{background:"rgba(251,191,36,.1)",color:C.gold,fontSize:10,fontWeight:700,padding:"3px 10px",borderRadius:99}}>⚡ {plans.find(p=>p.id===u.plan)?.label||""} Pro</span>}
-                <span style={{background:"rgba(96,165,250,.1)",color:C.blue,fontSize:10,fontWeight:700,padding:"3px 10px",borderRadius:99}}>{orders.filter(o=>o.userId===u.id).length} orders</span>
-              </div>
-              {u.address&&<div style={{color:C.m,fontSize:11,marginTop:6}}>📍 {u.address}</div>}
-            </div>
-          </div>
-        </div>)}
-      </div>}
-
-      {adminTab==="settings"&&<div style={{padding:"0 22px"}}>
-        <div style={{background:C.card,borderRadius:20,padding:18,border:`1px solid ${C.b}`,marginBottom:14}}>
-          <div style={{...N,color:C.w,fontWeight:800,fontSize:15,marginBottom:18}}>🚚 Delivery & Pricing</div>
-          <div style={{display:"flex",flexDirection:"column",gap:14}}>
-            {[["Delivery Charge (₹)","deliveryCharge","Charged when below free threshold"],["Free Delivery Min (₹)","freeDeliveryMin","Orders above this = free delivery"],["Platform Fee (₹)","platformFee","Fixed fee per order"],["GST (%)","gst","Tax percentage on subtotal"]].map(([label,key,hint])=><div key={key}>
-              <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8}}>
-                <div>
-                  <div style={{color:C.w,fontWeight:700,fontSize:13,...N}}>{label}</div>
-                  <div style={{color:C.m,fontSize:11,marginTop:2}}>{hint}</div>
-                </div>
-                <div style={{...N,color:C.g,fontWeight:900,fontSize:16}}>{key==="gst"?`${settings[key]}%`:`₹${settings[key]}`}</div>
-              </div>
-              <input type="number" value={settings[key]} onChange={e=>setSettings(p=>({...p,[key]:+e.target.value}))} min={0} style={{width:"100%",padding:"12px 16px",background:C.surf,border:`1.5px solid ${C.b}`,borderRadius:12,color:C.w,fontSize:14,...F,boxSizing:"border-box"}}/>
-            </div>)}
-          </div>
-          <div style={{background:"rgba(74,222,128,.07)",border:"1px solid rgba(74,222,128,.2)",borderRadius:14,padding:"14px 16px",marginTop:16,marginBottom:14}}>
-            <div style={{...N,color:C.g,fontWeight:800,fontSize:13,marginBottom:10}}>Preview for ₹300 order:</div>
-            {[["Subtotal","₹300"],["Delivery",300<settings.freeDeliveryMin?`₹${settings.deliveryCharge}`:"🎁 Free"],["GST",`₹${Math.round(300*settings.gst/100)}`],["Platform Fee",`₹${settings.platformFee}`],["Total",`₹${300+(300<settings.freeDeliveryMin?settings.deliveryCharge:0)+Math.round(300*settings.gst/100)+settings.platformFee}`]].map(([l,v])=><div key={l} style={{display:"flex",justifyContent:"space-between",fontSize:12,marginBottom:5}}>
-              <span style={{color:C.m}}>{l}</span><span style={{color:C.w,fontWeight:600}}>{v}</span>
-            </div>)}
-          </div>
-          <button onClick={()=>pop("✅ Settings saved!")} style={{width:"100%",background:C.gG,color:"#060c08",border:"none",padding:"14px",borderRadius:14,fontWeight:800,fontSize:14,...N}}>Save Settings ✓</button>
-        </div>
-
-        <div style={{background:C.card,borderRadius:20,padding:18,border:`1px solid ${C.b}`,marginBottom:14}}>
-          <div style={{...N,color:C.w,fontWeight:800,fontSize:15,marginBottom:14}}>👥 Admin Accounts (Authorized Only)</div>
-          {admins.map(a=><div key={a.id} style={{background:C.surf,borderRadius:14,padding:"14px",marginBottom:10,border:`1px solid ${a.active?"rgba(74,222,128,.3)":C.b}`,opacity:a.active?1:.5}}>
-            <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start"}}>
-              <div>
-                <div style={{...N,color:C.w,fontWeight:800,fontSize:14}}>{a.name}</div>
-                <div style={{color:C.g,fontSize:11,fontWeight:700,marginTop:2}}>{a.role}</div>
-                <div style={{color:C.m,fontSize:11,marginTop:2}}>@{a.username}</div>
-              </div>
-              <button onClick={()=>setAdmins(p=>p.map(x=>x.id===a.id?{...x,active:!x.active}:x))} style={{background:a.active?"rgba(74,222,128,.12)":"rgba(248,113,113,.12)",border:"none",color:a.active?C.g:C.r,padding:"8px 14px",borderRadius:20,fontWeight:700,fontSize:11,...F}}>
-                {a.active?"✓ Active":"✗ Inactive"}
-              </button>
-            </div>
-          </div>)}
-        </div>
-      </div>}
-
-      {adminTab==="stats"&&<div style={{padding:"0 22px"}}>
-        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12,marginBottom:18}}>
-          {[["📦","Orders",orders.length,C.g],["💰","Revenue","₹"+orders.reduce((s,o)=>s+o.total,0),C.o],["👥","Customers",users.length,C.pur],["🏅","Activations",planActivations.length,C.gold],["🍽","Items",allFlat.length,C.blue],["✅","Active",allFlat.filter(i=>i.active&&i.stock).length,C.g]].map(([ic,l,v,col])=><div key={l} style={{background:C.card,borderRadius:18,padding:"16px",border:`1px solid ${C.b}`}}>
-            <div style={{fontSize:22}}>{ic}</div>
-            <div style={{...N,color:col,fontSize:24,fontWeight:900,marginTop:6}}>{v}</div>
-            <div style={{color:C.m,fontSize:11,marginTop:3}}>{l}</div>
-          </div>)}
-        </div>
-        <div style={{background:C.card,borderRadius:18,padding:18,border:`1px solid ${C.b}`,marginBottom:14}}>
-          <div style={{...N,color:C.w,fontWeight:800,marginBottom:14}}>💳 Revenue Breakdown</div>
-          {[["Total Revenue","₹"+orders.reduce((s,o)=>s+o.total,0)],["Avg Order Value","₹"+(orders.length?Math.round(orders.reduce((s,o)=>s+o.total,0)/orders.length):0)],["Pro Plan Revenue","₹"+planActivations.reduce((s,a)=>s+a.planPrice,0)],["Delivery Collected","₹"+(orders.reduce((s,o)=>s+o.delivery,0))],["Platform Fees","₹"+(orders.reduce((s,o)=>s+o.platformFee,0))]].map(([l,v])=><div key={l} style={{display:"flex",justifyContent:"space-between",marginBottom:10,fontSize:13}}>
-            <span style={{color:C.m}}>{l}</span>
-            <span style={{color:C.w,fontWeight:700}}>{v}</span>
-          </div>)}
-        </div>
-        <div style={{background:C.card,borderRadius:18,padding:18,border:`1px solid ${C.b}`}}>
-          <div style={{...N,color:C.w,fontWeight:800,marginBottom:14}}>Goal Distribution</div>
-          {GOALS.map(g=>{const cnt=Object.values(foods[g.id]||{}).flat().length;const tot=allFlat.length||1;return <div key={g.id} style={{marginBottom:14}}>
-            <div style={{display:"flex",justifyContent:"space-between",fontSize:12,marginBottom:6}}>
-              <span style={{color:C.m}}>{g.icon} {g.label}</span>
-              <span style={{color:C.w,fontWeight:700}}>{cnt} items</span>
-            </div>
-            <div style={{background:C.b,borderRadius:99,height:6,overflow:"hidden"}}>
-              <div style={{background:C.gG,height:"100%",width:`${Math.round(cnt/tot*100)}%`,borderRadius:99}}/>
-            </div>
-          </div>;})}
-        </div>
-      </div>}
-    </div>}
-
-    {/* ══ BOTTOM NAV ══════════════════════════════════════════════ */}
-    <div style={{position:"fixed",bottom:0,left:"50%",transform:"translateX(-50%)",width:"100%",maxWidth:430,background:"rgba(6,12,8,.97)",backdropFilter:"blur(24px)",borderTop:`1px solid ${C.b}`,display:"flex",padding:"10px 0 24px",zIndex:200}}>
-      {NavBtn("home","🏠","Home",0)}
-      {NavBtn("menu","🍽","Menu",0)}
-      {NavBtn("cart","🛒","Cart",cartCount)}
-      {NavBtn("track","🛵","Track",liveOrders)}
-      {NavBtn("notifs","🔔","Alerts",unread)}
-    </div>
-  </div>;
-}
-
-ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
-</script>
-<script>
-if("serviceWorker"in navigator&&location.hostname.includes("github.io")){
-  navigator.serviceWorker.register("sw.js").then(()=>console.log("✅ SW")).catch(e=>console.log("SW:",e));
-}
-</script>
-</body>
-</html>
+          <div style={{display:"flex",justifyContent
