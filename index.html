@@ -345,23 +345,23 @@ function App(){
   // ── ONBOARD ──
   const[ob,setOb]=useState({step:0,goal:"",pref:"",age:"",weight:"",height:"",gender:"m"});
 
-  // 🔥 FIREBASE INITIALIZATION & SYNC LOGIC 🔥
+  // 🔥 FIREBASE INITIALIZATION & SYNC LOGIC (FIXED) 🔥
   useEffect(() => {
     const initFirebase = async () => {
       try {
-        if (!window.firebase.apps.length) {
-          window.firebase.initializeApp({
-            apiKey: "AIzaSyBvD-i0yV6u6iV6u6iV6u6iV6u6iV6u6iV6",
-            authDomain: "cosfit-4395b.firebaseapp.com",
-            projectId: "cosfit-4395b",
-            storageBucket: "cosfit-4395b.firebasestorage.app",
-            messagingSenderId: "821360181518",
-            appId: "1:821360181518:android:3e0205c069273577d24276"
-          });
-        }
+        const app = window.firebase.apps.length 
+          ? window.firebase.app() 
+          : window.firebase.initializeApp({
+              apiKey: "AIzaSyBvD-i0yV6u6iV6u6iV6u6iV6u6iV6u6iV6",
+              authDomain: "cosfit-4395b.firebaseapp.com",
+              projectId: "cosfit-4395b",
+              storageBucket: "cosfit-4395b.firebasestorage.app",
+              messagingSenderId: "821360181518",
+              appId: "1:821360181518:android:3e0205c069273577d24276"
+            });
         
-        const db = window.firebase.firestore();
-        window.fbDB = db; // Global access for sync
+        const db = app.firestore();
+        window.fbDB = db; 
         
         const docRef = db.collection("app_data").doc("foods_menu");
         const snap = await docRef.get();
@@ -371,10 +371,13 @@ function App(){
         } else {
           await docRef.set(INIT_FOODS);
         }
-      } catch (err) { console.error("Firebase Error: ", err); }
+      } catch (err) { 
+        console.error("Firebase Initialization/Sync Error: ", err); 
+      }
     };
     initFirebase();
   }, []);
+
 
   const syncToFirebase = async (newFoodsData) => {
     try {
