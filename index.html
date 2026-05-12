@@ -1,306 +1,1206 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>Cosfit — Eat Smart Live Strong</title>
-    <meta name="theme-color" content="#4ade80" />
-    <meta name="mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-    
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+<title>Cosfit — Eat Smart Live Strong</title>
+<meta name="description" content="Smart fitness food delivery by Coscoom Creative Tech Solutions"/>
+<meta name="theme-color" content="#4ade80"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<link rel="manifest" href="manifest.json"/>
+<link rel="apple-touch-icon" href="icon.png"/>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
 
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+<!-- ✅ Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 
-    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<!-- React + Babel -->
+<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
-    <style>
-        /* ── CSS STYLING ── */
-        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        html, body { background: #060c08; color: #edf8f0; width: 100%; overflow-x: hidden; font-family: 'Inter', sans-serif; }
-        #root { width: 100%; max-width: 430px; margin: 0 auto; min-height: 100vh; position: relative; }
-        ::-webkit-scrollbar { display: none; }
-
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes up { from { opacity: 0; transform: translateY(25px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes pop { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
-        @keyframes toast { from { opacity: 0; transform: translateX(-50%) translateY(-20px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
-
-        input, textarea { width: 100%; background: #101a13; border: 1px solid #1b2d1f; border-radius: 14px; padding: 16px; color: white; font-size: 15px; outline: none; }
-        input:focus { border-color: #4ade80; }
-
-        .primary-btn { background: linear-gradient(135deg, #4ade80, #22c55e); color: #000; padding: 18px; border-radius: 16px; font-weight: 900; width: 100%; text-align: center; border: none; box-shadow: 0 8px 24px rgba(74, 222, 128, 0.2); }
-        .primary-btn:active { transform: scale(0.96); }
-
-        .shimmer { background: linear-gradient(90deg, #101a13 25%, #1b2d1f 50%, #101a13 75%); background-size: 200% 100%; animation: shimmer-ani 1.5s infinite; }
-        @keyframes shimmer-ani { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
-    </style>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{background:#060c08;overflow-x:hidden;width:100%;font-family:'Inter',sans-serif}
+#root{width:100%;max-width:430px;margin:0 auto;overflow-x:hidden;position:relative}
+::-webkit-scrollbar{display:none}
+input,textarea,select{font-family:'Inter',sans-serif;box-sizing:border-box;-webkit-appearance:none;outline:none;border:none}
+button{cursor:pointer;border:none;outline:none}
+button:active{transform:scale(.92)!important;transition:transform .08s!important}
+@keyframes pop{from{opacity:0;transform:scale(.15)}to{opacity:1;transform:scale(1)}}
+@keyframes up{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes slideUp{from{opacity:0;transform:translateY(100%)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes cIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+@keyframes notif{from{opacity:0;transform:translateY(-80px)}to{opacity:1;transform:translateY(0)}}
+@keyframes dot{0%,100%{opacity:.1}50%{opacity:1}}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.18)}}
+@keyframes toast{from{opacity:0;transform:translateX(-50%) translateY(-20px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+</style>
 </head>
 <body>
 <div id="root"></div>
-
 <script type="text/babel">
-    const { useState, useEffect, useRef } = React;
+const {useState,useEffect,useRef}=React;
 
-    const C = { bg: "#060c08", surf: "#0c1610", card: "#101a13", b: "#1b2d1f", g: "#4ade80", gG: "linear-gradient(135deg, #4ade80, #22c55e)", o: "#fb923c", r: "#f87171", m: "#5e7d68" };
-    const GOALS = [{ id: "weight_loss", label: "Weight Loss", icon: "⚖️", calMod: -500 }, { id: "muscle_gain", label: "Muscle Gain", icon: "💪", calMod: 300 }, { id: "general", label: "Stay Fit", icon: "🌿", calMod: 0 }];
-    const MEALS = ["breakfast", "lunch", "dinner"];
-    const MIC = { breakfast: "☀️", lunch: "🌤", dinner: "🌙" };
-    const AVATARS = ["😊", "💪", "🥗", "🔥", "⚡", "👑", "🎯", "🧘"];
-    
-    const ORDER_STEPS = [
-        { icon: "✅", label: "Confirmed", msg: "We got your order!" },
-        { icon: "👨‍🍳", label: "Preparing", msg: "Chefs are cooking!" },
-        { icon: "📦", label: "Packed", msg: "Ready for pickup." },
-        { icon: "🛵", label: "Delivery", msg: "Rider is coming!" },
-        { icon: "🎉", label: "Delivered", msg: "Enjoy your meal!" }
-    ];
+// ── DESIGN TOKENS ────────────────────────────────────────────────
+const N={fontFamily:"'Nunito',sans-serif"};
+const F={fontFamily:"'Inter',sans-serif"};
+const C={
+  bg:"#060c08",surf:"#0c1610",card:"#101a13",card2:"#142019",
+  b:"#1b2d1f",b2:"#243829",
+  g:"#4ade80",gG:"linear-gradient(135deg,#4ade80,#22c55e)",
+  o:"#fb923c",gO:"linear-gradient(135deg,#fb923c,#f97316)",
+  gold:"#fbbf24",w:"#edf8f0",m:"#5e7d68",m2:"#3d5545",
+  r:"#f87171",blue:"#60a5fa",pur:"#a78bfa",
+};
 
-    const INIT_FOODS = {
-        weight_loss: {
-            breakfast: [{ id: 1, name: "Detox Smoothie", desc: "Spinach, apple, lemon", cal: 185, p: 5, c: 32, f: 3, price: 129, emoji: "🥤", tag: "Detox", active: true, stock: true }],
-            lunch: [{ id: 5, name: "Grilled Chicken Salad", desc: "Lettuce, tomato, lemon", cal: 320, p: 34, c: 12, f: 11, price: 229, emoji: "🥗", tag: "Low Carb", active: true, stock: true }],
-            dinner: [{ id: 8, name: "Steamed Fish", desc: "Tilapia, broccoli", cal: 310, p: 38, c: 10, f: 12, price: 259, emoji: "🐟", tag: "Healthy", active: true, stock: true }]
-        },
-        muscle_gain: {
-            breakfast: [{ id: 11, name: "Power Bowl", desc: "4 eggs, oats", cal: 620, p: 42, c: 58, f: 18, price: 219, emoji: "💪", tag: "Fuel", active: true, stock: true }],
-            lunch: [{ id: 14, name: "Quinoa Feast", desc: "Chicken, quinoa", cal: 680, p: 56, c: 55, f: 16, price: 329, emoji: "🍗", tag: "Muscle", active: true, stock: true }],
-            dinner: [{ id: 17, name: "Steak & Mash", desc: "Lean beef, sweet mash", cal: 690, p: 54, c: 48, f: 22, price: 389, emoji: "🥩", tag: "Iron", active: true, stock: true }]
-        },
-        general: {
-            breakfast: [{ id: 20, name: "Avocado Toast", desc: "Multigrain, seeds", cal: 310, p: 10, c: 34, f: 16, price: 179, emoji: "🥑", tag: "Fat", active: true, stock: true }],
-            lunch: [{ id: 24, name: "Dal Tadka & Rice", desc: "Yellow dal, brown rice", cal: 440, p: 18, c: 72, f: 8, price: 159, emoji: "🍚", tag: "Classic", active: true, stock: true }],
-            dinner: [{ id: 28, name: "Palak Paneer", desc: "Spinach, 2 rotis", cal: 390, p: 22, c: 44, f: 14, price: 189, emoji: "🥬", tag: "Iron", active: true, stock: true }]
+const COMPANY={name:"Coscoom Creative Tech Solutions",brand:"Idappadi Creators",email:"anantharajeinstein@gmail.com",phone:"8778148899"};
+
+// ── FIREBASE CONFIG ──────────────────────────────────────────────
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyDe8t6R270tdBqhjho6r0mtzkiJBSXOJ0k",
+  authDomain: "cosfit-cb1a4.firebaseapp.com",
+  projectId: "cosfit-cb1a4",
+  storageBucket: "cosfit-cb1a4.firebasestorage.app",
+  messagingSenderId: "155256850801",
+  appId: "1:155256850801:web:45aacbbadcba01a3b38ed0",
+  measurementId: "G-1J78P2QC5D"
+};
+
+// ── ADMIN CREDENTIALS (keep secure) ─────────────────────────────
+const INIT_ADMINS=[
+  {id:1,name:"Anantharaj",username:"Anantharajmech",role:"Super Admin",password:"ananthaarthi160893",active:true},
+  {id:2,name:"Aarthi",username:"Aarthimech",role:"Admin",password:"aarthiananth160893",active:true},
+  {id:3,name:"Ajith",username:"Ajithmech",role:"Staff",password:"ajithmerga160893",active:true},
+];
+
+const INIT_SETTINGS={deliveryCharge:40,freeDeliveryMin:400,platformFee:10,gst:5,appName:"Cosfit",currency:"₹",supportPhone:"8778148899"};
+
+const INIT_PLANS=[
+  {id:"w",label:"Weekly",price:499,per:"week",save:null,hot:false,features:["Personalized meal plan","Calorie & macro tracking","Free delivery on all orders","Priority customer support"]},
+  {id:"m",label:"Monthly",price:1499,per:"month",save:"Save 25%",hot:true,features:["Everything in Weekly","Advanced nutrition analytics","Chef special exclusive items","Dedicated health coach","Weekly progress reports"]},
+  {id:"y",label:"Yearly",price:9999,per:"year",save:"Save 58%",hot:false,features:["Everything in Monthly","Annual health assessment","Exclusive premium recipes","Family plan for 4 members","VIP badge"]},
+];
+
+const GOALS=[
+  {id:"weight_loss",label:"Weight Loss",icon:"⚖️",calMod:-500},
+  {id:"muscle_gain",label:"Muscle Gain",icon:"💪",calMod:300},
+  {id:"general",label:"Stay Fit",icon:"🌿",calMod:0},
+];
+const PREFS=[{id:"all",label:"Everything",icon:"🍽"},{id:"veg",label:"Vegetarian",icon:"🥦"},{id:"nonveg",label:"Non-Veg",icon:"🍗"},{id:"vegan",label:"Vegan",icon:"🌱"}];
+const MEALS=["breakfast","lunch","dinner"];
+const MIC={breakfast:"☀️",lunch:"🌤",dinner:"🌙"};
+const AVATARS=["😊","💪","🌟","🏃","🧘","🥗","🔥","⚡","🌈","🎯","👑","🦁","🎮","🎵","✨","💎","🌺","🦊","🐯","🌸"];
+const ORDER_STEPS=[{icon:"✅",label:"Order Confirmed",msg:"Your order is confirmed!"},{icon:"👨‍🍳",label:"Preparing Food",msg:"Chefs are cooking your fresh meal!"},{icon:"📦",label:"Order Packed",msg:"Packed & ready for pickup."},{icon:"🛵",label:"Out for Delivery",msg:"Rider is heading to you now!"},{icon:"🎉",label:"Delivered!",msg:"Enjoy your meal! Stay fit 💪"}];
+
+const INIT_FOODS={
+  weight_loss:{
+    breakfast:[
+      {id:1,name:"Green Detox Smoothie",desc:"Spinach, apple, ginger, lemon",cal:185,p:5,c:32,f:3,price:129,emoji:"🥤",tag:"Detox",time:"5m",active:true,stock:true},
+      {id:2,name:"Oats Berry Bowl",desc:"Rolled oats, mixed berries, chia seeds",cal:240,p:9,c:38,f:5,price:149,emoji:"🥣",tag:"High Fiber",time:"8m",active:true,stock:true},
+      {id:3,name:"Egg White Wrap",desc:"3 egg whites, spinach, whole grain",cal:210,p:22,c:18,f:4,price:169,emoji:"🌯",tag:"Protein",time:"10m",active:true,stock:true},
+    ],
+    lunch:[
+      {id:5,name:"Grilled Chicken Salad",desc:"Lettuce, tomato, cucumber, lemon dressing",cal:320,p:34,c:12,f:11,price:229,emoji:"🥗",tag:"Low Carb",time:"15m",active:true,stock:true},
+      {id:6,name:"Millet Khichdi",desc:"Foxtail millet, moong dal, turmeric",cal:290,p:13,c:48,f:5,price:179,emoji:"🍲",tag:"Gluten Free",time:"18m",active:true,stock:true},
+    ],
+    dinner:[
+      {id:8,name:"Steamed Fish & Greens",desc:"Tilapia, broccoli, beans, lemon",cal:310,p:38,c:10,f:12,price:259,emoji:"🐟",tag:"Heart Healthy",time:"20m",active:true,stock:true},
+      {id:9,name:"Moong Dal Soup",desc:"Green lentil, ginger, pepper, coriander",cal:195,p:13,c:28,f:3,price:139,emoji:"🍵",tag:"Digestive",time:"15m",active:true,stock:true},
+    ],
+  },
+  muscle_gain:{
+    breakfast:[
+      {id:11,name:"Protein Power Bowl",desc:"4 eggs, oats, banana, peanut butter",cal:620,p:42,c:58,f:18,price:219,emoji:"💪",tag:"Muscle Fuel",time:"12m",active:true,stock:true},
+      {id:12,name:"Chicken Omelette",desc:"Chicken strips, 3 eggs, cheese, peppers",cal:540,p:48,c:8,f:22,price:239,emoji:"🍳",tag:"High Protein",time:"12m",active:true,stock:true},
+    ],
+    lunch:[
+      {id:14,name:"Chicken Quinoa Feast",desc:"250g grilled chicken, quinoa, broccoli",cal:680,p:56,c:55,f:16,price:329,emoji:"🍗",tag:"Muscle Gain",time:"20m",active:true,stock:true},
+      {id:15,name:"Paneer Power Thali",desc:"Paneer tikka, brown rice, dal, salad",cal:720,p:44,c:72,f:24,price:299,emoji:"🧀",tag:"Vegetarian",time:"22m",active:true,stock:true},
+    ],
+    dinner:[
+      {id:17,name:"Steak & Sweet Potato",desc:"Lean beef steak, sweet potato mash",cal:690,p:54,c:48,f:22,price:389,emoji:"🥩",tag:"Iron Rich",time:"25m",active:true,stock:true},
+      {id:18,name:"Tuna Pasta Bake",desc:"Whole wheat pasta, tuna, tomato sauce",cal:610,p:46,c:65,f:12,price:269,emoji:"🍝",tag:"High Protein",time:"20m",active:true,stock:true},
+    ],
+  },
+  general:{
+    breakfast:[
+      {id:20,name:"Avocado Toast",desc:"Multigrain bread, avocado, seeds, lemon",cal:310,p:10,c:34,f:16,price:179,emoji:"🥑",tag:"Healthy Fat",time:"8m",active:true,stock:true},
+      {id:21,name:"Idli Sambar",desc:"3 idlis, sambar, coconut chutney",cal:280,p:9,c:52,f:3,price:119,emoji:"🫕",tag:"Traditional",time:"10m",active:true,stock:true},
+      {id:22,name:"Masala Dosa",desc:"Crispy dosa, potato masala, chutneys",cal:370,p:8,c:62,f:10,price:149,emoji:"🫓",tag:"Traditional",time:"15m",active:true,stock:true},
+    ],
+    lunch:[
+      {id:24,name:"Dal Tadka & Brown Rice",desc:"Yellow dal, ghee, brown rice, pickle",cal:440,p:18,c:72,f:8,price:159,emoji:"🍚",tag:"Classic",time:"18m",active:true,stock:true},
+      {id:25,name:"Chicken Biryani Bowl",desc:"Basmati rice, chicken, saffron, raita",cal:520,p:32,c:62,f:14,price:249,emoji:"🍛",tag:"Flavourful",time:"25m",active:true,stock:true},
+      {id:26,name:"Veggie Buddha Bowl",desc:"Roasted veg, chickpeas, tahini, greens",cal:420,p:16,c:58,f:14,price:219,emoji:"🥗",tag:"Plant Based",time:"15m",active:true,stock:true},
+    ],
+    dinner:[
+      {id:28,name:"Palak Paneer & Roti",desc:"Spinach gravy, cottage cheese, 2 rotis",cal:390,p:22,c:44,f:14,price:189,emoji:"🥬",tag:"Iron Rich",time:"20m",active:true,stock:true},
+      {id:30,name:"Fish Curry & Rice",desc:"Tilapia fish curry, steamed basmati rice",cal:430,p:36,c:52,f:10,price:229,emoji:"🐠",tag:"Omega-3",time:"22m",active:true,stock:true},
+    ],
+  },
+};
+
+// ── HELPERS ──────────────────────────────────────────────────────
+const tdee=(w,h,a,g,goal)=>{
+  const bmr=g==="f"?10*w+6.25*h-5*a-161:10*w+6.25*h-5*a+5;
+  return Math.round(bmr*1.55)+((GOALS.find(x=>x.id===goal))||{calMod:0}).calMod;
+};
+
+const getGreeting=(name,goal,orders)=>{
+  const hr=new Date().getHours();
+  const fn=name?.split(" ")[0]||"there";
+  let greeting,icon,meal,tip,sticker;
+  if(hr>=5&&hr<12){greeting="Good Morning";icon="☀️";meal="breakfast";sticker="🌅";tip=goal==="weight_loss"?"Start light – detox smoothie awaits!":goal==="muscle_gain"?"Fuel up! High-protein breakfast 💪":"Healthy breakfast to start your day!";}
+  else if(hr>=12&&hr<17){greeting="Good Afternoon";icon="🌤";meal="lunch";sticker="🌞";tip=goal==="weight_loss"?"Stay on track – choose low-cal lunch!":goal==="muscle_gain"?"Lunch = muscle building time 💪":"Keep energy going – lunch time!";}
+  else if(hr>=17&&hr<21){greeting="Good Evening";icon="🌆";meal="dinner";sticker="🌇";tip=goal==="weight_loss"?"Light dinner = better sleep!":goal==="muscle_gain"?"Recovery dinner – protein is key!":"Wind down with nutritious dinner!";}
+  else{greeting="Good Night";icon="🌙";meal="dinner";sticker="🌃";tip="Light meal recommended for better sleep 😴";}
+  const loyalty=orders.length>=10?"🏆 Top customer!":orders.length>=5?"⭐ Loyal member!":orders.length>=2?"✨ Regular customer!":"";
+  return{greeting,icon,meal,tip,sticker,loyalty,fn};
+};
+
+let NID=800;
+const nid=()=>++NID;
+
+// ── MINI COMPONENTS ──────────────────────────────────────────────
+function Toast({t}){
+  return <div style={{position:"fixed",top:22,left:"50%",transform:"translateX(-50%)",background:t.err?"rgba(248,113,113,.15)":"rgba(74,222,128,.12)",border:`1px solid ${t.err?"rgba(248,113,113,.5)":"rgba(74,222,128,.5)"}`,color:t.err?"#fca5a5":"#4ade80",padding:"12px 22px",borderRadius:50,fontWeight:700,fontSize:13,zIndex:9999,whiteSpace:"nowrap",maxWidth:"88vw",...F,animation:"toast .35s cubic-bezier(.34,1.56,.64,1) both",boxShadow:"0 8px 32px rgba(0,0,0,.5)"}}>
+    {t.msg}
+  </div>;
+}
+
+function NBanner({n,onClose}){
+  return <div onClick={onClose} style={{position:"fixed",top:0,left:"50%",transform:"translateX(-50%)",width:"100%",maxWidth:430,zIndex:9990,background:"linear-gradient(135deg,#0c1610,#142019)",borderBottom:"1px solid rgba(74,222,128,.3)",padding:"14px 20px 16px",display:"flex",alignItems:"center",gap:12,animation:"notif .45s cubic-bezier(.34,1.56,.64,1) both",boxShadow:"0 12px 40px rgba(0,0,0,.6)",cursor:"pointer"}}>
+    <div style={{width:44,height:44,background:"rgba(74,222,128,.15)",borderRadius:14,display:"flex",alignItems:"center",justifyContent:"center",fontSize:22,flexShrink:0}}>{n.icon}</div>
+    <div style={{flex:1,minWidth:0}}>
+      <div style={{color:C.g,fontWeight:800,fontSize:13,...N}}>{n.label}</div>
+      <div style={{color:C.m,fontSize:12,marginTop:2,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{n.msg}</div>
+    </div>
+    <div style={{color:C.m,fontSize:22}}>×</div>
+  </div>;
+}
+
+function Sheet({onClose,children,tall}){
+  return <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,.88)",zIndex:950,display:"flex",alignItems:"flex-end",justifyContent:"center",animation:"fadeIn .2s both"}} onClick={onClose}>
+    <div style={{background:C.surf,borderRadius:"28px 28px 0 0",width:"100%",maxWidth:430,padding:"22px 22px 44px",animation:"slideUp .35s cubic-bezier(.34,1.56,.64,1)",maxHeight:tall?"94vh":"82vh",overflowY:"auto"}} onClick={e=>e.stopPropagation()}>
+      <div style={{width:42,height:4,background:C.b,borderRadius:99,margin:"0 auto 20px"}}/>
+      {children}
+    </div>
+  </div>;
+}
+
+function Field({label,value,onChange,type="text",ph="",rows,min,note}){
+  const s={width:"100%",padding:"13px 16px",background:C.card,border:`1.5px solid ${value?"rgba(74,222,128,.5)":C.b}`,borderRadius:13,color:C.w,fontSize:14,...F,transition:"border-color .2s",boxSizing:"border-box"};
+  return <div style={{width:"100%"}}>
+    {label&&<div style={{fontSize:10,fontWeight:700,color:C.m,textTransform:"uppercase",letterSpacing:1.2,marginBottom:7,...F}}>{label}</div>}
+    {rows?<textarea rows={rows} value={value} onChange={e=>onChange(e.target.value)} placeholder={ph} style={{...s,resize:"none",lineHeight:1.7}}/>
+    :<input type={type} value={value} onChange={e=>onChange(type==="number"?+e.target.value:e.target.value)} placeholder={ph} min={min} style={s}/>}
+    {note&&<div style={{fontSize:11,color:C.m,marginTop:5,...F}}>{note}</div>}
+  </div>;
+}
+
+function Spinner(){
+  return <div style={{width:18,height:18,border:"2px solid rgba(6,12,8,.3)",borderTop:"2px solid #060c08",borderRadius:"50%",animation:"spin .7s linear infinite",display:"inline-block",marginRight:8,verticalAlign:"middle"}}/>;
+}
+
+// ═══════════════ MAIN APP ════════════════════════════════════════
+function App(){
+  // ── STATE ──
+  const[scr,setScr]=useState("splash");
+  const[authTab,setAuthTab]=useState("login");
+  const[authErr,setAuthErr]=useState("");
+  const[loading,setLoading]=useState(false);
+
+  // ── AUTH FIELDS ──
+  const[rName,setRName]=useState("");
+  const[rUsername,setRUsername]=useState("");
+  const[rEmail,setREmail]=useState("");
+  const[rPhone,setRPhone]=useState("");
+  const[rPassword,setRPassword]=useState("");
+  const[rConfirm,setRConfirm]=useState("");
+  const[loginId,setLoginId]=useState("");
+  const[loginPassword,setLoginPassword]=useState("");
+  const[fEmail,setFEmail]=useState("");
+
+  // ── USERS & SESSION ──
+  const[user,setUser]=useState(null);
+  const[isAdmin,setIsAdmin]=useState(false);
+  const[adminUser,setAdminUser]=useState(null);
+  const[admins]=useState(INIT_ADMINS);
+  const[adminUsername,setAdminUsername]=useState("");
+  const[adminPw,setAdminPw]=useState("");
+
+  // ── APP DATA ──
+  const[foods,setFoods]=useState(INIT_FOODS);
+  const[plans]=useState(INIT_PLANS);
+  const[settings]=useState(INIT_SETTINGS);
+  const[cart,setCart]=useState([]);
+  const[orders,setOrders]=useState([]);
+  const[notifs,setNotifs]=useState([]);
+  const[banner,setBanner]=useState(null);
+  const[toast,setToast]=useState(null);
+  const[allUsers,setAllUsers]=useState([]);
+  const[allOrders,setAllOrders]=useState([]);
+  const[planActivations,setPlanActivations]=useState([]);
+
+  // ── UI STATE ──
+  const[tab,setTab]=useState("home");
+  const[adminTab,setAdminTab]=useState("orders");
+  const[modal,setModal]=useState(null);
+  const[mGoal,setMGoal]=useState("weight_loss");
+  const[mMeal,setMMeal]=useState("breakfast");
+  const[search,setSearch]=useState("");
+
+  // ── ONBOARD ──
+  const[ob,setOb]=useState({step:0,goal:"",pref:"",age:"",weight:"",height:"",gender:"m"});
+
+  // ── FIREBASE INIT ──────────────────────────────────────────────
+  const[db,setDb]=useState(null);
+  const[auth,setAuth]=useState(null);
+
+  useEffect(()=>{
+    try{
+      if(!window.firebase.apps.length){
+        window.firebase.initializeApp(FIREBASE_CONFIG);
+      }
+      const firestore=window.firebase.firestore();
+      const fireauth=window.firebase.auth();
+      setDb(firestore);
+      setAuth(fireauth);
+      window.fbDB=firestore;
+      window.fbAuth=fireauth;
+
+      // ✅ Load food menu from Firestore
+      firestore.collection("app_data").doc("foods_menu").get().then(snap=>{
+        if(snap.exists) setFoods(snap.data());
+        else firestore.collection("app_data").doc("foods_menu").set(INIT_FOODS);
+      }).catch(()=>{});
+
+      // ✅ Firebase Auth state listener
+      fireauth.onAuthStateChanged(async(fbUser)=>{
+        if(fbUser){
+          try{
+            const doc=await firestore.collection("users").doc(fbUser.uid).get();
+            if(doc.exists){
+              const userData={...doc.data(),uid:fbUser.uid};
+              setUser(userData);
+              setMGoal(userData.goal||"general");
+              try{const ordSnap=await firestore.collection("orders").where("userId","==",fbUser.uid).get();setOrders(ordSnap.docs.map(d=>d.data()));}catch(e){}
+              setScr("app");
+            } else {
+              const basicUser={uid:fbUser.uid,email:fbUser.email,name:fbUser.email.split("@")[0],username:fbUser.email.split("@")[0].toLowerCase(),phone:"",avatar:"😊",plan:null,address:"",goal:"general",pref:"all",age:"25",weight:"70",height:"175",gender:"m",joinedAt:new Date().toISOString()};
+              try{await firestore.collection("users").doc(fbUser.uid).set(basicUser);}catch(e){}
+              setUser(basicUser);
+              setScr("onboard");
+            }
+          }catch(e){
+            const basicUser={uid:fbUser.uid,email:fbUser.email||"",name:(fbUser.email||"user").split("@")[0],username:(fbUser.email||"user").split("@")[0].toLowerCase(),phone:"",avatar:"😊",plan:null,address:"",goal:"general",pref:"all",age:"25",weight:"70",height:"175",gender:"m"};
+            setUser(basicUser);
+            setScr("app");
+          }
+        } else {
+          setTimeout(()=>setScr("auth"),2400);
         }
-    }    function Toast({ t }) {
-        return <div style={{ position: "fixed", top: 22, left: "50%", transform: "translateX(-50%)", background: t.err ? "#ef4444" : "#22c55e", color: "#fff", padding: "12px 24px", borderRadius: 50, fontWeight: 700, fontSize: 14, zIndex: 10000, animation: "toast 0.3s both" }}>{t.msg}</div>;
+      });
+    }catch(e){
+      setTimeout(()=>setScr("auth"),2400);
     }
+  },[]);
 
-    function Sheet({ onClose, children, tall }) {
-        return (
-            <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.92)", zIndex: 950, display: "flex", alignItems: "flex-end", justifyContent: "center" }} onClick={onClose}>
-                <div style={{ background: "#0c1610", borderRadius: "32px 32px 0 0", width: "100%", maxWidth: 430, padding: "24px", maxHeight: tall ? "95vh" : "80vh", overflowY: "auto", animation: "up 0.4s" }} onClick={e => e.stopPropagation()}>
-                    <div style={{ width: 40, height: 4, background: "#1b2d1f", borderRadius: 10, margin: "0 auto 20px" }} />
-                    {children}
-                </div>
+  const pop=(msg,err=false)=>{setToast({msg,err});setTimeout(()=>setToast(null),3200);};
+  const addNotif=(si)=>{
+    const s=ORDER_STEPS[si];
+    const n={id:Date.now(),...s,read:false,time:new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'})};
+    setNotifs(p=>[n,...p]);setBanner(n);setTimeout(()=>setBanner(null),5000);
+  };
+
+  // ── COMPUTED ──
+  const cartCount=cart.reduce((s,i)=>s+i.qty,0);
+  const cartSub=cart.reduce((s,i)=>s+i.price*i.qty,0);
+  const delivery=cartSub>=settings.freeDeliveryMin?0:settings.deliveryCharge;
+  const gstAmt=Math.round(cartSub*settings.gst/100);
+  const orderTotal=cartSub+delivery+gstAmt+settings.platformFee;
+  const todayCal=cart.reduce((s,i)=>s+i.cal*i.qty,0);
+  const target=user?tdee(+user.weight||70,+user.height||175,+user.age||25,user.gender||"m",user.goal||"general"):2000;
+  const calP=Math.min(100,Math.round(todayCal/target*100));
+  const unread=notifs.filter(n=>!n.read).length;
+  const liveOrders=orders.filter(o=>o.statusIdx<4).length;
+  const allFlat=Object.values(foods).flatMap(g=>Object.values(g).flat());
+  const greet=user?getGreeting(user.name,user.goal,orders):{greeting:"Welcome",icon:"👋",fn:"",tip:"",sticker:"🌟",loyalty:"",meal:"breakfast"};
+  const menuItems=(foods[mGoal]?.[mMeal]||[]).filter(i=>i.active&&i.stock&&(!search||i.name.toLowerCase().includes(search.toLowerCase())));
+  const curPlan=plans.find(p=>p.id===user?.plan);
+
+  // ── FIREBASE FOOD SYNC ──────────────────────────────────────────
+  const syncFoods=async(newFoods)=>{
+    try{if(window.fbDB)await window.fbDB.collection("app_data").doc("foods_menu").set(newFoods);}catch(e){}
+  };
+  const saveFood=(gId,meal,item)=>{
+    setFoods(prev=>{
+      const arr=prev[gId][meal];
+      const idx=arr.findIndex(x=>x.id===item.id);
+      const nf={...prev,[gId]:{...prev[gId],[meal]:idx>=0?arr.map(x=>x.id===item.id?item:x):[...arr,item]}};
+      syncFoods(nf);return nf;
+    });
+    pop("✅ Saved to Firebase!");setModal(null);
+  };
+  const deleteFood=(gId,meal,id,name)=>{
+    setFoods(prev=>{const nf={...prev,[gId]:{...prev[gId],[meal]:prev[gId][meal].filter(x=>x.id!==id)}};syncFoods(nf);return nf;});
+    pop(`🗑 "${name}" deleted`);
+  };
+  const toggleProp=(gId,meal,id,prop)=>{
+    setFoods(prev=>{const nf={...prev,[gId]:{...prev[gId],[meal]:prev[gId][meal].map(x=>x.id===id?{...x,[prop]:!x[prop]}:x)}};syncFoods(nf);return nf;});
+  };
+
+  // ── ✅ FIREBASE AUTH HANDLERS ────────────────────────────────────
+
+  // REGISTER — Firebase Auth + Firestore
+  const handleRegister=async()=>{
+    setAuthErr("");
+    if(!rName||!rUsername||!rEmail||!rPhone||!rPassword) return setAuthErr("All fields are required");
+    if(rPassword!==rConfirm) return setAuthErr("Passwords do not match");
+    if(rPassword.length<6) return setAuthErr("Password must be at least 6 characters");
+    if(!rEmail.includes("@")) return setAuthErr("Enter a valid email address");
+    if(rPhone.length<10) return setAuthErr("Enter a valid 10-digit phone number");
+    setLoading(true);
+    try{
+      // Check username unique
+      const uCheck=await window.fbDB.collection("users").where("username","==",rUsername.toLowerCase().trim()).get();
+      if(!uCheck.empty){setAuthErr("Username already taken. Try another.");setLoading(false);return;}
+      // Create Firebase Auth account
+      const cred=await window.fbAuth.createUserWithEmailAndPassword(rEmail.trim(),rPassword);
+      const uid=cred.user.uid;
+      // Save user profile to Firestore
+      const userData={
+        uid,name:rName.trim(),username:rUsername.toLowerCase().trim(),
+        email:rEmail.toLowerCase().trim(),phone:rPhone,
+        avatar:"😊",plan:null,address:"",
+        goal:"general",pref:"all",age:"25",weight:"70",height:"175",gender:"m",
+        joinedAt:new Date().toISOString()
+      };
+      await window.fbDB.collection("users").doc(uid).set(userData);
+      setUser(userData);
+      setScr("onboard");
+      pop("Account created! 🎉");
+    }catch(e){
+      if(e.code==="auth/email-already-in-use") setAuthErr("This email is already registered. Please login.");
+      else setAuthErr(e.message||"Registration failed. Try again.");
+    }
+    setLoading(false);
+  };
+
+  // LOGIN — Firebase Auth + username lookup
+  const handleLogin=async()=>{
+    setAuthErr("");
+    if(!loginId||!loginPassword) return setAuthErr("Enter username/email and password");
+    setLoading(true);
+    try{
+      let email=loginId.trim();
+      // Username login — look up email from Firestore
+      if(!loginId.includes("@")){
+        const q=await window.fbDB.collection("users").where("username","==",loginId.toLowerCase().trim()).get();
+        if(q.empty){setAuthErr("Username not found.");setLoading(false);return;}
+        email=q.docs[0].data().email;
+      }
+      await window.fbAuth.signInWithEmailAndPassword(email,loginPassword);
+      // onAuthStateChanged will handle the rest
+      pop("Welcome back! 👋");
+    }catch(e){
+      if(e.code==="auth/wrong-password"||e.code==="auth/user-not-found"||e.code==="auth/invalid-credential")
+        setAuthErr("Wrong email or password. Try again.");
+      else setAuthErr(e.message||"Login failed.");
+    }
+    setLoading(false);
+  };
+
+  // FORGOT PASSWORD — Firebase sends real reset email ✉️
+  const handleForgotPassword=async()=>{
+    setAuthErr("");
+    if(!fEmail.includes("@")) return setAuthErr("Enter a valid email address");
+    setLoading(true);
+    try{
+      await window.fbAuth.sendPasswordResetEmail(fEmail.trim());
+      pop("✅ Password reset email sent! Check your inbox.");
+      setAuthTab("login");
+      setFEmail("");
+    }catch(e){
+      if(e.code==="auth/user-not-found") setAuthErr("No account found with this email.");
+      else setAuthErr("Failed to send email. Try again.");
+    }
+    setLoading(false);
+  };
+
+  // ADMIN LOGIN — hardcoded (no Firebase Auth)
+  const handleAdminLogin=()=>{
+    const a=admins.find(x=>x.username===adminUsername&&x.password===adminPw&&x.active);
+    if(!a){pop("Wrong admin credentials!",true);return;}
+    setAdminUser(a);setIsAdmin(true);setModal(null);setTab("admin");
+    setAdminUsername("");setAdminPw("");
+    pop(`Welcome ${a.name}! 🎉`);
+    // Load all users & orders for admin
+    if(window.fbDB){
+      window.fbDB.collection("users").get().then(snap=>setAllUsers(snap.docs.map(d=>d.data())));
+      window.fbDB.collection("orders").orderBy("ts","desc").get().then(snap=>setAllOrders(snap.docs.map(d=>d.data())));
+    }
+  };
+
+  // SIGN OUT — Firebase Auth signOut
+  const handleSignOut=async()=>{
+    try{await window.fbAuth.signOut();}catch(e){}
+    setScr("auth");setUser(null);setCart([]);setNotifs([]);
+    setIsAdmin(false);setAdminUser(null);setTab("home");
+    setLoginId("");setLoginPassword("");setAuthTab("login");setAuthErr("");
+  };
+
+  // ── CART & ORDER ──────────────────────────────────────────────
+  const addToCart=item=>{setCart(p=>{const e=p.find(c=>c.id===item.id);return e?p.map(c=>c.id===item.id?{...c,qty:c.qty+1}:c):[...p,{...item,qty:1}];});pop(`${item.emoji} Added!`);setModal(null);};
+  const chgQty=(id,d)=>setCart(p=>p.map(c=>c.id===id?{...c,qty:Math.max(0,c.qty+d)}:c).filter(c=>c.qty>0));
+  const getQty=id=>cart.find(c=>c.id===id)?.qty||0;
+
+  // ✅ Place Order — saves to Firestore
+  const placeOrder=async()=>{
+    if(!cart.length)return;
+    const o={
+      id:Date.now(),userId:user.uid||user.id,userName:user.name,
+      userUsername:user.username,userPhone:user.phone,
+      userAddress:user.address||"No address provided",
+      items:[...cart],subtotal:cartSub,delivery,gst:gstAmt,
+      platformFee:settings.platformFee,total:orderTotal,
+      statusIdx:0,paymentStatus:"Cash on Delivery",
+      time:new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'}),
+      date:new Date().toLocaleDateString('en-IN'),ts:Date.now()
+    };
+    // Save to Firestore
+    try{await window.fbDB.collection("orders").add(o);}catch(e){}
+    setOrders(p=>[o,...p]);addNotif(0);setCart([]);setTab("track");
+    pop("🎉 Order placed successfully!");
+  };
+
+  const updateOrder=async(oid)=>{
+    setOrders(p=>p.map(o=>{
+      if(o.id===oid&&o.statusIdx<4){
+        const ni=o.statusIdx+1;addNotif(ni);
+        // Update in Firestore too
+        try{window.fbDB.collection("orders").where("id","==",oid).get().then(snap=>{snap.docs.forEach(d=>d.ref.update({statusIdx:ni}));});}catch(e){}
+        return{...o,statusIdx:ni};
+      }return o;
+    }));
+    pop("✅ Status updated!");
+  };
+
+  // ✅ Update user profile in Firestore
+  const saveProfile=async()=>{
+    try{
+      await window.fbDB.collection("users").doc(user.uid).update({address:user.address});
+      pop("✅ Address saved!");
+    }catch(e){pop("Saved locally!");}
+  };
+
+  // Activate plan — save to Firestore
+  const activatePlan=async(plan)=>{
+    const act={id:nid(),userId:user.uid,userName:user.name,userUsername:user.username,userPhone:user.phone,planId:plan.id,planName:plan.label,planPrice:plan.price,planPer:plan.per,activatedAt:new Date().toISOString(),paymentStatus:"Paid",active:true};
+    setPlanActivations(p=>[act,...p]);
+    const upd={...user,plan:plan.id,planName:plan.label};
+    setUser(upd);
+    try{await window.fbDB.collection("users").doc(user.uid).update({plan:plan.id,planName:plan.label});}catch(e){}
+    try{await window.fbDB.collection("plan_activations").add(act);}catch(e){}
+    pop(`✅ ${plan.label} plan activated!`);setModal(null);
+  };
+
+  // ─────────────────────────────────────────────────────────────
+  // SPLASH
+  // ─────────────────────────────────────────────────────────────
+  if(scr==="splash") return <div style={{minHeight:"100vh",background:C.bg,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",position:"relative",overflow:"hidden"}}>
+    <div style={{position:"absolute",inset:0,background:"radial-gradient(ellipse 60% 55% at 50% 50%,rgba(74,222,128,.09),transparent)"}}/>
+    <div style={{animation:"pop .7s cubic-bezier(.34,1.56,.64,1) both"}}>
+      <div style={{width:100,height:100,background:C.gG,borderRadius:32,display:"flex",alignItems:"center",justifyContent:"center",fontSize:48,boxShadow:"0 0 90px rgba(74,222,128,.45)",margin:"0 auto"}}>🥗</div>
+    </div>
+    <div style={{...N,color:C.w,fontSize:44,fontWeight:900,marginTop:20,animation:"up .5s .3s both",letterSpacing:-1.5}}>Cosfit</div>
+    <div style={{color:C.m,fontSize:14,marginTop:5,animation:"up .5s .4s both"}}>Eat Smart · Live Strong</div>
+    <div style={{color:"#263d2a",fontSize:11,marginTop:4,animation:"up .5s .5s both"}}>{COMPANY.brand}</div>
+    <div style={{position:"absolute",bottom:52,display:"flex",gap:8}}>
+      {[0,1,2].map(i=><div key={i} style={{width:8,height:8,borderRadius:"50%",background:i===1?C.g:"#1b2d1f",animation:`dot 1.4s ${i*.22}s infinite`}}/>)}
+    </div>
+  </div>;
+
+  // ─────────────────────────────────────────────────────────────
+  // AUTH SCREEN
+  // ─────────────────────────────────────────────────────────────
+  if(scr==="auth") return <div style={{minHeight:"100vh",background:C.bg,display:"flex",flexDirection:"column",...F}}>
+    {toast&&<Toast t={toast}/>}
+    <div style={{flex:1,overflowY:"auto",padding:"52px 28px 40px",maxWidth:430,margin:"0 auto",width:"100%"}}>
+      <div style={{marginBottom:28,animation:"up .5s both"}}>
+        <div style={{width:64,height:64,background:C.gG,borderRadius:20,display:"flex",alignItems:"center",justifyContent:"center",fontSize:30,boxShadow:"0 0 32px rgba(74,222,128,.3)"}}>🥗</div>
+        <div style={{...N,color:C.w,fontSize:30,fontWeight:900,marginTop:14,lineHeight:1.2,letterSpacing:-.8}}>
+          {authTab==="forgot"?"Reset Password 🔑":authTab==="login"?"Sign In 👋":"Create Account 🚀"}
+        </div>
+        <div style={{color:C.m,fontSize:13,marginTop:5}}>
+          {authTab==="forgot"?"We'll send a reset link to your Gmail":authTab==="login"?"Login with Username or Email":"Join the Cosfit family today"}
+        </div>
+      </div>
+
+      {authTab!=="forgot"&&<div style={{display:"flex",background:C.card,borderRadius:16,padding:4,gap:4,marginBottom:22}}>
+        {[["login","Sign In"],["register","Create Account"]].map(([k,l])=><button key={k} onClick={()=>{setAuthTab(k);setAuthErr("");}} style={{flex:1,padding:"12px",borderRadius:12,border:"none",background:authTab===k?C.gG:"transparent",color:authTab===k?"#060c08":C.m,fontWeight:800,fontSize:14,...N,transition:"all .2s"}}>{l}</button>)}
+      </div>}
+
+      {authErr&&<div style={{background:"rgba(248,113,113,.1)",border:"1px solid rgba(248,113,113,.3)",borderRadius:13,padding:"12px 16px",marginBottom:16,color:C.r,fontSize:13,fontWeight:600,display:"flex",gap:8,alignItems:"center",animation:"up .3s both"}}>⚠️ {authErr}</div>}
+
+      {authTab==="login"&&<div style={{display:"flex",flexDirection:"column",gap:15,animation:"up .4s both"}}>
+        <Field label="Username or Email *" value={loginId} onChange={setLoginId} ph="e.g. arjun or arjun@gmail.com"/>
+        <Field label="Password *" value={loginPassword} onChange={setLoginPassword} type="password" ph="Enter your password"/>
+        <div style={{textAlign:"right",marginTop:-6}}>
+          <span style={{color:C.g,fontSize:12,fontWeight:700,cursor:"pointer"}} onClick={()=>{setAuthTab("forgot");setAuthErr("");}}>Forgot Password?</span>
+        </div>
+        <button onClick={handleLogin} disabled={loading} style={{padding:"17px",borderRadius:16,border:"none",background:loading?"#1a2a1a":C.gG,color:loading?"rgba(255,255,255,.5)":"#060c08",...N,fontSize:16,fontWeight:900,boxShadow:loading?"none":"0 8px 36px rgba(74,222,128,.4)",marginTop:2}}>
+          {loading?<><Spinner/>Signing in...</>:"Secure Login →"}
+        </button>
+        <div style={{textAlign:"center",padding:"14px 0",borderTop:`1px solid ${C.b}`,marginTop:6}}>
+          <div style={{color:C.m,fontSize:12,marginBottom:8}}>Admin? Access Control Panel</div>
+          <button onClick={()=>setModal({type:"adminLogin"})} style={{background:"rgba(96,165,250,.1)",border:"1px solid rgba(96,165,250,.3)",color:C.blue,padding:"10px 24px",borderRadius:20,fontWeight:700,fontSize:13,...F}}>⚙️ Admin Login</button>
+        </div>
+      </div>}
+
+      {authTab==="register"&&<div style={{display:"flex",flexDirection:"column",gap:14,animation:"up .4s both"}}>
+        <Field label="Full Name *" value={rName} onChange={setRName} ph="e.g. Arjun Kumar"/>
+        <Field label="Username *" value={rUsername} onChange={v=>setRUsername(v.toLowerCase().replace(/\s/g,"_"))} ph="e.g. arjun_kumar"/>
+        <Field label="Gmail Address *" value={rEmail} onChange={setREmail} type="email" ph="e.g. arjun@gmail.com"/>
+        <Field label="Mobile Number *" value={rPhone} onChange={e=>setRPhone(e.replace(/\D/g,"").slice(0,10))} type="tel" ph="98765 43210"/>
+        <Field label="Password *" value={rPassword} onChange={setRPassword} type="password" ph="Create a strong password (min 6 chars)"/>
+        <Field label="Confirm Password *" value={rConfirm} onChange={setRConfirm} type="password" ph="Confirm your password"/>
+        <button onClick={handleRegister} disabled={loading} style={{padding:"17px",borderRadius:16,border:"none",background:loading?"#1a2a1a":C.gG,color:loading?"rgba(255,255,255,.5)":"#060c08",...N,fontSize:16,fontWeight:900,boxShadow:loading?"none":"0 8px 36px rgba(74,222,128,.4)",marginTop:2}}>
+          {loading?<><Spinner/>Creating Account...</>:"Create Account →"}
+        </button>
+      </div>}
+
+      {authTab==="forgot"&&<div style={{display:"flex",flexDirection:"column",gap:16,animation:"up .4s both"}}>
+        <div style={{background:"rgba(74,222,128,.07)",border:"1px solid rgba(74,222,128,.2)",borderRadius:14,padding:"14px 16px",fontSize:12,color:C.m,lineHeight:1.7}}>
+          📧 Enter your registered Gmail. We'll send a <span style={{color:C.g,fontWeight:700}}>secure password reset link</span> directly to your inbox.
+        </div>
+        <Field label="Registered Gmail Address *" value={fEmail} onChange={setFEmail} type="email" ph="Enter your email"/>
+        <button onClick={handleForgotPassword} disabled={loading} style={{padding:"17px",borderRadius:16,border:"none",background:loading?"#1a2a1a":C.gG,color:loading?"rgba(255,255,255,.5)":"#060c08",...N,fontSize:16,fontWeight:900,boxShadow:loading?"none":"0 8px 36px rgba(74,222,128,.4)"}}>
+          {loading?<><Spinner/>Sending Email...</>:"Send Reset Link ✉️"}
+        </button>
+        <button onClick={()=>{setAuthTab("login");setAuthErr("");}} style={{padding:"14px",borderRadius:16,border:`1.5px solid ${C.b}`,background:"transparent",color:C.m,...F,fontWeight:700,fontSize:14}}>← Back to Login</button>
+      </div>}
+    </div>
+
+    {/* Admin Login Modal */}
+    {modal?.type==="adminLogin"&&<div style={{position:"fixed",inset:0,background:"rgba(0,0,0,.93)",zIndex:960,display:"flex",alignItems:"center",justifyContent:"center",padding:24}}>
+      <div style={{background:C.surf,borderRadius:24,padding:"28px 24px",width:"100%",maxWidth:340,animation:"up .35s cubic-bezier(.34,1.56,.64,1)"}}>
+        <div style={{fontSize:48,textAlign:"center"}}>🔐</div>
+        <div style={{...N,color:C.w,fontSize:20,fontWeight:900,textAlign:"center",marginTop:12}}>Admin Login</div>
+        <div style={{color:C.m,fontSize:12,textAlign:"center",marginTop:4,marginBottom:20}}>Restricted Access Only</div>
+        <div style={{display:"flex",flexDirection:"column",gap:12,marginBottom:16}}>
+          <input type="text" placeholder="Admin Username" value={adminUsername} onChange={e=>setAdminUsername(e.target.value)} style={{width:"100%",padding:"13px 16px",background:C.card,border:`1.5px solid ${C.b}`,borderRadius:12,color:C.w,fontSize:14,...F,boxSizing:"border-box"}}/>
+          <input type="password" placeholder="Password" value={adminPw} onChange={e=>setAdminPw(e.target.value)} onKeyDown={e=>e.key==="Enter"&&handleAdminLogin()} style={{width:"100%",padding:"13px 16px",background:C.card,border:`1.5px solid ${C.b}`,borderRadius:12,color:C.w,fontSize:14,...F,boxSizing:"border-box"}}/>
+        </div>
+        <div style={{display:"flex",gap:8}}>
+          <button onClick={handleAdminLogin} style={{flex:1,background:C.gG,color:"#060c08",border:"none",padding:"13px",borderRadius:12,fontWeight:800,fontSize:14,...N}}>Enter</button>
+          <button onClick={()=>setModal(null)} style={{flex:1,background:C.card,color:C.m,border:`1px solid ${C.b}`,padding:"13px",borderRadius:12,fontWeight:700,fontSize:14}}>Cancel</button>
+        </div>
+      </div>
+    </div>}
+  </div>;
+
+  // ─────────────────────────────────────────────────────────────
+  // ONBOARDING
+  // ─────────────────────────────────────────────────────────────
+  if(scr==="onboard"){
+    const prog=((ob.step+1)/3)*100;
+    const bmi=ob.weight&&ob.height&&+ob.height>0?(+ob.weight/((+ob.height/100)**2)).toFixed(1):null;
+    const ok=[!!ob.goal,!!ob.weight&&!!ob.height&&!!ob.age,!!ob.pref][ob.step];
+    return <div style={{minHeight:"100vh",background:C.bg,display:"flex",flexDirection:"column",...F}}>
+      {toast&&<Toast t={toast}/>}
+      <div style={{padding:"52px 28px 0"}}>
+        <div style={{display:"flex",justifyContent:"space-between",marginBottom:10}}>
+          <span style={{color:C.m,fontSize:12,fontWeight:600}}>Step {ob.step+1} of 3</span>
+          <span style={{color:C.g,fontSize:12,fontWeight:700}}>{Math.round(prog)}%</span>
+        </div>
+        <div style={{background:C.card,borderRadius:99,height:5,overflow:"hidden"}}>
+          <div style={{background:C.gG,height:"100%",width:`${prog}%`,borderRadius:99,transition:"width .4s ease"}}/>
+        </div>
+      </div>
+      <div style={{flex:1,padding:"24px 28px",overflowY:"auto"}}>
+        <div style={{...N,color:C.w,fontSize:26,fontWeight:900,marginBottom:4}}>
+          {["Your Fitness Goal 🎯","Body Numbers 📊","Food Preference 🍽"][ob.step]}
+        </div>
+        <div style={{color:C.m,fontSize:13,marginBottom:22}}>
+          {["Choose what matters most","For accurate calorie targets","Show you meals you love"][ob.step]}
+        </div>
+        {ob.step===0&&<div style={{display:"flex",flexDirection:"column",gap:12}}>
+          {GOALS.map(g=><button key={g.id} onClick={()=>setOb(p=>({...p,goal:g.id}))} style={{background:ob.goal===g.id?"rgba(74,222,128,.08)":C.card,border:`1.5px solid ${ob.goal===g.id?C.g:C.b}`,borderRadius:18,padding:"18px",cursor:"pointer",textAlign:"left",display:"flex",alignItems:"center",gap:14,width:"100%",boxSizing:"border-box"}}>
+            <span style={{fontSize:32}}>{g.icon}</span>
+            <div style={{flex:1}}><div style={{color:C.w,fontWeight:800,fontSize:15,...N}}>{g.label}</div></div>
+            {ob.goal===g.id&&<div style={{width:24,height:24,borderRadius:"50%",background:C.gG,display:"flex",alignItems:"center",justifyContent:"center",color:"#060c08",fontSize:12,fontWeight:900,flexShrink:0}}>✓</div>}
+          </button>)}
+        </div>}
+        {ob.step===1&&<div style={{display:"flex",flexDirection:"column",gap:14}}>
+          {[["Age (years)","age"],["Weight (kg)","weight"],["Height (cm)","height"]].map(([l,k])=><Field key={k} label={l+" *"} value={ob[k]} onChange={v=>setOb(p=>({...p,[k]:v}))} type="number" ph="—"/>)}
+          <div>
+            <div style={{fontSize:10,fontWeight:700,color:C.m,textTransform:"uppercase",letterSpacing:1.2,marginBottom:10}}>Gender</div>
+            <div style={{display:"flex",gap:10}}>
+              {[["m","👨 Male"],["f","👩 Female"]].map(([v,l])=><button key={v} onClick={()=>setOb(p=>({...p,gender:v}))} style={{flex:1,padding:"14px",borderRadius:14,border:`1.5px solid ${ob.gender===v?C.g:C.b}`,background:ob.gender===v?"rgba(74,222,128,.1)":C.card,color:ob.gender===v?C.g:C.m,fontWeight:700,fontSize:14}}>{l}</button>)}
             </div>
-        );
-    }
+          </div>
+          {bmi&&<div style={{background:"rgba(74,222,128,.07)",border:"1px solid rgba(74,222,128,.2)",borderRadius:14,padding:"14px 16px"}}>
+            <div style={{color:C.g,fontSize:13,fontWeight:700,...N}}>📊 BMI: {bmi} — {(+bmi)<18.5?"Underweight":(+bmi)<25?"Healthy":(+bmi)<30?"Overweight":"Obese"}</div>
+            <div style={{color:C.m,fontSize:12,marginTop:3}}>Daily target ≈ {tdee(+ob.weight,+ob.height,+ob.age||25,ob.gender,ob.goal||"general")} kcal</div>
+          </div>}
+        </div>}
+        {ob.step===2&&<div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
+          {PREFS.map(p=><button key={p.id} onClick={()=>setOb(prev=>({...prev,pref:p.id}))} style={{background:ob.pref===p.id?"rgba(74,222,128,.1)":C.card,border:`1.5px solid ${ob.pref===p.id?C.g:C.b}`,borderRadius:18,padding:"24px 16px",cursor:"pointer",textAlign:"center"}}>
+            <div style={{fontSize:40}}>{p.icon}</div>
+            <div style={{color:ob.pref===p.id?C.g:C.w,fontWeight:800,fontSize:14,marginTop:12,...N}}>{p.label}</div>
+            {ob.pref===p.id&&<div style={{color:C.g,fontSize:11,marginTop:5,fontWeight:700}}>✓ Selected</div>}
+          </button>)}
+        </div>}
+      </div>
+      <div style={{padding:"0 28px 40px",display:"flex",gap:12}}>
+        {ob.step>0&&<button onClick={()=>setOb(p=>({...p,step:p.step-1}))} style={{flex:1,padding:"15px",borderRadius:15,border:`1.5px solid ${C.b}`,background:"transparent",color:C.w,...N,fontSize:15,fontWeight:700}}>← Back</button>}
+        <button disabled={!ok} onClick={async()=>{
+          if(ob.step<2){setOb(p=>({...p,step:p.step+1}));}
+          else{
+            const u={...user,...ob};setUser(u);setMGoal(ob.goal);
+            // Save onboard data to Firestore
+            try{await window.fbDB.collection("users").doc(u.uid).update({goal:ob.goal,pref:ob.pref,age:ob.age,weight:ob.weight,height:ob.height,gender:ob.gender});}catch(e){}
+            setScr("app");pop("🎉 Profile complete! Welcome to Cosfit!");
+          }
+        }} style={{flex:2,padding:"15px",borderRadius:15,border:"none",cursor:ok?"pointer":"default",background:ok?C.gG:"#1a1a1a",color:ok?"#060c08":C.m,...N,fontSize:15,fontWeight:800,boxShadow:ok?"0 8px 32px rgba(74,222,128,.35)":"none"}}>
+          {ob.step<2?"Continue →":"🚀 Start Cosfit!"}
+        </button>
+      </div>
+    </div>;
+  }
 
-    function App() {
-        const [scr, setScr] = useState("splash");
-        const [authTab, setAuthTab] = useState("login");
-        const [loading, setLoading] = useState(false);
-        const [user, setUser] = useState(null);
-        const [users, setUsers] = useState([]);
-        const [isAdmin, setIsAdmin] = useState(false);
-        
-        // Input States
-        const [loginMail, setLoginMail] = useState("");
-        const [loginPass, setLoginPass] = useState("");
-        const [regName, setRegName] = useState("");
-        const [regMail, setRegMail] = useState("");
-        const [regPhone, setRegPhone] = useState("");
-        const [regPass, setRegPass] = useState("");
-        const [fEmail, setFEmail] = useState("");
-        const [authErr, setAuthErr] = useState("");
+  if(scr!=="app")return null;
 
-        // App Data
-        const [foods, setFoods] = useState(INIT_FOODS);
-        const [cart, setCart] = useState(() => {
-            const s = localStorage.getItem("cosfit_cart");
-            return s ? JSON.parse(s) : [];
-        });
-        const [orders, setOrders] = useState([]);
-        const [notifs, setNotifs] = useState([]);
-        const [toast, setToast] = useState(null);
-        const [tab, setTab] = useState("home");
-        const [mGoal, setMGoal] = useState("general");
-        const [mMeal, setMMeal] = useState("breakfast");
-        const [search, setSearch] = useState("");
-        const [modal, setModal] = useState(null);
+  // ═══════════════════════ MAIN APP ════════════════════════════
+  const NavBtn=(k,ic,l,b=0)=><button key={k} onClick={()=>setTab(k)} style={{flex:1,background:"none",border:"none",display:"flex",flexDirection:"column",alignItems:"center",gap:4,padding:"4px 0",position:"relative"}}>
+    <div style={{background:tab===k?"rgba(74,222,128,.13)":"transparent",borderRadius:14,padding:"7px 14px",position:"relative",transition:"background .25s"}}>
+      <span style={{fontSize:18}}>{ic}</span>
+      {b>0&&<span style={{position:"absolute",top:-4,right:-4,background:C.r,color:"#fff",borderRadius:"50%",width:17,height:17,display:"flex",alignItems:"center",justifyContent:"center",fontSize:8,fontWeight:900,animation:"pulse 1.5s infinite"}}>{b}</span>}
+    </div>
+    <span style={{fontSize:9,fontWeight:tab===k?800:500,color:tab===k?C.g:C.m,...F}}>{l}</span>
+  </button>;
 
-        // 3. Persistent Cart (Claude Fix)
-        useEffect(() => { localStorage.setItem("cosfit_cart", JSON.stringify(cart)); }, [cart]);
+  return <div style={{minHeight:"100vh",maxWidth:430,margin:"0 auto",background:C.bg,position:"relative",overflow:"hidden",...F}}>
+    {toast&&<Toast t={toast}/>}
+    {banner&&<NBanner n={banner} onClose={()=>setBanner(null)}/>}
 
-        // 🔥 5. FIREBASE ID FIX (cosfit-af85d) 🔥
-        useEffect(() => {
-            const start = async () => {
-                try {
-                    if (!window.firebase.apps.length) {
-                        window.firebase.initializeApp({
-                            apiKey: "AIzaSyBaNFG34QfaciXeOVQWQtNGoMI65ozEVTA",
-                            authDomain: "cosfit-af85d.firebaseapp.com",
-                            projectId: "cosfit-af85d",
-                            storageBucket: "cosfit-af85d.firebasestorage.app",
-                            messagingSenderId: "58737921778",
-                            appId: "1:58737921778:web:1dbd0913dfbbf05f494a6b"
-                        });
-                    }
-                    const db = window.firebase.firestore();
-                    window.fbDB = db;
+    {/* ── MODALS ── */}
+    {modal?.type==="item"&&<Sheet onClose={()=>setModal(null)}>
+      <div style={{textAlign:"center"}}>
+        <div style={{fontSize:72}}>{modal.d.emoji}</div>
+        <div style={{...N,color:C.w,fontSize:20,fontWeight:900,marginTop:10}}>{modal.d.name}</div>
+        <div style={{color:C.m,fontSize:12,marginTop:5,lineHeight:1.6}}>{modal.d.desc}</div>
+        <div style={{display:"inline-flex",gap:8,background:"rgba(74,222,128,.1)",border:"1px solid rgba(74,222,128,.2)",borderRadius:20,padding:"5px 14px",marginTop:10}}>
+          <span style={{color:C.g,fontSize:12,fontWeight:700}}>{modal.d.tag}</span>
+          <span style={{color:C.m,fontSize:11}}>· ⏱ {modal.d.time}</span>
+        </div>
+      </div>
+      <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:8,marginTop:18,background:C.card,borderRadius:16,padding:"14px 6px"}}>
+        {[["🔥",modal.d.cal,"kcal"],["🥩",modal.d.p+"g","Protein"],["🌾",modal.d.c+"g","Carbs"],["💧",modal.d.f+"g","Fat"]].map(([ic,v,l])=><div key={l} style={{textAlign:"center"}}>
+          <div style={{fontSize:18}}>{ic}</div>
+          <div style={{...N,fontWeight:800,fontSize:14,color:C.w,marginTop:2}}>{v}</div>
+          <div style={{fontSize:9,color:C.m,marginTop:2}}>{l}</div>
+        </div>)}
+      </div>
+      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginTop:22}}>
+        <div>
+          <div style={{...N,fontSize:28,fontWeight:900,color:C.o}}>₹{modal.d.price}</div>
+          <div style={{fontSize:11,color:C.m}}>⏱ {modal.d.time} prep time</div>
+        </div>
+        <div style={{display:"flex",gap:10}}>
+          <button onClick={()=>setModal(null)} style={{background:C.card,color:C.m,border:`1px solid ${C.b}`,padding:"12px 18px",borderRadius:13,fontWeight:700,fontSize:13}}>Cancel</button>
+          <button onClick={()=>addToCart(modal.d)} style={{background:C.gO,color:"#fff",border:"none",padding:"12px 22px",borderRadius:13,fontWeight:800,fontSize:13,...N,boxShadow:"0 4px 20px rgba(249,115,22,.4)"}}>Add to Cart 🛒</button>
+        </div>
+      </div>
+    </Sheet>}
 
-                    // Realtime Listeners
-                    db.collection("app_data").doc("foods_menu").onSnapshot(s => { if(s.exists) setFoods(s.data()); });
-                    db.collection("app_data").doc("users_list").onSnapshot(s => { if(s.exists) setUsers(s.data().users || []); });
-                    db.collection("app_data").doc("orders_list").onSnapshot(s => { if(s.exists) setOrders(s.data().orders || []); });
+    {modal?.type==="sub"&&<Sheet onClose={()=>setModal(null)} tall>
+      <div style={{...N,color:C.w,fontSize:22,fontWeight:900,marginBottom:5}}>Upgrade Your Plan ⚡</div>
+      <div style={{color:C.m,fontSize:13,marginBottom:20}}>Unlock personalization + priority delivery</div>
+      {plans.map(plan=><div key={plan.id} onClick={()=>activatePlan(plan)} style={{background:plan.hot?"rgba(74,222,128,.07)":C.card,border:`1.5px solid ${user?.plan===plan.id?C.g:plan.hot?C.g:C.b}`,borderRadius:18,padding:"18px",cursor:"pointer",position:"relative",marginBottom:12}}>
+        {plan.hot&&<div style={{position:"absolute",top:-10,right:16,background:C.gG,color:"#060c08",fontSize:9,fontWeight:900,padding:"3px 12px",borderRadius:99}}>POPULAR</div>}
+        {user?.plan===plan.id&&<div style={{position:"absolute",top:10,left:16,background:"rgba(74,222,128,.15)",color:C.g,fontSize:9,fontWeight:900,padding:"2px 10px",borderRadius:99}}>✓ ACTIVE</div>}
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:12,marginTop:user?.plan===plan.id?14:0}}>
+          <div>
+            <div style={{color:C.w,fontWeight:800,fontSize:16,...N}}>{plan.label}</div>
+            {plan.save&&<div style={{color:C.g,fontSize:12,fontWeight:700,marginTop:3}}>{plan.save}</div>}
+          </div>
+          <div style={{textAlign:"right"}}>
+            <div style={{...N,color:C.o,fontSize:22,fontWeight:900}}>₹{plan.price}</div>
+            <div style={{color:C.m,fontSize:11}}>/{plan.per}</div>
+          </div>
+        </div>
+        {plan.features.map((f,i)=><div key={i} style={{display:"flex",gap:8,alignItems:"center",marginBottom:6}}>
+          <span style={{color:C.g,fontSize:12}}>✓</span>
+          <span style={{color:C.m,fontSize:12}}>{f}</span>
+        </div>)}
+      </div>)}
+      <button onClick={()=>setModal(null)} style={{width:"100%",marginTop:4,background:"transparent",border:`1px solid ${C.b}`,color:C.m,padding:"13px",borderRadius:14,fontWeight:600,fontSize:14}}>Maybe Later</button>
+    </Sheet>}
 
-                    window.firebase.auth().onAuthStateChanged((u) => {
-                        if (u) {
-                            db.collection("app_data").doc("users_list").get().then(snap => {
-                                const all = snap.exists ? snap.data().users : [];
-                                const found = all.find(x => x.email === u.email);
-                                if (found) {
-                                    setUser(found);
-                                    if (found.role === "admin") setIsAdmin(true);
-                                    setScr("app");
-                                }
-                            });
-                        } else { setScr("auth"); }
-                    });
-                } catch (e) { console.error(e); setScr("auth"); }
-            };
-            start();
-        }, []);
+    {modal?.type==="avatar"&&<Sheet onClose={()=>setModal(null)}>
+      <div style={{...N,color:C.w,fontSize:18,fontWeight:900,marginBottom:16}}>Choose Profile Picture</div>
+      <div style={{display:"grid",gridTemplateColumns:"repeat(5,1fr)",gap:10}}>
+        {AVATARS.map(em=><button key={em} onClick={async()=>{
+          const u={...user,avatar:em};setUser(u);setModal(null);pop("✅ Avatar updated!");
+          try{await window.fbDB.collection("users").doc(u.uid).update({avatar:em});}catch(e){}
+        }} style={{background:user?.avatar===em?"rgba(74,222,128,.15)":C.card,border:`1.5px solid ${user?.avatar===em?C.g:C.b}`,borderRadius:14,padding:"12px 0",fontSize:24,textAlign:"center"}}>
+          {em}{user?.avatar===em&&<div style={{fontSize:9,color:C.g,fontWeight:700,marginTop:3}}>✓</div>}
+        </button>)}
+      </div>
+    </Sheet>}
 
-        const pop = (msg, err = false) => { setToast({ msg, err }); setTimeout(() => setToast(null), 3000); };
+    {/* ══ HOME ══ */}
+    {tab==="home"&&<div style={{paddingBottom:90,height:"100vh",overflowY:"auto"}}>
+      <div style={{padding:"52px 22px 18px",background:"linear-gradient(180deg,#0c1610 0%,transparent 100%)"}}>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start"}}>
+          <div>
+            <div style={{color:C.m,fontSize:13,fontWeight:600}}>{greet.icon} {greet.greeting}</div>
+            <div style={{...N,color:C.w,fontSize:28,fontWeight:900,marginTop:4,letterSpacing:-.8}}>{greet.fn}</div>
+            {curPlan&&<div style={{display:"inline-flex",alignItems:"center",gap:6,background:"rgba(251,191,36,.1)",border:"1px solid rgba(251,191,36,.3)",borderRadius:20,padding:"4px 12px",marginTop:6}}>
+              <span style={{color:C.gold,fontSize:11,fontWeight:800,...N}}>⚡ {curPlan.label} Pro Active</span>
+            </div>}
+          </div>
+          <div style={{display:"flex",gap:8}}>
+            <button onClick={()=>setTab("notifs")} style={{width:42,height:42,borderRadius:"50%",background:"rgba(74,222,128,.1)",border:"1px solid rgba(74,222,128,.25)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:18,position:"relative"}}>
+              🔔{unread>0&&<span style={{position:"absolute",top:-2,right:-2,background:C.r,color:"#fff",borderRadius:"50%",width:17,height:17,display:"flex",alignItems:"center",justifyContent:"center",fontSize:8,fontWeight:900}}>{unread}</span>}
+            </button>
+            <button onClick={()=>setTab("profile")} style={{width:42,height:42,borderRadius:"50%",background:C.card,border:`1.5px solid ${C.b}`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:20}}>
+              {user?.avatar||"😊"}
+            </button>
+          </div>
+        </div>
+      </div>
 
-        // 🔥 8. PHONE VALIDATION & 9. LOADING STATE 🔥
-        const handleRegister = async () => {
-            setAuthErr("");
-            if (!regName || !regMail || regPhone.length !== 10 || regPass.length < 6) return setAuthErr("Check fields (10-digit phone, 6-char pass)");
-            setLoading(true);
-            try {
-                const res = await window.firebase.auth().createUserWithEmailAndPassword(regMail.trim(), regPass);
-                const nu = { id: res.user.uid, name: regName, email: regMail.toLowerCase(), phone: regPhone, avatar: "😊", role: "user", goal: "general", age: "25", weight: "70", height: "175", gender: "m" };
-                const upUsers = [...users, nu];
-                await window.fbDB.collection("app_data").doc("users_list").set({ users: upUsers }, { merge: true });
-                setUser(nu); setScr("app"); pop("Account Created! 🎉");
-            } catch (e) { setAuthErr(e.message); }
-            setLoading(false);
-        };
+      <div style={{margin:"0 22px 16px",background:"rgba(74,222,128,.07)",border:"1px solid rgba(74,222,128,.2)",borderRadius:18,padding:"14px 16px",display:"flex",gap:12,alignItems:"flex-start"}}>
+        <span style={{fontSize:26}}>{greet.sticker}</span>
+        <div style={{flex:1}}>
+          <div style={{color:C.g,fontSize:12,fontWeight:800,...N}}>{greet.greeting} tip!</div>
+          <div style={{color:C.m,fontSize:12,marginTop:3,lineHeight:1.5}}>{greet.tip}</div>
+          {greet.loyalty&&<div style={{color:C.gold,fontSize:11,fontWeight:700,marginTop:4}}>{greet.loyalty}</div>}
+        </div>
+      </div>
 
-        const handleLogin = async () => {
-            setAuthErr(""); if (!loginMail || !loginPass) return setAuthErr("Enter email/pass");
-            setLoading(true);
-            try {
-                let mail = loginMail.trim().toLowerCase();
-                if (!mail.includes("@")) {
-                    const u = users.find(x => x.name.toLowerCase() === mail || x.phone === mail);
-                    if (u) mail = u.email; else throw new Error("User not found");
-                }
-                await window.firebase.auth().signInWithEmailAndPassword(mail, loginPass);
-                pop("Welcome back!");
-            } catch (e) { setAuthErr("Login failed"); }
-            setLoading(false);
-        };
-
-        const handleForgotPass = async () => {
-            if (!fEmail.includes("@")) return pop("Enter valid Gmail", true);
-            setLoading(true);
-            try {
-                await window.firebase.auth().sendPasswordResetEmail(fEmail.trim());
-                pop("Reset link sent! Check Gmail ✅"); setAuthTab("login");
-            } catch (e) { pop("Error sending link", true); }
-            setLoading(false);
-        };
-
-        const signOut = () => window.firebase.auth().signOut().then(() => { setScr("auth"); setUser(null); setIsAdmin(false); setTab("home"); });
-        const addToCart = (i) => {
-            setCart(prev => {
-                const ex = prev.find(c => c.id === i.id);
-                return ex ? prev.map(c => c.id === i.id ? { ...c, qty: c.qty + 1 } : c) : [...prev, { ...i, qty: 1 }];
-            });
-            pop(i.emoji + " Added!");
-        };
-
-        const placeOrder = async () => {
-            if (!cart.length) return;
-            setLoading(true);
-            const o = { id: Date.now(), userId: user.id, userName: user.name, items: [...cart], total: cart.reduce((s, i) => s + i.price * i.qty, 0) + 50, statusIdx: 0, date: new Date().toLocaleDateString(), time: new Date().toLocaleTimeString() };
-            try {
-                await window.fbDB.collection("app_data").doc("orders_list").set({ orders: window.firebase.firestore.FieldValue.arrayUnion(o) }, { merge: true });
-                setCart([]); setTab("track"); pop("Order Placed! 🚀");
-            } catch (e) { pop("Failed", true); }
-            setLoading(false);
-        };
-
-        if (scr === "splash") return <div className="flex-center" style={{ height: "100vh", flexDirection: "column" }}><div style={{ fontSize: 80, animation: "pop 0.6s both" }}>🥗</div><h1 style={{ marginTop: 20, fontSize: 40, fontWeight: 900 }}>Cosfit</h1></div>;
-
-        if (scr === "auth") return (
-            <div style={{ padding: "60px 25px" }}>
-                {toast && <Toast t={toast} />}
-                <div style={{ textAlign: "center", marginBottom: 40 }}><div style={{ fontSize: 60 }}>🥗</div><h2 style={{ marginTop: 15 }}>Welcome to Cosfit</h2></div>
-                <div style={{ display: "flex", background: "#101a13", borderRadius: 18, padding: 5, marginBottom: 30 }}>
-                    {["login", "register"].map(t => <button key={t} onClick={() => setAuthTab(t)} style={{ flex: 1, padding: 15, borderRadius: 14, background: authTab === t ? "#4ade80" : "transparent", color: authTab === t ? "#000" : "#5e7d68", fontWeight: 800 }}>{t === "login" ? "Sign In" : "Join"}</button>)}
-                </div>
-                {authErr && <div style={{ color: "#f87171", textAlign: "center", marginBottom: 20 }}>⚠️ {authErr}</div>}
-                {authTab === "login" && <div>
-                    <input value={loginMail} onChange={e => setLoginMail(e.target.value)} placeholder="Email or Phone" style={{ marginBottom: 15 }} />
-                    <input type="password" value={loginPass} onChange={e => setLoginPass(e.target.value)} placeholder="Password" style={{ marginBottom: 15 }} />
-                    <button onClick={() => setAuthTab("forgot")} style={{ float: "right", color: "#4ade80", background: "none", marginBottom: 20 }}>Forgot?</button>
-                    <button disabled={loading} onClick={handleLogin} className="primary-btn">{loading ? "Verifying..." : "Login →"}</button>
-                </div>}
-                {authTab === "register" && <div>
-                    <input value={regName} onChange={e => setRegName(e.target.value)} placeholder="Full Name" style={{ marginBottom: 12 }} />
-                    <input value={regMail} onChange={e => setRegMail(e.target.value)} placeholder="Email" style={{ marginBottom: 12 }} />
-                    <input value={regPhone} maxLength={10} onChange={e => setRegPhone(e.target.value)} placeholder="Phone" style={{ marginBottom: 12 }} />
-                    <input type="password" value={regPass} onChange={e => setRegPass(e.target.value)} placeholder="Password" style={{ marginBottom: 12 }} />
-                    <button disabled={loading} onClick={handleRegister} className="primary-btn">{loading ? "Creating..." : "Sign Up →"}</button>
-                </div>}
-                {authTab === "forgot" && <div>
-                    <h3 style={{ marginBottom: 10 }}>Reset 🔑</h3>
-                    <input value={fEmail} onChange={e => setFEmail(e.target.value)} placeholder="Enter Gmail" style={{ marginBottom: 15 }} />
-                    <button onClick={handleForgotPass} className="primary-btn">Send Link</button>
-                    <button onClick={() => setAuthTab("login")} style={{ width: "100%", marginTop: 15, background: "none", color: "#5e7d68" }}>← Back</button>
-                </div>}
+      <div style={{margin:"0 22px 16px",background:C.card,borderRadius:24,padding:"18px",border:`1px solid ${C.b}`}}>
+        <div style={{display:"flex",alignItems:"center",gap:18}}>
+          <div style={{position:"relative",width:84,height:84,flexShrink:0}}>
+            <svg width={84} height={84} style={{transform:"rotate(-90deg)"}}>
+              <circle cx={42} cy={42} r={34} fill="none" stroke={C.b} strokeWidth={8}/>
+              <circle cx={42} cy={42} r={34} fill="none" stroke={calP>100?C.r:C.g} strokeWidth={8} strokeDasharray={214} strokeDashoffset={214*(1-calP/100)} strokeLinecap="round" style={{transition:"stroke-dashoffset .8s ease"}}/>
+            </svg>
+            <div style={{position:"absolute",inset:0,display:"flex",alignItems:"center",justifyContent:"center"}}>
+              <div style={{...N,color:C.w,fontSize:14,fontWeight:900}}>{calP}%</div>
             </div>
-        );
+          </div>
+          <div style={{flex:1}}>
+            <div style={{color:C.m,fontSize:10,fontWeight:700,textTransform:"uppercase",letterSpacing:1.2}}>Today's Intake</div>
+            <div style={{...N,color:C.w,fontSize:24,fontWeight:900,marginTop:3}}>{todayCal} <span style={{fontSize:12,color:C.m}}>kcal</span></div>
+            <div style={{color:C.m,fontSize:12,marginTop:2}}>Goal: {target} kcal</div>
+          </div>
+        </div>
+      </div>
 
-        return (
-            <div style={{ paddingBottom: 100 }}>
-                {toast && <Toast t={toast} />}
-                {tab === "home" && <div style={{ padding: 25 }}>
-                    <div style={{ display: "flex", justifyContent: "space-between", marginTop: 20 }}>
-                        <div><p style={{ color: "#5e7d68" }}>Hello,</p><h2 style={{ fontSize: 32 }}>{user?.name}</h2></div>
-                        <div onClick={() => setTab("profile")} style={{ width: 55, height: 55, borderRadius: "50%", background: "#101a13", border: "1px solid #1b2d1f", fontSize: 26 }} className="flex-center">{user?.avatar}</div>
-                    </div>
-                    <div style={{ background: "#101a13", borderRadius: 24, padding: 25, marginTop: 30 }}><p style={{ color: "#5e7d68", fontSize: 11 }}>CALORIE TARGET</p><h3 style={{ color: "#4ade80", fontSize: 32 }}>2400 kcal</h3></div>
-                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 15, marginTop: 25 }}>
-                        <button onClick={() => setTab("menu")} style={{ background: "#4ade80", padding: 20, borderRadius: 22, color: "#000", fontWeight: 900 }}>🍽 Order</button>
-                        <button onClick={() => setTab("track")} style={{ background: "#101a13", padding: 20, borderRadius: 22, border: "1px solid #1b2d1f" }}>🛵 Track</button>
-                    </div>
-                    <h3 style={{ marginTop: 35 }}>Foods for You</h3>
-                    <div style={{ display: "flex", gap: 15, overflowX: "auto", marginTop: 20 }}>
-                        {foods.weight_loss.breakfast.map(i => <div key={i.id} style={{ minWidth: 160, background: "#101a13", borderRadius: 22, padding: 15 }}><div style={{ fontSize: 40, textAlign: "center" }}>{i.emoji}</div><p style={{ fontWeight: 800, marginTop: 10 }}>{i.name}</p><button onClick={() => addToCart(i)} style={{ background: "#4ade80", width: "100%", padding: 8, borderRadius: 10, marginTop: 10, color: "#000", fontWeight: 900 }}>+ Add</button></div>)}
-                    </div>
-                </div>}
+      <div style={{padding:"0 22px",marginBottom:16}}>
+        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
+          <button onClick={()=>setTab("menu")} style={{background:C.gG,borderRadius:20,padding:"16px",border:"none",textAlign:"left",boxShadow:"0 8px 28px rgba(74,222,128,.25)"}}>
+            <div style={{fontSize:28}}>🍽</div>
+            <div style={{...N,color:"#060c08",fontWeight:900,fontSize:15,marginTop:8}}>Order Food</div>
+            <div style={{color:"rgba(6,12,8,.55)",fontSize:11,marginTop:3}}>{allFlat.filter(i=>i.active&&i.stock).length} items</div>
+          </button>
+          <button onClick={()=>setTab("track")} style={{background:C.card,borderRadius:20,padding:"16px",border:`1px solid ${liveOrders>0?C.g:C.b}`,textAlign:"left",position:"relative"}}>
+            <div style={{fontSize:28}}>🛵</div>
+            <div style={{...N,color:C.w,fontWeight:900,fontSize:15,marginTop:8}}>Track Order</div>
+            <div style={{color:C.m,fontSize:11,marginTop:3}}>{orders.length} orders</div>
+            {liveOrders>0&&<div style={{position:"absolute",top:10,right:10,background:C.r,color:"#fff",borderRadius:99,fontSize:9,fontWeight:900,padding:"2px 8px",animation:"pulse 1.5s infinite"}}>● LIVE</div>}
+          </button>
+        </div>
+      </div>
 
-                {tab === "profile" && <div style={{ padding: 25, textAlign: "center" }}>
-                    <div style={{ fontSize: 80, margin: "40px 0" }}>{user?.avatar}</div>
-                    <h2>{user?.name}</h2><p style={{ color: "#5e7d68" }}>{user?.email}</p>
-                    <button onClick={signOut} className="primary-btn" style={{ background: "rgba(248,113,113,0.1)", color: "#f87171", marginTop: 40 }}>Sign Out 🚪</button>
-                    {isAdmin && <button onClick={() => setTab("admin")} className="primary-btn" style={{ marginTop: 15 }}>Admin Panel ⚙️</button>}
-                </div>}
-
-                {/* Bottom Nav */}
-                <div style={{ position: "fixed", bottom: 0, width: "100%", maxWidth: 430, background: "rgba(6,12,8,0.98)", display: "flex", justifyContent: "space-around", padding: "15px 0 35px", borderTop: "1px solid #1b2d1f" }}>
-                    {[["home", "🏠"], ["menu", "🍽"], ["cart", "🛒"], ["track", "🛵"], ["profile", "👤"]].map(([k, ic]) => <button key={k} onClick={() => setTab(k)} style={{ background: "none", opacity: tab === k ? 1 : 0.3, fontSize: 24 }}>{ic}</button>)}
+      <div style={{padding:"0 22px"}}>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
+          <div style={{...N,color:C.w,fontSize:16,fontWeight:800}}>{greet.sticker} {(greet.meal||"breakfast").charAt(0).toUpperCase()+(greet.meal||"breakfast").slice(1)} for You</div>
+          <button onClick={()=>setTab("menu")} style={{background:"none",border:"none",color:C.g,fontSize:12,fontWeight:700,...N}}>See All →</button>
+        </div>
+        <div style={{display:"flex",gap:12,overflowX:"auto",paddingBottom:8}}>
+          {(foods[user?.goal||"general"]?.[greet.meal||"breakfast"]||[]).filter(i=>i.active&&i.stock).slice(0,5).map((item,i)=>{
+            const q=getQty(item.id);
+            return <div key={item.id} onClick={()=>setModal({type:"item",d:item})} style={{minWidth:165,background:C.card,borderRadius:20,overflow:"hidden",cursor:"pointer",border:`1px solid ${C.b}`,flexShrink:0,animation:`cIn .4s ease ${i*.08}s both`}}>
+              <div style={{background:"linear-gradient(135deg,#0c1610,#101a13)",padding:"18px 14px 12px",textAlign:"center",position:"relative"}}>
+                <div style={{fontSize:46}}>{item.emoji}</div>
+                <div style={{position:"absolute",top:8,right:8,background:"rgba(74,222,128,.14)",border:"1px solid rgba(74,222,128,.2)",borderRadius:7,padding:"2px 6px",fontSize:9,fontWeight:700,color:C.g}}>{item.tag}</div>
+              </div>
+              <div style={{padding:"10px 12px 12px"}}>
+                <div style={{...N,fontWeight:800,fontSize:12,color:C.w,lineHeight:1.3}}>{item.name}</div>
+                <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginTop:8}}>
+                  <div>
+                    <div style={{...N,color:C.o,fontWeight:900,fontSize:14}}>₹{item.price}</div>
+                    <div style={{fontSize:9,color:C.m}}>🔥{item.cal}</div>
+                  </div>
+                  {q>0?<div style={{display:"flex",alignItems:"center",gap:4,background:C.surf,borderRadius:9,padding:"4px 7px"}}>
+                    <button onClick={e=>{e.stopPropagation();chgQty(item.id,-1);}} style={{background:"none",border:"none",color:C.g,fontWeight:900,fontSize:16,width:20,height:20,display:"flex",alignItems:"center",justifyContent:"center"}}>−</button>
+                    <span style={{color:C.w,fontWeight:800,minWidth:14,textAlign:"center",fontSize:12,...N}}>{q}</span>
+                    <button onClick={e=>{e.stopPropagation();addToCart(item);}} style={{background:"none",border:"none",color:C.g,fontWeight:900,fontSize:16,width:20,height:20,display:"flex",alignItems:"center",justifyContent:"center"}}>+</button>
+                  </div>:<button onClick={e=>{e.stopPropagation();addToCart(item);}} style={{background:C.gO,color:"#fff",border:"none",padding:"6px 12px",borderRadius:9,fontWeight:800,fontSize:11,...N}}>+ Add</button>}
                 </div>
+              </div>
+            </div>;
+          })}
+        </div>
+      </div>
+
+      {!curPlan&&<div style={{margin:"16px 22px 0",background:"linear-gradient(135deg,#0c1610,#101a13)",border:"1px solid rgba(74,222,128,.15)",borderRadius:20,padding:"18px",cursor:"pointer"}} onClick={()=>setModal({type:"sub"})}>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+          <div>
+            <div style={{fontSize:10,fontWeight:700,color:C.g,letterSpacing:1.5,textTransform:"uppercase"}}>⚡ Cosfit Pro</div>
+            <div style={{...N,color:C.w,fontSize:17,fontWeight:900,marginTop:4,lineHeight:1.3}}>Smart Meal Plans<br/>Just for You</div>
+            <div style={{color:C.m,fontSize:12,marginTop:4}}>From ₹{plans[0]?.price}/{plans[0]?.per}</div>
+          </div>
+          <div style={{background:C.gG,width:54,height:54,borderRadius:16,display:"flex",alignItems:"center",justifyContent:"center",fontSize:26,boxShadow:"0 4px 24px rgba(74,222,128,.35)"}}>⚡</div>
+        </div>
+      </div>}
+    </div>}
+
+    {/* ══ MENU ══ */}
+    {tab==="menu"&&<div style={{paddingBottom:90,height:"100vh",overflowY:"auto"}}>
+      <div style={{padding:"52px 22px 14px",background:"linear-gradient(180deg,#0c1610 0%,transparent 100%)"}}>
+        <div style={{...N,color:C.w,fontSize:26,fontWeight:900,letterSpacing:-.8}}>Menu 🍽</div>
+        <div style={{display:"flex",alignItems:"center",gap:10,background:C.card,borderRadius:14,padding:"12px 16px",marginTop:14,border:`1px solid ${C.b}`}}>
+          <span>🔍</span>
+          <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search meals..." style={{flex:1,background:"none",border:"none",color:C.w,fontSize:14,...F,width:"100%"}}/>
+          {search&&<button onClick={()=>setSearch("")} style={{background:"none",border:"none",color:C.m,fontSize:22}}>×</button>}
+        </div>
+      </div>
+      <div style={{padding:"0 22px 12px",display:"flex",gap:8,overflowX:"auto"}}>
+        {GOALS.map(g=><button key={g.id} onClick={()=>setMGoal(g.id)} style={{background:mGoal===g.id?"rgba(74,222,128,.14)":C.card,border:`1.5px solid ${mGoal===g.id?C.g:C.b}`,color:mGoal===g.id?C.g:C.m,padding:"8px 16px",borderRadius:20,fontWeight:700,fontSize:12,whiteSpace:"nowrap",flexShrink:0,...F}}>{g.icon} {g.label}</button>)}
+      </div>
+      <div style={{padding:"0 22px 14px"}}>
+        <div style={{display:"flex",background:C.card,borderRadius:16,padding:4,gap:3}}>
+          {MEALS.map(m=><button key={m} onClick={()=>setMMeal(m)} style={{flex:1,padding:"10px 8px",borderRadius:12,border:"none",background:mMeal===m?C.g:"transparent",color:mMeal===m?"#060c08":C.m,fontWeight:700,fontSize:12,...F}}>{MIC[m]} {m.charAt(0).toUpperCase()+m.slice(1)}</button>)}
+        </div>
+      </div>
+      <div style={{padding:"0 22px"}}>
+        {menuItems.length===0&&<div style={{textAlign:"center",padding:"48px 0"}}><div style={{fontSize:52}}>🔍</div><div style={{color:C.m,fontSize:14,marginTop:12,...N}}>No meals found</div></div>}
+        {menuItems.map((item,i)=>{
+          const q=getQty(item.id);
+          return <div key={item.id} style={{background:C.card,borderRadius:20,marginBottom:12,border:`1px solid ${C.b}`,overflow:"hidden",display:"flex",animation:`cIn .3s ease ${i*.05}s both`}}>
+            <div onClick={()=>setModal({type:"item",d:item})} style={{width:88,background:"linear-gradient(135deg,#0c1610,#101a13)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:40,cursor:"pointer",flexShrink:0}}>{item.emoji}</div>
+            <div style={{flex:1,padding:"13px 14px 13px 12px",minWidth:0}}>
+              <div style={{...N,fontWeight:800,fontSize:14,color:C.w}}>{item.name}</div>
+              <div style={{fontSize:11,color:C.m,marginTop:3,lineHeight:1.4}}>{item.desc}</div>
+              <div style={{display:"flex",gap:5,marginTop:7,flexWrap:"wrap"}}>
+                <span style={{background:"rgba(251,146,60,.12)",color:C.o,fontSize:10,fontWeight:700,padding:"3px 8px",borderRadius:99}}>🔥{item.cal}</span>
+                <span style={{background:"rgba(74,222,128,.1)",color:C.g,fontSize:9,fontWeight:700,padding:"3px 8px",borderRadius:99}}>{item.tag}</span>
+              </div>
+              <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginTop:10}}>
+                <span style={{...N,fontWeight:900,fontSize:16,color:C.o}}>₹{item.price}</span>
+                {q>0?<div style={{display:"flex",alignItems:"center",gap:8,background:C.surf,borderRadius:10,padding:"6px 12px"}}>
+                  <button onClick={()=>chgQty(item.id,-1)} style={{background:"none",border:"none",color:C.g,fontWeight:900,fontSize:20,width:22,height:22,display:"flex",alignItems:"center",justifyContent:"center"}}>−</button>
+                  <span style={{color:C.w,fontWeight:800,minWidth:16,textAlign:"center",...N}}>{q}</span>
+                  <button onClick={()=>addToCart(item)} style={{background:"none",border:"none",color:C.g,fontWeight:900,fontSize:20,width:22,height:22,display:"flex",alignItems:"center",justifyContent:"center"}}>+</button>
+                </div>:<button onClick={()=>addToCart(item)} style={{background:C.gO,color:"#fff",border:"none",padding:"8px 16px",borderRadius:10,fontWeight:800,fontSize:12,...N}}>+ Add</button>}
+              </div>
             </div>
-        );
-    }
+          </div>;
+        })}
+      </div>
+    </div>}
 
-    ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+    {/* ══ CART ══ */}
+    {tab==="cart"&&<div style={{paddingBottom:90,height:"100vh",overflowY:"auto"}}>
+      <div style={{padding:"52px 22px 20px"}}>
+        <div style={{...N,color:C.w,fontSize:26,fontWeight:900}}>Your Cart 🛒</div>
+        {cart.length>0&&<div style={{color:C.m,fontSize:13,marginTop:4}}>{cartCount} items · {cart.reduce((s,i)=>s+i.cal*i.qty,0)} kcal</div>}
+      </div>
+      {cart.length===0?<div style={{textAlign:"center",padding:"60px 24px"}}>
+        <div style={{fontSize:74}}>🛒</div>
+        <div style={{...N,color:C.w,fontSize:20,fontWeight:900,marginTop:16}}>Cart is empty</div>
+        <button onClick={()=>setTab("menu")} style={{background:C.gG,color:"#060c08",border:"none",padding:"14px 32px",borderRadius:16,fontWeight:800,fontSize:14,marginTop:24,...N}}>Explore Menu →</button>
+      </div>:<div style={{padding:"0 22px"}}>
+        {cart.map(item=><div key={item.id} style={{background:C.card,borderRadius:18,padding:14,marginBottom:10,display:"flex",gap:12,alignItems:"center",border:`1px solid ${C.b}`}}>
+          <div style={{fontSize:32,width:44,textAlign:"center",flexShrink:0}}>{item.emoji}</div>
+          <div style={{flex:1,minWidth:0}}>
+            <div style={{...N,fontWeight:800,color:C.w,fontSize:13}}>{item.name}</div>
+            <div style={{...N,color:C.o,fontWeight:900,fontSize:14,marginTop:3}}>₹{item.price*item.qty}</div>
+          </div>
+          <div style={{display:"flex",alignItems:"center",gap:7,background:C.surf,borderRadius:11,padding:"7px 10px",flexShrink:0}}>
+            <button onClick={()=>chgQty(item.id,-1)} style={{background:"none",border:"none",color:C.g,fontWeight:900,fontSize:18,width:20,height:20,display:"flex",alignItems:"center",justifyContent:"center"}}>−</button>
+            <span style={{color:C.w,fontWeight:800,minWidth:16,textAlign:"center",...N}}>{item.qty}</span>
+            <button onClick={()=>chgQty(item.id,1)} style={{background:"none",border:"none",color:C.g,fontWeight:900,fontSize:18,width:20,height:20,display:"flex",alignItems:"center",justifyContent:"center"}}>+</button>
+          </div>
+        </div>)}
+        <div style={{background:C.card,borderRadius:18,padding:18,marginTop:6,border:`1px solid ${C.b}`,marginBottom:14}}>
+          <div style={{...N,color:C.w,fontWeight:800,fontSize:15,marginBottom:14}}>Bill Summary</div>
+          {[["Subtotal",`₹${cartSub}`],["Delivery",delivery===0?"🎁 Free":`₹${delivery}`],[`GST (${settings.gst}%)`,`₹${gstAmt}`],["Platform Fee",`₹${settings.platformFee}`]].map(([l,v])=><div key={l} style={{display:"flex",justifyContent:"space-between",marginBottom:10,fontSize:13}}>
+            <span style={{color:C.m}}>{l}</span><span style={{color:C.w,fontWeight:600}}>{v}</span>
+          </div>)}
+          <div style={{borderTop:`1px solid ${C.b}`,paddingTop:12,marginTop:4,display:"flex",justifyContent:"space-between"}}>
+            <span style={{...N,color:C.w,fontWeight:900,fontSize:17}}>Total</span>
+            <span style={{...N,color:C.o,fontWeight:900,fontSize:20}}>₹{orderTotal}</span>
+          </div>
+        </div>
+        <div style={{background:C.card,borderRadius:18,padding:18,marginBottom:16,border:`1px solid ${C.b}`}}>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
+            <div style={{...N,fontWeight:800,color:C.w,fontSize:14}}>📍 Delivery Address</div>
+            <button onClick={()=>setTab("profile")} style={{background:"none",border:"none",color:C.g,fontSize:12,fontWeight:700,...N}}>Edit →</button>
+          </div>
+          {user?.address?<div style={{color:C.m,fontSize:13,lineHeight:1.6}}>{user.address}</div>:
+          <button onClick={()=>setTab("profile")} style={{width:"100%",background:"rgba(74,222,128,.07)",border:"1px dashed rgba(74,222,128,.3)",color:C.g,padding:"12px",borderRadius:12,fontWeight:700,fontSize:13}}>+ Add Delivery Address</button>}
+        </div>
+        <button onClick={placeOrder} style={{width:"100%",background:C.gO,color:"#fff",border:"none",padding:18,borderRadius:18,fontWeight:900,fontSize:16,...N,boxShadow:"0 8px 36px rgba(249,115,22,.42)"}}>🚀 Place Order</button>
+      </div>}
+    </div>}
 
-    if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => navigator.serviceWorker.register('/sw.js').catch(e => console.log(e)));
-    }
+    {/* ══ TRACK ══ */}
+    {tab==="track"&&<div style={{paddingBottom:90,height:"100vh",overflowY:"auto"}}>
+      <div style={{padding:"52px 22px 22px"}}>
+        <div style={{...N,color:C.w,fontSize:26,fontWeight:900}}>Track Orders 🛵</div>
+        <div style={{color:C.m,fontSize:13,marginTop:4}}>{orders.length} total · {liveOrders} live</div>
+      </div>
+      {orders.length===0?<div style={{textAlign:"center",padding:"60px 24px"}}>
+        <div style={{fontSize:72}}>📦</div>
+        <div style={{...N,color:C.w,fontSize:20,fontWeight:900,marginTop:16}}>No orders yet</div>
+        <button onClick={()=>setTab("menu")} style={{background:C.gG,color:"#060c08",border:"none",padding:"14px 32px",borderRadius:16,fontWeight:800,fontSize:14,marginTop:24,...N}}>Order Now →</button>
+      </div>:<div style={{padding:"0 22px"}}>
+        {orders.map(order=><div key={order.id} style={{background:C.card,borderRadius:22,marginBottom:16,border:`1px solid ${order.statusIdx<4?"rgba(74,222,128,.35)":C.b}`,overflow:"hidden"}}>
+          <div style={{background:"linear-gradient(135deg,#0c1610,#101a13)",padding:"16px 18px",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+            <div>
+              <div style={{...N,color:C.w,fontWeight:800,fontSize:14}}>#{String(order.id).slice(-8)}</div>
+              <div style={{color:C.m,fontSize:11,marginTop:2}}>{order.date} · {order.time}</div>
+            </div>
+            <div style={{textAlign:"right"}}>
+              <div style={{...N,color:C.o,fontWeight:900,fontSize:18}}>₹{order.total}</div>
+              {order.statusIdx<4?<div style={{background:"rgba(74,222,128,.15)",color:C.g,borderRadius:99,fontSize:9,fontWeight:900,padding:"3px 10px",marginTop:4,display:"inline-block",animation:"pulse 1.5s infinite"}}>● LIVE</div>:<div style={{color:C.g,fontSize:11,fontWeight:700,marginTop:4}}>✅ Done</div>}
+            </div>
+          </div>
+          <div style={{padding:"18px"}}>
+            {ORDER_STEPS.map((step,i)=><div key={i} style={{display:"flex",alignItems:"flex-start",gap:12,marginBottom:i<4?14:0}}>
+              <div style={{width:30,height:30,borderRadius:"50%",flexShrink:0,background:i<order.statusIdx?"rgba(74,222,128,.18)":i===order.statusIdx?"rgba(74,222,128,.12)":"transparent",border:`2px solid ${i<=order.statusIdx?C.g:C.b}`,display:"flex",alignItems:"center",justifyContent:"center",transition:"all .5s"}}>
+                {i<order.statusIdx?<span style={{fontSize:11,color:C.g,fontWeight:900}}>✓</span>:i===order.statusIdx?<span style={{fontSize:15,animation:"pulse 1.5s infinite"}}>{step.icon}</span>:<span style={{color:C.m,fontSize:10,fontWeight:800}}>{i+1}</span>}
+              </div>
+              <div style={{flex:1,paddingTop:3}}>
+                <div style={{fontSize:12,fontWeight:i===order.statusIdx?800:500,color:i<=order.statusIdx?C.w:C.m,...N,display:"flex",alignItems:"center",gap:8}}>
+                  {step.label}{i===order.statusIdx&&<span style={{background:"rgba(74,222,128,.15)",color:C.g,fontSize:9,fontWeight:800,padding:"2px 8px",borderRadius:99}}>NOW</span>}
+                </div>
+                {i===order.statusIdx&&<div style={{fontSize:11,color:C.m,marginTop:3,lineHeight:1.5}}>{step.msg}</div>}
+              </div>
+            </div>)}
+            <div style={{display:"flex",flexWrap:"wrap",gap:6,paddingTop:12,marginTop:4,borderTop:`1px solid ${C.b}`}}>
+              {order.items.map(i=><span key={i.id} style={{background:C.surf,color:C.m,padding:"3px 10px",borderRadius:99,fontSize:11}}>{i.emoji} {i.name} ×{i.qty}</span>)}
+            </div>
+          </div>
+        </div>)}
+      </div>}
+    </div>}
+
+    {/* ══ NOTIFS ══ */}
+    {tab==="notifs"&&<div style={{paddingBottom:90,height:"100vh",overflowY:"auto"}}>
+      <div style={{padding:"52px 22px 20px",display:"flex",justifyContent:"space-between",alignItems:"flex-end"}}>
+        <div>
+          <div style={{...N,color:C.w,fontSize:26,fontWeight:900}}>Notifications 🔔</div>
+          <div style={{color:C.m,fontSize:13,marginTop:4}}>{unread} unread</div>
+        </div>
+        {unread>0&&<button onClick={()=>setNotifs(p=>p.map(n=>({...n,read:true})))} style={{background:"none",border:"none",color:C.g,fontSize:12,fontWeight:700,...N}}>Mark all read</button>}
+      </div>
+      {notifs.length===0?<div style={{textAlign:"center",padding:"60px 24px"}}>
+        <div style={{fontSize:72}}>🔔</div>
+        <div style={{...N,color:C.w,fontSize:20,fontWeight:900,marginTop:16}}>No notifications yet</div>
+      </div>:<div style={{padding:"0 22px"}}>
+        {notifs.map((n,i)=><div key={n.id} onClick={()=>setNotifs(p=>p.map(x=>x.id===n.id?{...x,read:true}:x))} style={{background:n.read?C.card:"rgba(74,222,128,.06)",borderRadius:18,padding:"16px",marginBottom:10,border:`1px solid ${n.read?C.b:"rgba(74,222,128,.25)"}`,display:"flex",gap:12,cursor:"pointer",animation:`cIn .3s ease ${i*.05}s both`}}>
+          <div style={{width:44,height:44,background:n.read?"rgba(74,222,128,.07)":"rgba(74,222,128,.14)",borderRadius:14,display:"flex",alignItems:"center",justifyContent:"center",fontSize:22,flexShrink:0}}>{n.icon}</div>
+          <div style={{flex:1}}>
+            <div style={{...N,fontWeight:800,color:C.w,fontSize:13}}>{n.label}</div>
+            <div style={{fontSize:12,color:C.m,marginTop:3,lineHeight:1.5}}>{n.msg}</div>
+            <div style={{fontSize:10,color:C.m2,marginTop:6}}>{n.time}</div>
+          </div>
+          {!n.read&&<div style={{width:9,height:9,borderRadius:"50%",background:C.g,flexShrink:0,marginTop:5,animation:"pulse 1.5s infinite"}}/>}
+        </div>)}
+      </div>}
+    </div>}
+
+    {/* ══ PROFILE ══ */}
+    {tab==="profile"&&<div style={{paddingBottom:90,height:"100vh",overflowY:"auto"}}>
+      <div style={{padding:"52px 22px 28px",background:"linear-gradient(180deg,#0c1610 0%,transparent 100%)",textAlign:"center"}}>
+        <div style={{position:"relative",display:"inline-block"}}>
+          <div style={{width:88,height:88,background:C.gG,borderRadius:"50%",display:"flex",alignItems:"center",justifyContent:"center",fontSize:42,margin:"0 auto",boxShadow:"0 0 36px rgba(74,222,128,.32)",cursor:"pointer"}} onClick={()=>setModal({type:"avatar"})}>{user?.avatar||"😊"}</div>
+          <div style={{position:"absolute",bottom:0,right:0,background:C.gG,borderRadius:"50%",width:26,height:26,display:"flex",alignItems:"center",justifyContent:"center",fontSize:13,cursor:"pointer",border:`2px solid ${C.bg}`}} onClick={()=>setModal({type:"avatar"})}>✏️</div>
+        </div>
+        <div style={{...N,color:C.w,fontSize:22,fontWeight:900,marginTop:12}}>{user?.name}</div>
+        <div style={{color:C.m,fontSize:13,marginTop:4}}>@{user?.username} · +91 {user?.phone}</div>
+        <div style={{color:C.m,fontSize:12,marginTop:3}}>{user?.email}</div>
+        {curPlan&&<div style={{display:"inline-flex",gap:6,background:"rgba(251,191,36,.1)",border:"1px solid rgba(251,191,36,.3)",borderRadius:20,padding:"6px 14px",marginTop:10}}>
+          <span style={{color:C.gold,fontSize:12,fontWeight:800,...N}}>⚡ {curPlan.label} Pro</span>
+        </div>}
+      </div>
+      <div style={{padding:"0 22px"}}>
+        <div style={{background:C.card,borderRadius:20,padding:16,border:`1px solid ${C.b}`,marginBottom:14}}>
+          <div style={{...N,color:C.w,fontWeight:800,fontSize:14,marginBottom:12}}>📍 Delivery Address</div>
+          <Field value={user?.address||""} onChange={v=>setUser(p=>({...p,address:v}))} ph="Enter your full delivery address..." rows={3}/>
+          <button onClick={saveProfile} style={{width:"100%",marginTop:10,background:C.gG,color:"#060c08",border:"none",padding:13,borderRadius:12,fontWeight:800,fontSize:14,...N}}>Save Address</button>
+        </div>
+        <div style={{display:"flex",flexDirection:"column",gap:10,marginBottom:20}}>
+          {[
+            {ic:"🖼",l:"Change Avatar",fn:()=>setModal({type:"avatar"}),col:C.g,bg:"rgba(74,222,128,.08)",bd:"rgba(74,222,128,.25)"},
+            {ic:"⚡",l:curPlan?`Active: ${curPlan.label} Pro`:"Upgrade to Pro",fn:()=>setModal({type:"sub"}),col:C.gold,bg:"rgba(251,191,36,.08)",bd:"rgba(251,191,36,.25)"},
+            {ic:"⚙️",l:isAdmin?"Admin Panel →":"Admin Login",fn:()=>isAdmin?setTab("admin"):setModal({type:"adminLogin"}),col:isAdmin?C.g:C.m,bg:C.card,bd:C.b},
+            {ic:"🚪",l:"Sign Out",fn:handleSignOut,col:C.r,bg:"rgba(248,113,113,.1)",bd:"rgba(248,113,113,.25)"},
+          ].map(b=><button key={b.l} onClick={b.fn} style={{background:b.bg,border:`1px solid ${b.bd}`,color:b.col,padding:"14px 16px",borderRadius:16,fontWeight:700,fontSize:14,textAlign:"left",display:"flex",alignItems:"center",gap:12}}>
+            <span style={{fontSize:20}}>{b.ic}</span><span>{b.l}</span>
+          </button>)}
+        </div>
+        <div style={{background:"rgba(74,222,128,.05)",border:"1px solid rgba(74,222,128,.1)",borderRadius:14,padding:"12px 16px",marginBottom:14}}>
+          <div style={{color:C.g,fontSize:11,fontWeight:700,...N,marginBottom:4}}>🔐 Firebase Auth Active</div>
+          <div style={{color:C.m,fontSize:11}}>Your account is securely stored in Firebase. Password reset works via Gmail link.</div>
+        </div>
+        <div style={{textAlign:"center",color:"#1b2d1f",fontSize:11,paddingBottom:8,lineHeight:1.8}}>Cosfit v6.0 · {COMPANY.name}</div>
+      </div>
+    </div>}
+
+    {/* ══ ADMIN PANEL ══ */}
+    {tab==="admin"&&isAdmin&&<div style={{paddingBottom:90,height:"100vh",overflowY:"auto"}}>
+      <div style={{padding:"52px 22px 16px",background:"linear-gradient(135deg,#080f1c,#0c1610)"}}>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start"}}>
+          <div>
+            <div style={{color:C.blue,fontSize:10,fontWeight:700,letterSpacing:1.5,textTransform:"uppercase"}}>⚙️ Admin Panel</div>
+            <div style={{...N,color:C.w,fontSize:22,fontWeight:900,marginTop:4}}>Control Centre</div>
+            <div style={{color:C.m,fontSize:12,marginTop:2}}>{adminUser?.name} · {adminUser?.role}</div>
+          </div>
+          <button onClick={()=>{setIsAdmin(false);setAdminUser(null);setTab("profile");pop("Exited admin");}} style={{background:"rgba(248,113,113,.15)",border:"1px solid rgba(248,113,113,.3)",color:C.r,padding:"8px 14px",borderRadius:20,fontSize:12,fontWeight:700,...N}}>Exit</button>
+        </div>
+        <div style={{display:"flex",gap:8,marginTop:14,flexWrap:"wrap"}}>
+          {[[`${orders.length} Orders`,C.g],[`${allOrders.length} Total`,C.o],[`${allUsers.length} Users`,C.pur],[`${allFlat.filter(i=>i.active).length} Items`,C.blue]].map(([l,c])=><div key={l} style={{background:"rgba(255,255,255,.04)",border:"1px solid rgba(255,255,255,.08)",borderRadius:99,padding:"4px 12px",fontSize:10,fontWeight:700,color:c}}>{l}</div>)}
+        </div>
+      </div>
+
+      <div style={{padding:"0 22px 14px"}}>
+        <div style={{display:"flex",background:C.card,borderRadius:14,padding:4,gap:2,overflowX:"auto"}}>
+          {[["orders","📦"],["foods","🍽"],["customers","👥"],["stats","📊"]].map(([k,ic])=><button key={k} onClick={()=>setAdminTab(k)} style={{flexShrink:0,padding:"9px 14px",borderRadius:10,border:"none",background:adminTab===k?C.blue:"transparent",color:adminTab===k?"#fff":C.m,fontWeight:700,fontSize:12,...F,whiteSpace:"nowrap"}}>
+            {ic} {k.charAt(0).toUpperCase()+k.slice(1)}
+          </button>)}
+        </div>
+      </div>
+
+      {adminTab==="orders"&&<div style={{padding:"0 22px"}}>
+        {[...orders,...allOrders.filter(o=>!orders.find(x=>x.id===o.id))].length===0?
+        <div style={{textAlign:"center",padding:"40px 0"}}><div style={{fontSize:52}}>📦</div><div style={{color:C.m,fontWeight:700,marginTop:12,...N}}>No orders yet</div></div>:
+        [...orders,...allOrders.filter(o=>!orders.find(x=>x.id===o.id))].map(order=><div key={order.id} style={{background:C.card,borderRadius:20,marginBottom:14,border:`1px solid ${order.statusIdx<4?"rgba(74,222,128,.3)":C.b}`,overflow:"hidden"}}>
+          <div style={{background:"linear-gradient(135deg,#080f1c,#0c1610)",padding:"14px 16px"}}>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:8}}>
+              <div>
+                <div style={{...N,color:C.w,fontWeight:800,fontSize:13}}>#{String(order.id).slice(-8)}</div>
+                <div style={{fontSize:11,color:C.m,marginTop:2}}>{order.date} · {order.time}</div>
+              </div>
+              <div style={{textAlign:"right"}}>
+                <div style={{...N,color:C.o,fontWeight:900,fontSize:16}}>₹{order.total}</div>
+              </div>
+            </div>
+            <div style={{background:"rgba(255,255,255,.04)",borderRadius:10,padding:"10px 12px"}}>
+              <div style={{fontSize:12,color:C.m}}>👤 <span style={{color:C.w,fontWeight:700}}>{order.userName}</span></div>
+              <div style={{fontSize:12,color:C.m,marginTop:4}}>📞 <span style={{color:C.g,fontWeight:700}}>+91 {order.userPhone}</span></div>
+              <div style={{fontSize:11,color:C.m,marginTop:4}}>📍 {order.userAddress||"No address"}</div>
+            </div>
+          </div>
+          <div style={{padding:"10px 16px 14px"}}>
+            <div style={{color:C.g,fontSize:11,fontWeight:700,marginBottom:8}}>{ORDER_STEPS[order.statusIdx]?.icon} {ORDER_STEPS[order.statusIdx]?.label}</div>
+            <div style={{display:"flex",flexWrap:"wrap",gap:5,marginBottom:12}}>
+              {order.items.map(i=><span key={i.id} style={{background:C.surf,color:C.m,padding:"3px 10px",borderRadius:99,fontSize:11}}>{i.emoji} {i.name} ×{i.qty}</span>)}
+            </div>
+            {order.statusIdx<4?
+              <button onClick={()=>updateOrder(order.id)} style={{width:"100%",background:C.gG,color:"#060c08",border:"none",padding:"10px",borderRadius:12,fontWeight:900,fontSize:12,...N}}>
+                Update → {ORDER_STEPS[order.statusIdx+1]?.icon} {ORDER_STEPS[order.statusIdx+1]?.label}
+              </button>:
+              <div style={{background:"rgba(74,222,128,.07)",border:"1px solid rgba(74,222,128,.2)",borderRadius:12,padding:"10px",textAlign:"center",color:C.g,fontSize:12,fontWeight:700,...N}}>✅ Delivered!</div>
+            }
+          </div>
+        </div>)}
+      </div>}
+
+      {adminTab==="foods"&&<div style={{padding:"0 22px"}}>
+        {GOALS.map(goal=><div key={goal.id} style={{marginBottom:22}}>
+          <div style={{...N,color:C.w,fontWeight:900,fontSize:14,marginBottom:10,display:"flex",alignItems:"center",gap:8}}>
+            <span>{goal.icon}</span><span>{goal.label}</span>
+            <span style={{color:C.m,fontSize:11,fontWeight:600,marginLeft:"auto"}}>{Object.values(foods[goal.id]||{}).flat().length} items</span>
+          </div>
+          {MEALS.map(meal=><div key={meal} style={{marginBottom:12}}>
+            <div style={{fontSize:10,fontWeight:700,color:C.m,textTransform:"uppercase",letterSpacing:1.2,marginBottom:8}}>{MIC[meal]} {meal} ({(foods[goal.id]?.[meal]||[]).length})</div>
+            {(foods[goal.id]?.[meal]||[]).map(item=><div key={item.id} style={{background:C.card,borderRadius:13,padding:"10px 12px",marginBottom:7,border:`1px solid ${C.b}`,display:"flex",alignItems:"center",gap:9,opacity:!item.active?0.45:1}}>
+              <span style={{fontSize:20,flexShrink:0}}>{item.emoji}</span>
+              <div style={{flex:1,minWidth:0}}>
+                <div style={{...N,fontWeight:700,color:C.w,fontSize:13,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{item.name}</div>
+                <div style={{fontSize:10,color:C.m}}>₹{item.price} · {item.cal}kcal</div>
+              </div>
+              <div style={{display:"flex",gap:4,flexShrink:0}}>
+                <button onClick={()=>toggleProp(goal.id,meal,item.id,"stock")} style={{background:item.stock?"rgba(74,222,128,.12)":"rgba(248,113,113,.12)",border:"none",color:item.stock?C.g:C.r,width:28,height:28,borderRadius:8,fontSize:12}}>{item.stock?"📦":"🚫"}</button>
+                <button onClick={()=>toggleProp(goal.id,meal,item.id,"active")} style={{background:item.active?"rgba(74,222,128,.12)":"rgba(100,100,100,.1)",border:"none",color:item.active?C.g:C.m,width:28,height:28,borderRadius:8,fontSize:13}}>{item.active?"👁":"🙈"}</button>
+                <button onClick={()=>deleteFood(goal.id,meal,item.id,item.name)} style={{background:"rgba(248,113,113,.12)",border:"none",color:C.r,width:28,height:28,borderRadius:8,fontSize:12}}>🗑</button>
+              </div>
+            </div>)}
+          </div>)}
+        </div>)}
+      </div>}
+
+      {adminTab==="customers"&&<div style={{padding:"0 22px"}}>
+        <div style={{...N,color:C.w,fontWeight:800,fontSize:15,marginBottom:14}}>👥 Firebase Users ({allUsers.length})</div>
+        {allUsers.length===0?<div style={{textAlign:"center",padding:"40px 0",color:C.m}}>No customers yet. Users registered via Firebase Auth appear here.</div>:
+        allUsers.map(u=><div key={u.uid||u.email} style={{background:C.card,borderRadius:18,padding:"16px",marginBottom:12,border:`1px solid ${C.b}`}}>
+          <div style={{display:"flex",gap:12,alignItems:"flex-start"}}>
+            <div style={{width:46,height:46,background:C.gG,borderRadius:"50%",display:"flex",alignItems:"center",justifyContent:"center",fontSize:22,flexShrink:0}}>{u.avatar||"😊"}</div>
+            <div style={{flex:1}}>
+              <div style={{...N,color:C.w,fontWeight:800,fontSize:14}}>{u.name}</div>
+              <div style={{color:C.m,fontSize:12,marginTop:2}}>@{u.username} · +91 {u.phone}</div>
+              <div style={{color:C.m,fontSize:11,marginTop:2}}>{u.email}</div>
+              {u.address&&<div style={{color:C.m,fontSize:11,marginTop:4}}>📍 {u.address}</div>}
+            </div>
+          </div>
+        </div>)}
+      </div>}
+
+      {adminTab==="stats"&&<div style={{padding:"0 22px"}}>
+        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12,marginBottom:18}}>
+          {[["📦","Orders",orders.length,C.g],["💰","Revenue","₹"+orders.reduce((s,o)=>s+o.total,0),C.o],["👥","Firebase Users",allUsers.length,C.pur],["🍽","Menu Items",allFlat.length,C.blue]].map(([ic,l,v,col])=><div key={l} style={{background:C.card,borderRadius:18,padding:"16px",border:`1px solid ${C.b}`}}>
+            <div style={{fontSize:22}}>{ic}</div>
+            <div style={{...N,color:col,fontSize:24,fontWeight:900,marginTop:6}}>{v}</div>
+            <div style={{color:C.m,fontSize:11,marginTop:3}}>{l}</div>
+          </div>)}
+        </div>
+        <div style={{background:"rgba(74,222,128,.07)",border:"1px solid rgba(74,222,128,.2)",borderRadius:16,padding:"16px"}}>
+          <div style={{color:C.g,fontWeight:800,fontSize:13,...N,marginBottom:8}}>🔥 Firebase Status</div>
+          <div style={{color:C.m,fontSize:12,lineHeight:1.8}}>
+            ✅ Firebase Auth — Active<br/>
+            ✅ Firestore — Connected<br/>
+            ✅ Food Menu — Synced<br/>
+            ✅ Real Gmail OTP — Via Firebase Reset Link<br/>
+            ✅ Orders — Saved to Firestore
+          </div>
+        </div>
+      </div>}
+    </div>}
+
+    {/* ══ BOTTOM NAV ══ */}
+    <div style={{position:"fixed",bottom:0,left:"50%",transform:"translateX(-50%)",width:"100%",maxWidth:430,background:"rgba(6,12,8,.97)",backdropFilter:"blur(24px)",borderTop:`1px solid ${C.b}`,display:"flex",padding:"10px 0 24px",zIndex:200}}>
+      {NavBtn("home","🏠","Home",0)}
+      {NavBtn("menu","🍽","Menu",0)}
+      {NavBtn("cart","🛒","Cart",cartCount)}
+      {NavBtn("track","🛵","Track",liveOrders)}
+      {NavBtn("notifs","🔔","Alerts",unread)}
+    </div>
+  </div>;
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
+</script>
+<script>
+// ✅ Service Worker — works on any HTTPS domain
+if("serviceWorker" in navigator && location.protocol === "https:"){
+  navigator.serviceWorker.register("sw.js").then(()=>console.log("✅ SW registered")).catch(e=>console.log("SW:",e));
+}
 </script>
 </body>
 </html>
