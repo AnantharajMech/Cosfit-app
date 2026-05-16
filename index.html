@@ -13,54 +13,63 @@
 <link rel="apple-touch-icon" href="icon.png"/>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
 
-<!-- ✅ Firebase SDKs -->
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 
-<!-- React + Babel -->
 <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
 <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
 <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
 <style>
-*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{background:#060c08;overflow-x:hidden;width:100%;font-family:'Inter',sans-serif}
-#root{width:100%;max-width:430px;margin:0 auto;overflow-x:hidden;position:relative}
-::-webkit-scrollbar{display:none}
-input,textarea,select{font-family:'Inter',sans-serif;box-sizing:border-box;-webkit-appearance:none;outline:none;border:none}
-button{cursor:pointer;border:none;outline:none}
-button:active{transform:scale(.92)!important;transition:transform .08s!important}
-@keyframes pop{from{opacity:0;transform:scale(.15)}to{opacity:1;transform:scale(1)}}
-@keyframes up{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
-@keyframes slideUp{from{opacity:0;transform:translateY(100%)}to{opacity:1;transform:translateY(0)}}
-@keyframes fadeIn{from{opacity:0}to{opacity:1}}
-@keyframes cIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
-@keyframes notif{from{opacity:0;transform:translateY(-80px)}to{opacity:1;transform:translateY(0)}}
-@keyframes dot{0%,100%{opacity:.1}50%{opacity:1}}
-@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.18)}}
-@keyframes toast{from{opacity:0;transform:translateX(-50%) translateY(-20px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
-@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body { background: #060c08; overflow-x: hidden; width: 100%; font-family: 'Inter', sans-serif; }
+#root { width: 100%; max-width: 430px; margin: 0 auto; overflow-x: hidden; position: relative; }
+::-webkit-scrollbar { display: none; }
+input, textarea, select { font-family: 'Inter', sans-serif; box-sizing: border-box; -webkit-appearance: none; outline: none; border: none; }
+button { cursor: pointer; border: none; outline: none; transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.15s; }
+button:active { transform: scale(0.94) !important; }
+select { 
+  background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%234ade80%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.4-12.8z%22%2F%3E%3C%2Fsvg%3E"); 
+  background-repeat: no-repeat; 
+  background-position: right 14px top 50%; 
+  background-size: 10px auto; 
+}
+@keyframes pop { from { opacity: 0; transform: scale(0.15); } to { opacity: 1; transform: scale(1); } }
+@keyframes up { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes slideUp { from { opacity: 0; transform: translateY(100%); } to { opacity: 1; transform: translateY(0); } }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes cIn { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes notif { from { opacity: 0; transform: translateY(-80px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes dot { 0%, 100% { opacity: 0.1; } 50% { opacity: 1; } }
+@keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.18); box-shadow: 0 0 12px rgba(74,222,128,0.5); } }
+@keyframes toast { from { opacity: 0; transform: translateX(-50%) translateY(-20px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
+@keyframes spin { from { transform: rotate(0); } to { transform: rotate(360deg); } }
 </style>
 </head>
 <body>
 <div id="root"></div>
 <script type="text/babel">
-const {useState,useEffect,useRef}=React;
+const { useState, useEffect, useRef } = React;
 
 // ── DESIGN TOKENS ────────────────────────────────────────────────
-const N={fontFamily:"'Nunito',sans-serif"};
-const F={fontFamily:"'Inter',sans-serif"};
-const C={
-  bg:"#060c08",surf:"#0c1610",card:"#101a13",card2:"#142019",
-  b:"#1b2d1f",b2:"#243829",
-  g:"#4ade80",gG:"linear-gradient(135deg,#4ade80,#22c55e)",
-  o:"#fb923c",gO:"linear-gradient(135deg,#fb923c,#f97316)",
-  gold:"#fbbf24",w:"#edf8f0",m:"#5e7d68",m2:"#3d5545",
-  r:"#f87171",blue:"#60a5fa",pur:"#a78bfa",
+const N = { fontFamily: "'Nunito', sans-serif" };
+const F = { fontFamily: "'Inter', sans-serif" };
+const C = {
+  bg: "#060c08", surf: "#0c1610", card: "linear-gradient(145deg, #101a13, #0c1610)", card2: "#142019",
+  b: "rgba(74,222,128,0.12)", b2: "#243829",
+  g: "#4ade80", gG: "linear-gradient(135deg, #4ade80, #22c55e)",
+  o: "#fb923c", gO: "linear-gradient(135deg, #fb923c, #f97316)",
+  gold: "#fbbf24", w: "#edf8f0", m: "#6b8a76", m2: "#3d5545",
+  r: "#f87171", blue: "#60a5fa", pur: "#a78bfa",
 };
 
-const COMPANY={name:"Coscoom Creative Tech Solutions",brand:"Idappadi Creators",email:"anantharajeinstein@gmail.com",phone:"8778148899"};
+const COMPANY = { 
+  name: "Coscoom Creative Tech Solutions", 
+  brand: "Idappadi Creators", 
+  email: "anantharajeinstein@gmail.com", 
+  phone: "8778148899" 
+};
 
 // ── FIREBASE CONFIG ──────────────────────────────────────────────
 const FIREBASE_CONFIG = {
@@ -69,1132 +78,1468 @@ const FIREBASE_CONFIG = {
   projectId: "cosfit-cb1a4",
   storageBucket: "cosfit-cb1a4.firebasestorage.app",
   messagingSenderId: "155256850801",
-  appId: "1:155256850801:web:45aacbbadcba01a3b38ed0",
-  measurementId: "G-1J78P2QC5D"
+  appId: "1:155256850801:web:45aacbbadcba01a3b38ed0"
 };
 
-// ── ADMIN CREDENTIALS (keep secure) ─────────────────────────────
-const INIT_ADMINS=[
-  {id:1,name:"Anantharaj",username:"Anantharajmech",role:"Super Admin",password:"ananthaarthi160893",active:true},
-  {id:2,name:"Aarthi",username:"Aarthimech",role:"Admin",password:"aarthiananth160893",active:true},
-  {id:3,name:"Ajith",username:"Ajithmech",role:"Staff",password:"ajithmerga160893",active:true},
+// ── ADMIN CREDENTIALS ─────────────────────────────
+const INIT_ADMINS = [
+  { id: 1, name: "Anantharaj", username: "Anantharajmech", role: "Super Admin", password: "ananthaarthi160893", active: true },
+  { id: 2, name: "Aarthi", username: "Aarthimech", role: "Admin", password: "aarthiananth160893", active: true },
+  { id: 3, name: "Ajith", username: "Ajithmech", role: "Staff", password: "ajithmerga160893", active: true },
 ];
 
-const INIT_SETTINGS={deliveryCharge:40,freeDeliveryMin:400,platformFee:10,gst:5,appName:"Cosfit",currency:"₹",supportPhone:"8778148899"};
+const INIT_SETTINGS = { 
+  deliveryCharge: 40, 
+  freeDeliveryMin: 400, 
+  platformFee: 10, 
+  gst: 5, 
+  appName: "Cosfit", 
+  currency: "₹", 
+  supportPhone: "8778148899" 
+};
 
-const INIT_PLANS=[
-  {id:"w",label:"Weekly",price:499,per:"week",save:null,hot:false,features:["Personalized meal plan","Calorie & macro tracking","Free delivery on all orders","Priority customer support"]},
-  {id:"m",label:"Monthly",price:1499,per:"month",save:"Save 25%",hot:true,features:["Everything in Weekly","Advanced nutrition analytics","Chef special exclusive items","Dedicated health coach","Weekly progress reports"]},
-  {id:"y",label:"Yearly",price:9999,per:"year",save:"Save 58%",hot:false,features:["Everything in Monthly","Annual health assessment","Exclusive premium recipes","Family plan for 4 members","VIP badge"]},
+const INIT_PLANS = [
+  { id: "w", label: "Weekly", price: 499, per: "week", save: "", hot: false, features: ["Personalized meal plan", "Calorie & macro tracking", "Free delivery on all orders", "Priority customer support"] },
+  { id: "m", label: "Monthly", price: 1499, per: "month", save: "Save 25%", hot: true, features: ["Everything in Weekly", "Advanced nutrition analytics", "Chef special exclusive items", "Dedicated health coach", "Weekly progress reports"] },
+  { id: "y", label: "Yearly", price: 9999, per: "year", save: "Save 58%", hot: false, features: ["Everything in Monthly", "Annual health assessment", "Exclusive premium recipes", "Family plan for 4 members", "VIP badge"] },
 ];
 
-const GOALS=[
-  {id:"weight_loss",label:"Weight Loss",icon:"⚖️",calMod:-500},
-  {id:"muscle_gain",label:"Muscle Gain",icon:"💪",calMod:300},
-  {id:"general",label:"Stay Fit",icon:"🌿",calMod:0},
+const GOALS = [
+  { id: "weight_loss", label: "Weight Loss", icon: "⚖️", calMod: -500 },
+  { id: "muscle_gain", label: "Muscle Gain", icon: "💪", calMod: 300 },
+  { id: "general", label: "Stay Fit", icon: "🌿", calMod: 0 },
 ];
-const PREFS=[{id:"all",label:"Everything",icon:"🍽"},{id:"veg",label:"Vegetarian",icon:"🥦"},{id:"nonveg",label:"Non-Veg",icon:"🍗"},{id:"vegan",label:"Vegan",icon:"🌱"}];
-const MEALS=["breakfast","lunch","dinner"];
-const MIC={breakfast:"☀️",lunch:"🌤",dinner:"🌙"};
-const AVATARS=["😊","💪","🌟","🏃","🧘","🥗","🔥","⚡","🌈","🎯","👑","🦁","🎮","🎵","✨","💎","🌺","🦊","🐯","🌸"];
-const ORDER_STEPS=[{icon:"✅",label:"Order Confirmed",msg:"Your order is confirmed!"},{icon:"👨‍🍳",label:"Preparing Food",msg:"Chefs are cooking your fresh meal!"},{icon:"📦",label:"Order Packed",msg:"Packed & ready for pickup."},{icon:"🛵",label:"Out for Delivery",msg:"Rider is heading to you now!"},{icon:"🎉",label:"Delivered!",msg:"Enjoy your meal! Stay fit 💪"}];
 
-const INIT_FOODS={
-  weight_loss:{
-    breakfast:[
-      {id:1,name:"Green Detox Smoothie",desc:"Spinach, apple, ginger, lemon",cal:185,p:5,c:32,f:3,price:129,emoji:"🥤",tag:"Detox",time:"5m",active:true,stock:true},
-      {id:2,name:"Oats Berry Bowl",desc:"Rolled oats, mixed berries, chia seeds",cal:240,p:9,c:38,f:5,price:149,emoji:"🥣",tag:"High Fiber",time:"8m",active:true,stock:true},
-      {id:3,name:"Egg White Wrap",desc:"3 egg whites, spinach, whole grain",cal:210,p:22,c:18,f:4,price:169,emoji:"🌯",tag:"Protein",time:"10m",active:true,stock:true},
+const PREFS = [
+  { id: "all", label: "Everything", icon: "🍽" },
+  { id: "veg", label: "Vegetarian", icon: "🥦" },
+  { id: "nonveg", label: "Non-Veg", icon: "🍗" },
+  { id: "vegan", label: "Vegan", icon: "🌱" }
+];
+
+const MEALS = ["breakfast", "lunch", "dinner"];
+const MIC = { breakfast: "☀️", lunch: "🌤", dinner: "🌙" };
+const AVATARS = ["😊", "💪", "🌟", "🏃", "🧘", "🥗", "🔥", "⚡", "🌈", "🎯", "👑", "🦁", "🎮", "🎵", "✨", "💎", "🌺", "🦊", "🐯", "🌸"];
+
+const ORDER_STEPS = [
+  { icon: "✅", label: "Order Confirmed", msg: "Your order is confirmed!" },
+  { icon: "👨‍🍳", label: "Preparing Food", msg: "Chefs are cooking your fresh meal!" },
+  { icon: "📦", label: "Order Packed", msg: "Packed & ready for pickup." },
+  { icon: "🛵", label: "Out for Delivery", msg: "Rider is heading to you now!" },
+  { icon: "🎉", label: "Delivered!", msg: "Enjoy your meal! Stay fit 💪" },
+  { icon: "❌", label: "Order Cancelled", msg: "Your order has been cancelled." }
+];
+
+const INIT_FOODS = {
+  weight_loss: {
+    breakfast: [
+      { id: 1, name: "Green Detox Smoothie", desc: "Spinach, apple, ginger, lemon", cal: 185, p: 5, c: 32, f: 3, price: 129, emoji: "🥤", tag: "Detox", time: "5m", active: true, stock: true },
+      { id: 2, name: "Oats Berry Bowl", desc: "Rolled oats, mixed berries, chia seeds", cal: 240, p: 9, c: 38, f: 5, price: 149, emoji: "🥣", tag: "High Fiber", time: "8m", active: true, stock: true },
+      { id: 3, name: "Egg White Wrap", desc: "3 egg whites, spinach, whole grain", cal: 210, p: 22, c: 18, f: 4, price: 169, emoji: "🌯", tag: "Protein", time: "10m", active: true, stock: true },
     ],
-    lunch:[
-      {id:5,name:"Grilled Chicken Salad",desc:"Lettuce, tomato, cucumber, lemon dressing",cal:320,p:34,c:12,f:11,price:229,emoji:"🥗",tag:"Low Carb",time:"15m",active:true,stock:true},
-      {id:6,name:"Millet Khichdi",desc:"Foxtail millet, moong dal, turmeric",cal:290,p:13,c:48,f:5,price:179,emoji:"🍲",tag:"Gluten Free",time:"18m",active:true,stock:true},
+    lunch: [
+      { id: 5, name: "Grilled Chicken Salad", desc: "Lettuce, tomato, cucumber, lemon dressing", cal: 320, p: 34, c: 12, f: 11, price: 229, emoji: "🥗", tag: "Low Carb", time: "15m", active: true, stock: true },
+      { id: 6, name: "Millet Khichdi", desc: "Foxtail millet, moong dal, turmeric", cal: 290, p: 13, c: 48, f: 5, price: 179, emoji: "🍲", tag: "Gluten Free", time: "18m", active: true, stock: true },
     ],
-    dinner:[
-      {id:8,name:"Steamed Fish & Greens",desc:"Tilapia, broccoli, beans, lemon",cal:310,p:38,c:10,f:12,price:259,emoji:"🐟",tag:"Heart Healthy",time:"20m",active:true,stock:true},
-      {id:9,name:"Moong Dal Soup",desc:"Green lentil, ginger, pepper, coriander",cal:195,p:13,c:28,f:3,price:139,emoji:"🍵",tag:"Digestive",time:"15m",active:true,stock:true},
+    dinner: [
+      { id: 8, name: "Steamed Fish & Greens", desc: "Tilapia, broccoli, beans, lemon", cal: 310, p: 38, c: 10, f: 12, price: 259, emoji: "🐟", tag: "Heart Healthy", time: "20m", active: true, stock: true },
+      { id: 9, name: "Moong Dal Soup", desc: "Green lentil, ginger, pepper, coriander", cal: 195, p: 13, c: 28, f: 3, price: 139, emoji: "🍵", tag: "Digestive", time: "15m", active: true, stock: true },
     ],
   },
-  muscle_gain:{
-    breakfast:[
-      {id:11,name:"Protein Power Bowl",desc:"4 eggs, oats, banana, peanut butter",cal:620,p:42,c:58,f:18,price:219,emoji:"💪",tag:"Muscle Fuel",time:"12m",active:true,stock:true},
-      {id:12,name:"Chicken Omelette",desc:"Chicken strips, 3 eggs, cheese, peppers",cal:540,p:48,c:8,f:22,price:239,emoji:"🍳",tag:"High Protein",time:"12m",active:true,stock:true},
+  muscle_gain: {
+    breakfast: [
+      { id: 11, name: "Protein Power Bowl", desc: "4 eggs, oats, banana, peanut butter", cal: 620, p: 42, c: 58, f: 18, price: 219, emoji: "💪", tag: "Muscle Fuel", time: "12m", active: true, stock: true },
+      { id: 12, name: "Chicken Omelette", desc: "Chicken strips, 3 eggs, cheese, peppers", cal: 540, p: 48, c: 8, f: 22, price: 239, emoji: "🍳", tag: "High Protein", time: "12m", active: true, stock: true },
     ],
-    lunch:[
-      {id:14,name:"Chicken Quinoa Feast",desc:"250g grilled chicken, quinoa, broccoli",cal:680,p:56,c:55,f:16,price:329,emoji:"🍗",tag:"Muscle Gain",time:"20m",active:true,stock:true},
-      {id:15,name:"Paneer Power Thali",desc:"Paneer tikka, brown rice, dal, salad",cal:720,p:44,c:72,f:24,price:299,emoji:"🧀",tag:"Vegetarian",time:"22m",active:true,stock:true},
+    lunch: [
+      { id: 14, name: "Chicken Quinoa Feast", desc: "250g grilled chicken, quinoa, broccoli", cal: 680, p: 56, c: 55, f: 16, price: 329, emoji: "🍗", tag: "Muscle Gain", time: "20m", active: true, stock: true },
+      { id: 15, name: "Paneer Power Thali", desc: "Paneer tikka, brown rice, dal, salad", cal: 720, p: 44, c: 72, f: 24, price: 299, emoji: "🧀", tag: "Vegetarian", time: "22m", active: true, stock: true },
     ],
-    dinner:[
-      {id:17,name:"Steak & Sweet Potato",desc:"Lean beef steak, sweet potato mash",cal:690,p:54,c:48,f:22,price:389,emoji:"🥩",tag:"Iron Rich",time:"25m",active:true,stock:true},
-      {id:18,name:"Tuna Pasta Bake",desc:"Whole wheat pasta, tuna, tomato sauce",cal:610,p:46,c:65,f:12,price:269,emoji:"🍝",tag:"High Protein",time:"20m",active:true,stock:true},
+    dinner: [
+      { id: 17, name: "Steak & Sweet Potato", desc: "Lean beef steak, sweet potato mash", cal: 690, p: 54, c: 48, f: 22, price: 389, emoji: "🥩", tag: "Iron Rich", time: "25m", active: true, stock: true },
+      { id: 18, name: "Tuna Pasta Bake", desc: "Whole wheat pasta, tuna, tomato sauce", cal: 610, p: 46, c: 65, f: 12, price: 269, emoji: "🍝", tag: "High Protein", time: "20m", active: true, stock: true },
     ],
   },
-  general:{
-    breakfast:[
-      {id:20,name:"Avocado Toast",desc:"Multigrain bread, avocado, seeds, lemon",cal:310,p:10,c:34,f:16,price:179,emoji:"🥑",tag:"Healthy Fat",time:"8m",active:true,stock:true},
-      {id:21,name:"Idli Sambar",desc:"3 idlis, sambar, coconut chutney",cal:280,p:9,c:52,f:3,price:119,emoji:"🫕",tag:"Traditional",time:"10m",active:true,stock:true},
-      {id:22,name:"Masala Dosa",desc:"Crispy dosa, potato masala, chutneys",cal:370,p:8,c:62,f:10,price:149,emoji:"🫓",tag:"Traditional",time:"15m",active:true,stock:true},
+  general: {
+    breakfast: [
+      { id: 20, name: "Avocado Toast", desc: "Multigrain bread, avocado, seeds, lemon", cal: 310, p: 10, c: 34, f: 16, price: 179, emoji: "🥑", tag: "Healthy Fat", time: "8m", active: true, stock: true },
+      { id: 21, name: "Idli Sambar", desc: "3 idlis, sambar, coconut chutney", cal: 280, p: 9, c: 52, f: 3, price: 119, emoji: "🫕", tag: "Traditional", time: "10m", active: true, stock: true },
+      { id: 22, name: "Masala Dosa", desc: "Crispy dosa, potato masala, chutneys", cal: 370, p: 8, c: 62, f: 10, price: 149, emoji: "🫓", tag: "Traditional", time: "15m", active: true, stock: true },
     ],
-    lunch:[
-      {id:24,name:"Dal Tadka & Brown Rice",desc:"Yellow dal, ghee, brown rice, pickle",cal:440,p:18,c:72,f:8,price:159,emoji:"🍚",tag:"Classic",time:"18m",active:true,stock:true},
-      {id:25,name:"Chicken Biryani Bowl",desc:"Basmati rice, chicken, saffron, raita",cal:520,p:32,c:62,f:14,price:249,emoji:"🍛",tag:"Flavourful",time:"25m",active:true,stock:true},
-      {id:26,name:"Veggie Buddha Bowl",desc:"Roasted veg, chickpeas, tahini, greens",cal:420,p:16,c:58,f:14,price:219,emoji:"🥗",tag:"Plant Based",time:"15m",active:true,stock:true},
+    lunch: [
+      { id: 24, name: "Dal Tadka & Brown Rice", desc: "Yellow dal, ghee, brown rice, pickle", cal: 440, p: 18, c: 72, f: 8, price: 159, emoji: "🍚", tag: "Classic", time: "18m", active: true, stock: true },
+      { id: 25, name: "Chicken Biryani Bowl", desc: "Basmati rice, chicken, saffron, raita", cal: 520, p: 32, c: 62, f: 14, price: 249, emoji: "🍛", tag: "Flavourful", time: "25m", active: true, stock: true },
+      { id: 26, name: "Veggie Buddha Bowl", desc: "Roasted veg, chickpeas, tahini, greens", cal: 420, p: 16, c: 58, f: 14, price: 219, emoji: "🥗", tag: "Plant Based", time: "15m", active: true, stock: true },
     ],
-    dinner:[
-      {id:28,name:"Palak Paneer & Roti",desc:"Spinach gravy, cottage cheese, 2 rotis",cal:390,p:22,c:44,f:14,price:189,emoji:"🥬",tag:"Iron Rich",time:"20m",active:true,stock:true},
-      {id:30,name:"Fish Curry & Rice",desc:"Tilapia fish curry, steamed basmati rice",cal:430,p:36,c:52,f:10,price:229,emoji:"🐠",tag:"Omega-3",time:"22m",active:true,stock:true},
+    dinner: [
+      { id: 28, name: "Palak Paneer & Roti", desc: "Spinach gravy, cottage cheese, 2 rotis", cal: 390, p: 22, c: 44, f: 14, price: 189, emoji: "🥬", tag: "Iron Rich", time: "20m", active: true, stock: true },
+      { id: 30, name: "Fish Curry & Rice", desc: "Tilapia fish curry, steamed basmati rice", cal: 430, p: 36, c: 52, f: 10, price: 229, emoji: "🐠", tag: "Omega-3", time: "22m", active: true, stock: true },
     ],
   },
 };
 
-// ── HELPERS ──────────────────────────────────────────────────────
-const tdee=(w,h,a,g,goal)=>{
-  const bmr=g==="f"?10*w+6.25*h-5*a-161:10*w+6.25*h-5*a+5;
-  return Math.round(bmr*1.55)+((GOALS.find(x=>x.id===goal))||{calMod:0}).calMod;
+const tdee = (w, h, a, g, goal) => {
+  const bmr = g === "f" ? 10 * w + 6.25 * h - 5 * a - 161 : 10 * w + 6.25 * h - 5 * a + 5;
+  return Math.round(bmr * 1.55) + ((GOALS.find(x => x.id === goal)) || { calMod: 0 }).calMod;
 };
 
-const getGreeting=(name,goal,orders)=>{
-  const hr=new Date().getHours();
-  const fn=name?.split(" ")[0]||"there";
-  let greeting,icon,meal,tip,sticker;
-  if(hr>=5&&hr<12){greeting="Good Morning";icon="☀️";meal="breakfast";sticker="🌅";tip=goal==="weight_loss"?"Start light – detox smoothie awaits!":goal==="muscle_gain"?"Fuel up! High-protein breakfast 💪":"Healthy breakfast to start your day!";}
-  else if(hr>=12&&hr<17){greeting="Good Afternoon";icon="🌤";meal="lunch";sticker="🌞";tip=goal==="weight_loss"?"Stay on track – choose low-cal lunch!":goal==="muscle_gain"?"Lunch = muscle building time 💪":"Keep energy going – lunch time!";}
-  else if(hr>=17&&hr<21){greeting="Good Evening";icon="🌆";meal="dinner";sticker="🌇";tip=goal==="weight_loss"?"Light dinner = better sleep!":goal==="muscle_gain"?"Recovery dinner – protein is key!":"Wind down with nutritious dinner!";}
-  else{greeting="Good Night";icon="🌙";meal="dinner";sticker="🌃";tip="Light meal recommended for better sleep 😴";}
-  const loyalty=orders.length>=10?"🏆 Top customer!":orders.length>=5?"⭐ Loyal member!":orders.length>=2?"✨ Regular customer!":"";
-  return{greeting,icon,meal,tip,sticker,loyalty,fn};
+const getGreeting = (name, goal, orders) => {
+  const hr = new Date().getHours();
+  const fn = name?.split(" ")[0] || "there";
+  let greeting, icon, meal, tip, sticker;
+  
+  if (hr >= 5 && hr < 12) { 
+    greeting = "Good Morning"; icon = "☀️"; meal = "breakfast"; sticker = "🌅"; 
+    tip = goal === "weight_loss" ? "Start light – detox smoothie awaits!" : goal === "muscle_gain" ? "Fuel up! High-protein breakfast 💪" : "Healthy breakfast to start your day!"; 
+  } else if (hr >= 12 && hr < 17) { 
+    greeting = "Good Afternoon"; icon = "🌤"; meal = "lunch"; sticker = "🌞"; 
+    tip = goal === "weight_loss" ? "Stay on track – choose low-cal lunch!" : goal === "muscle_gain" ? "Lunch = muscle building time 💪" : "Keep energy going – lunch time!"; 
+  } else if (hr >= 17 && hr < 21) { 
+    greeting = "Good Evening"; icon = "🌆"; meal = "dinner"; sticker = "🌇"; 
+    tip = goal === "weight_loss" ? "Light dinner = better sleep!" : goal === "muscle_gain" ? "Recovery dinner – protein is key!" : "Wind down with nutritious dinner!"; 
+  } else { 
+    greeting = "Good Night"; icon = "🌙"; meal = "dinner"; sticker = "🌃"; 
+    tip = "Light meal recommended for better sleep 😴"; 
+  }
+  
+  const loyalty = orders.length >= 10 ? "🏆 Top customer!" : orders.length >= 5 ? "⭐ Loyal member!" : orders.length >= 2 ? "✨ Regular customer!" : "";
+  return { greeting, icon, meal, tip, sticker, loyalty, fn };
 };
-
-let NID=800;
-const nid=()=>++NID;
 
 // ── MINI COMPONENTS ──────────────────────────────────────────────
-function Toast({t}){
-  return <div style={{position:"fixed",top:22,left:"50%",transform:"translateX(-50%)",background:t.err?"rgba(248,113,113,.15)":"rgba(74,222,128,.12)",border:`1px solid ${t.err?"rgba(248,113,113,.5)":"rgba(74,222,128,.5)"}`,color:t.err?"#fca5a5":"#4ade80",padding:"12px 22px",borderRadius:50,fontWeight:700,fontSize:13,zIndex:9999,whiteSpace:"nowrap",maxWidth:"88vw",...F,animation:"toast .35s cubic-bezier(.34,1.56,.64,1) both",boxShadow:"0 8px 32px rgba(0,0,0,.5)"}}>
-    {t.msg}
-  </div>;
-}
-
-function NBanner({n,onClose}){
-  return <div onClick={onClose} style={{position:"fixed",top:0,left:"50%",transform:"translateX(-50%)",width:"100%",maxWidth:430,zIndex:9990,background:"linear-gradient(135deg,#0c1610,#142019)",borderBottom:"1px solid rgba(74,222,128,.3)",padding:"14px 20px 16px",display:"flex",alignItems:"center",gap:12,animation:"notif .45s cubic-bezier(.34,1.56,.64,1) both",boxShadow:"0 12px 40px rgba(0,0,0,.6)",cursor:"pointer"}}>
-    <div style={{width:44,height:44,background:"rgba(74,222,128,.15)",borderRadius:14,display:"flex",alignItems:"center",justifyContent:"center",fontSize:22,flexShrink:0}}>{n.icon}</div>
-    <div style={{flex:1,minWidth:0}}>
-      <div style={{color:C.g,fontWeight:800,fontSize:13,...N}}>{n.label}</div>
-      <div style={{color:C.m,fontSize:12,marginTop:2,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{n.msg}</div>
+function Toast({ t }) {
+  return (
+    <div style={{
+      position: "fixed", top: 22, left: "50%", transform: "translateX(-50%)",
+      background: t.err ? "rgba(248,113,113,.15)" : "rgba(74,222,128,.15)",
+      border: `1px solid ${t.err ? "rgba(248,113,113,.5)" : "rgba(74,222,128,.5)"}`,
+      color: t.err ? "#fca5a5" : "#4ade80", padding: "12px 22px", borderRadius: 50,
+      fontWeight: 800, fontSize: 13, zIndex: 9999, whiteSpace: "nowrap",
+      maxWidth: "88vw", ...F, animation: "toast .35s cubic-bezier(.34,1.56,.64,1) both",
+      backdropFilter: "blur(12px)", boxShadow: "0 8px 32px rgba(0,0,0,.6)"
+    }}>
+      {t.msg}
     </div>
-    <div style={{color:C.m,fontSize:22}}>×</div>
-  </div>;
+  );
 }
 
-function Sheet({onClose,children,tall}){
-  return <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,.88)",zIndex:950,display:"flex",alignItems:"flex-end",justifyContent:"center",animation:"fadeIn .2s both"}} onClick={onClose}>
-    <div style={{background:C.surf,borderRadius:"28px 28px 0 0",width:"100%",maxWidth:430,padding:"22px 22px 44px",animation:"slideUp .35s cubic-bezier(.34,1.56,.64,1)",maxHeight:tall?"94vh":"82vh",overflowY:"auto"}} onClick={e=>e.stopPropagation()}>
-      <div style={{width:42,height:4,background:C.b,borderRadius:99,margin:"0 auto 20px"}}/>
-      {children}
+function NBanner({ n, onClose }) {
+  return (
+    <div onClick={onClose} style={{
+      position: "fixed", top: 0, left: "50%", transform: "translateX(-50%)",
+      width: "100%", maxWidth: 430, zIndex: 9990,
+      background: "linear-gradient(135deg,rgba(12,22,16,0.95),rgba(20,32,25,0.95))",
+      backdropFilter: "blur(16px)", borderBottom: "1px solid rgba(74,222,128,.3)",
+      padding: "14px 20px 16px", display: "flex", alignItems: "center", gap: 12,
+      animation: "notif .45s cubic-bezier(.34,1.56,.64,1) both",
+      boxShadow: "0 12px 40px rgba(0,0,0,.8)", cursor: "pointer"
+    }}>
+      <div style={{ width: 44, height: 44, background: "rgba(74,222,128,.15)", borderRadius: 14, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22, flexShrink: 0 }}>
+        {n.icon}
+      </div>
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div style={{ color: C.g, fontWeight: 800, fontSize: 13, ...N }}>{n.label}</div>
+        <div style={{ color: C.w, fontSize: 12, marginTop: 2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{n.msg}</div>
+      </div>
+      <div style={{ color: C.m, fontSize: 22 }}>×</div>
     </div>
-  </div>;
+  );
 }
 
-function Field({label,value,onChange,type="text",ph="",rows,min,note}){
-  const s={width:"100%",padding:"13px 16px",background:C.card,border:`1.5px solid ${value?"rgba(74,222,128,.5)":C.b}`,borderRadius:13,color:C.w,fontSize:14,...F,transition:"border-color .2s",boxSizing:"border-box"};
-  return <div style={{width:"100%"}}>
-    {label&&<div style={{fontSize:10,fontWeight:700,color:C.m,textTransform:"uppercase",letterSpacing:1.2,marginBottom:7,...F}}>{label}</div>}
-    {rows?<textarea rows={rows} value={value} onChange={e=>onChange(e.target.value)} placeholder={ph} style={{...s,resize:"none",lineHeight:1.7}}/>
-    :<input type={type} value={value} onChange={e=>onChange(type==="number"?+e.target.value:e.target.value)} placeholder={ph} min={min} style={s}/>}
-    {note&&<div style={{fontSize:11,color:C.m,marginTop:5,...F}}>{note}</div>}
-  </div>;
+function Sheet({ onClose, children, tall }) {
+  return (
+    <div style={{
+      position: "fixed", inset: 0, background: "rgba(0,0,0,.75)",
+      backdropFilter: "blur(8px)", zIndex: 950, display: "flex",
+      alignItems: "flex-end", justifyContent: "center", animation: "fadeIn .2s both"
+    }} onClick={onClose}>
+      <div style={{
+        background: "#0c1610", borderTop: `1px solid ${C.g}`, borderRadius: "28px 28px 0 0",
+        width: "100%", maxWidth: 430, padding: "22px 22px 44px",
+        animation: "slideUp .35s cubic-bezier(.34,1.56,.64,1)", maxHeight: tall ? "94vh" : "82vh",
+        overflowY: "auto", boxShadow: "0 -10px 40px rgba(74,222,128,0.1)"
+      }} onClick={e => e.stopPropagation()}>
+        <div style={{ width: 42, height: 4, background: C.m2, borderRadius: 99, margin: "0 auto 20px" }}/>
+        {children}
+      </div>
+    </div>
+  );
 }
 
-function Spinner(){
-  return <div style={{width:18,height:18,border:"2px solid rgba(6,12,8,.3)",borderTop:"2px solid #060c08",borderRadius:"50%",animation:"spin .7s linear infinite",display:"inline-block",marginRight:8,verticalAlign:"middle"}}/>;
+function Field({ label, value, onChange, type = "text", ph = "", rows, min, note }) {
+  const s = {
+    width: "100%", padding: "13px 16px", background: "rgba(255,255,255,0.03)",
+    border: `1.5px solid ${value ? "rgba(74,222,128,.4)" : C.b}`, borderRadius: 13,
+    color: C.w, fontSize: 14, ...F, transition: "all .3s", boxSizing: "border-box"
+  };
+  return (
+    <div style={{ width: "100%" }}>
+      {label && <div style={{ fontSize: 10, fontWeight: 700, color: C.m, textTransform: "uppercase", letterSpacing: 1.2, marginBottom: 7, ...F }}>{label}</div>}
+      {rows ? 
+        <textarea rows={rows} value={value} onChange={e => onChange(e.target.value)} placeholder={ph} style={{ ...s, resize: "none", lineHeight: 1.7 }} />
+        : <input type={type} value={value} onChange={e => onChange(type === "number" ? +e.target.value : e.target.value)} placeholder={ph} min={min} style={s} />
+      }
+      {note && <div style={{ fontSize: 11, color: C.m, marginTop: 5, ...F }}>{note}</div>}
+    </div>
+  );
+}
+
+function Spinner() {
+  return <div style={{ width: 18, height: 18, border: "2px solid rgba(74,222,128,.3)", borderTop: "2px solid #4ade80", borderRadius: "50%", animation: "spin .7s linear infinite", display: "inline-block", marginRight: 8, verticalAlign: "middle" }} />;
 }
 
 // ═══════════════ MAIN APP ════════════════════════════════════════
-function App(){
-  // ── STATE ──
-  const[scr,setScr]=useState("splash");
-  const[authTab,setAuthTab]=useState("login");
-  const[authErr,setAuthErr]=useState("");
-  const[loading,setLoading]=useState(false);
+function App() {
+  const [scr, setScr] = useState("splash");
+  const [authTab, setAuthTab] = useState("login");
+  const [authErr, setAuthErr] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  // ── AUTH FIELDS ──
-  const[rName,setRName]=useState("");
-  const[rUsername,setRUsername]=useState("");
-  const[rEmail,setREmail]=useState("");
-  const[rPhone,setRPhone]=useState("");
-  const[rPassword,setRPassword]=useState("");
-  const[rConfirm,setRConfirm]=useState("");
-  const[loginId,setLoginId]=useState("");
-  const[loginPassword,setLoginPassword]=useState("");
-  const[fEmail,setFEmail]=useState("");
+  const [rName, setRName] = useState("");
+  const [rUsername, setRUsername] = useState("");
+  const [rEmail, setREmail] = useState("");
+  const [rPhone, setRPhone] = useState("");
+  const [rPassword, setRPassword] = useState("");
+  const [rConfirm, setRConfirm] = useState("");
+  const [loginId, setLoginId] = useState("");
+  const [loginPassword, setLoginPassword] = useState("");
+  const [fEmail, setFEmail] = useState("");
 
-  // ── USERS & SESSION ──
-  const[user,setUser]=useState(null);
-  const[isAdmin,setIsAdmin]=useState(false);
-  const[adminUser,setAdminUser]=useState(null);
-  const[admins]=useState(INIT_ADMINS);
-  const[adminUsername,setAdminUsername]=useState("");
-  const[adminPw,setAdminPw]=useState("");
+  const [user, setUser] = useState(null);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [adminUser, setAdminUser] = useState(null);
+  const [admins] = useState(INIT_ADMINS);
+  const [adminUsername, setAdminUsername] = useState("");
+  const [adminPw, setAdminPw] = useState("");
 
-  // ── APP DATA ──
-  const[foods,setFoods]=useState(INIT_FOODS);
-  const[plans]=useState(INIT_PLANS);
-  const[settings]=useState(INIT_SETTINGS);
-  const[cart,setCart]=useState([]);
-  const[orders,setOrders]=useState([]);
-  const[notifs,setNotifs]=useState([]);
-  const[banner,setBanner]=useState(null);
-  const[toast,setToast]=useState(null);
-  const[allUsers,setAllUsers]=useState([]);
-  const[allOrders,setAllOrders]=useState([]);
-  const[planActivations,setPlanActivations]=useState([]);
+  const [foods, setFoods] = useState(INIT_FOODS);
+  const [plans, setPlans] = useState(INIT_PLANS); 
+  const [settings, setSettings] = useState(INIT_SETTINGS); 
+  const [cart, setCart] = useState([]);
+  const [orders, setOrders] = useState([]);
+  const [notifs, setNotifs] = useState([]);
+  const [banner, setBanner] = useState(null);
+  const [toast, setToast] = useState(null);
+  const [allUsers, setAllUsers] = useState([]);
+  const [allOrders, setAllOrders] = useState([]);
 
-  // ── UI STATE ──
-  const[tab,setTab]=useState("home");
-  const[adminTab,setAdminTab]=useState("orders");
-  const[modal,setModal]=useState(null);
-  const[mGoal,setMGoal]=useState("weight_loss");
-  const[mMeal,setMMeal]=useState("breakfast");
-  const[search,setSearch]=useState("");
+  const [stgCharge, setStgCharge] = useState(settings.deliveryCharge);
+  const [stgFreeMin, setStgFreeMin] = useState(settings.freeDeliveryMin);
 
-  // ── ONBOARD ──
-  const[ob,setOb]=useState({step:0,goal:"",pref:"",age:"",weight:"",height:"",gender:"m"});
+  const [tab, setTab] = useState("home");
+  const [adminTab, setAdminTab] = useState("orders");
+  const [modal, setModal] = useState(null);
+  const [foodModal, setFoodModal] = useState(null); 
+  const [planModal, setPlanModal] = useState(null); 
 
-  // ── FIREBASE INIT ──────────────────────────────────────────────
-  const[db,setDb]=useState(null);
-  const[auth,setAuth]=useState(null);
+  const [mGoal, setMGoal] = useState("weight_loss");
+  const [mMeal, setMMeal] = useState("breakfast");
+  const [search, setSearch] = useState("");
+  const [ob, setOb] = useState({ step: 0, goal: "", pref: "", age: "", weight: "", height: "", gender: "m" });
 
-  useEffect(()=>{
-    try{
-      if(!window.firebase.apps.length){
-        window.firebase.initializeApp(FIREBASE_CONFIG);
-      }
-      const firestore=window.firebase.firestore();
-      const fireauth=window.firebase.auth();
-      setDb(firestore);
-      setAuth(fireauth);
-      window.fbDB=firestore;
-      window.fbAuth=fireauth;
+  useEffect(() => {
+    try {
+      if (!window.firebase.apps.length) window.firebase.initializeApp(FIREBASE_CONFIG);
+      const firestore = window.firebase.firestore();
+      const fireauth = window.firebase.auth();
+      window.fbDB = firestore;
+      window.fbAuth = fireauth;
 
-      // ✅ Load food menu from Firestore
-      firestore.collection("app_data").doc("foods_menu").get().then(snap=>{
-        if(snap.exists) setFoods(snap.data());
+      // Load Foods
+      firestore.collection("app_data").doc("foods_menu").get().then(snap => {
+        if(snap.exists) setFoods(snap.data()); 
         else firestore.collection("app_data").doc("foods_menu").set(INIT_FOODS);
       }).catch(()=>{});
 
-      // ✅ Firebase Auth state listener
-      fireauth.onAuthStateChanged(async(fbUser)=>{
-        if(fbUser){
-          try{
-            const doc=await firestore.collection("users").doc(fbUser.uid).get();
-            if(doc.exists){
-              const userData={...doc.data(),uid:fbUser.uid};
-              setUser(userData);
-              setMGoal(userData.goal||"general");
-              try{const ordSnap=await firestore.collection("orders").where("userId","==",fbUser.uid).get();setOrders(ordSnap.docs.map(d=>d.data()));}catch(e){}
+      // Load Plans
+      firestore.collection("app_data").doc("premium_plans").get().then(snap => {
+        if(snap.exists) setPlans(snap.data().plans); 
+        else firestore.collection("app_data").doc("premium_plans").set({plans: INIT_PLANS});
+      }).catch(()=>{});
+
+      // Delivery Settings Live Sync
+      firestore.collection("app_data").doc("settings").onSnapshot(snap => {
+        if(snap.exists) {
+           const data = snap.data();
+           setSettings(data);
+           setStgCharge(data.deliveryCharge !== undefined ? data.deliveryCharge : 40);
+           setStgFreeMin(data.freeDeliveryMin !== undefined ? data.freeDeliveryMin : 400);
+        } else {
+           firestore.collection("app_data").doc("settings").set(INIT_SETTINGS);
+        }
+      });
+
+      // Authentication State
+      fireauth.onAuthStateChanged(async (fbUser) => {
+        if (fbUser) {
+          try {
+            const doc = await firestore.collection("users").doc(fbUser.uid).get();
+            if (doc.exists) {
+              const userData = { ...doc.data(), uid: fbUser.uid };
+              setUser(userData); 
+              setMGoal(userData.goal || "general"); 
               setScr("app");
             } else {
-              const basicUser={uid:fbUser.uid,email:fbUser.email,name:fbUser.email.split("@")[0],username:fbUser.email.split("@")[0].toLowerCase(),phone:"",avatar:"😊",plan:null,address:"",goal:"general",pref:"all",age:"25",weight:"70",height:"175",gender:"m",joinedAt:new Date().toISOString()};
-              try{await firestore.collection("users").doc(fbUser.uid).set(basicUser);}catch(e){}
-              setUser(basicUser);
+              const basicUser = { uid: fbUser.uid, email: fbUser.email, name: fbUser.email.split("@")[0], username: fbUser.email.split("@")[0].toLowerCase(), phone: "", avatar: "😊", plan: null, address: "", goal: "general", pref: "all", age: "25", weight: "70", height: "175", gender: "m", joinedAt: new Date().toISOString() };
+              try { await firestore.collection("users").doc(fbUser.uid).set(basicUser); } catch(e){}
+              setUser(basicUser); 
               setScr("onboard");
             }
-          }catch(e){
-            const basicUser={uid:fbUser.uid,email:fbUser.email||"",name:(fbUser.email||"user").split("@")[0],username:(fbUser.email||"user").split("@")[0].toLowerCase(),phone:"",avatar:"😊",plan:null,address:"",goal:"general",pref:"all",age:"25",weight:"70",height:"175",gender:"m"};
-            setUser(basicUser);
+          } catch(e) {
+            setUser({ uid: fbUser.uid, email: fbUser.email || "", name: (fbUser.email || "user").split("@")[0], username: (fbUser.email || "user").split("@")[0].toLowerCase(), phone: "", avatar: "😊", plan: null, address: "", goal: "general", pref: "all", age: "25", weight: "70", height: "175", gender: "m" });
             setScr("app");
           }
         } else {
-          setTimeout(()=>setScr("auth"),2400);
+          setTimeout(() => setScr("auth"), 2000);
         }
       });
-    }catch(e){
-      setTimeout(()=>setScr("auth"),2400);
+    } catch(e) { 
+      setTimeout(() => setScr("auth"), 2000); 
     }
-  },[]);
+  }, []);
 
-  const pop=(msg,err=false)=>{setToast({msg,err});setTimeout(()=>setToast(null),3200);};
-  const addNotif=(si)=>{
-    const s=ORDER_STEPS[si];
-    const n={id:Date.now(),...s,read:false,time:new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'})};
-    setNotifs(p=>[n,...p]);setBanner(n);setTimeout(()=>setBanner(null),5000);
+  // Notifications Sync Logic
+  useEffect(() => {
+    if (user?.uid && window.fbDB) {
+      const unsub = window.fbDB.collection("orders").where("userId", "==", user.uid)
+        .onSnapshot(snap => {
+          const fetched = snap.docs.map(d => d.data());
+          setOrders(prev => {
+            if (prev.length > 0) {
+              fetched.forEach(newO => {
+                const oldO = prev.find(o => o.id === newO.id);
+                if (oldO && oldO.statusIdx !== newO.statusIdx) {
+                  addNotif(newO.statusIdx);
+                }
+              });
+            }
+            return fetched.sort((a, b) => b.ts - a.ts);
+          });
+        });
+      return () => unsub();
+    }
+  }, [user?.uid]);
+
+  useEffect(() => {
+    if (isAdmin && window.fbDB) {
+      const unsubOrd = window.fbDB.collection("orders").orderBy("ts", "desc").onSnapshot(snap => setAllOrders(snap.docs.map(d => d.data())));
+      const unsubUsr = window.fbDB.collection("users").onSnapshot(snap => setAllUsers(snap.docs.map(d => d.data())));
+      return () => { unsubOrd(); unsubUsr(); };
+    }
+  }, [isAdmin]);
+
+  const pop = (msg, err = false) => {
+    if(window.navigator.vibrate) window.navigator.vibrate(err ? [40,50,40] : 40);
+    setToast({ msg, err });
+    setTimeout(() => setToast(null), 3200);
   };
 
-  // ── COMPUTED ──
-  const cartCount=cart.reduce((s,i)=>s+i.qty,0);
-  const cartSub=cart.reduce((s,i)=>s+i.price*i.qty,0);
-  const delivery=cartSub>=settings.freeDeliveryMin?0:settings.deliveryCharge;
-  const gstAmt=Math.round(cartSub*settings.gst/100);
-  const orderTotal=cartSub+delivery+gstAmt+settings.platformFee;
-  const todayCal=cart.reduce((s,i)=>s+i.cal*i.qty,0);
-  const target=user?tdee(+user.weight||70,+user.height||175,+user.age||25,user.gender||"m",user.goal||"general"):2000;
-  const calP=Math.min(100,Math.round(todayCal/target*100));
-  const unread=notifs.filter(n=>!n.read).length;
-  const liveOrders=orders.filter(o=>o.statusIdx<4).length;
-  const allFlat=Object.values(foods).flatMap(g=>Object.values(g).flat());
-  const greet=user?getGreeting(user.name,user.goal,orders):{greeting:"Welcome",icon:"👋",fn:"",tip:"",sticker:"🌟",loyalty:"",meal:"breakfast"};
-  const menuItems=(foods[mGoal]?.[mMeal]||[]).filter(i=>i.active&&i.stock&&(!search||i.name.toLowerCase().includes(search.toLowerCase())));
-  const curPlan=plans.find(p=>p.id===user?.plan);
-
-  // ── FIREBASE FOOD SYNC ──────────────────────────────────────────
-  const syncFoods=async(newFoods)=>{
-    try{if(window.fbDB)await window.fbDB.collection("app_data").doc("foods_menu").set(newFoods);}catch(e){}
+  const addNotif = (si) => {
+    if(window.navigator.vibrate) window.navigator.vibrate([50,100,50]);
+    const n = { id: Date.now(), ...ORDER_STEPS[si], read: false, time: new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }) };
+    setNotifs(p => [n, ...p]);
+    setBanner(n);
+    setTimeout(() => setBanner(null), 5000);
   };
-  const saveFood=(gId,meal,item)=>{
-    setFoods(prev=>{
-      const arr=prev[gId][meal];
-      const idx=arr.findIndex(x=>x.id===item.id);
-      const nf={...prev,[gId]:{...prev[gId],[meal]:idx>=0?arr.map(x=>x.id===item.id?item:x):[...arr,item]}};
-      syncFoods(nf);return nf;
+
+  let allFlat = [];
+  Object.values(foods).forEach(g => {
+    if (g) {
+      Object.values(g).forEach(arr => {
+        if (Array.isArray(arr)) {
+          arr.forEach(item => allFlat.push(item));
+        }
+      });
+    }
+  });
+
+  const cartCount = cart.reduce((s, i) => s + i.qty, 0);
+  const cartSub = cart.reduce((s, i) => s + i.price * i.qty, 0);
+  const delivery = cartSub >= settings.freeDeliveryMin ? 0 : settings.deliveryCharge;
+  const gstAmt = Math.round(cartSub * settings.gst / 100);
+  const orderTotal = cartSub + delivery + gstAmt + settings.platformFee;
+  const todayCal = cart.reduce((s, i) => s + i.cal * i.qty, 0);
+  const target = user ? tdee(+user.weight || 70, +user.height || 175, +user.age || 25, user.gender || "m", user.goal || "general") : 2000;
+  const calP = Math.min(100, Math.round(todayCal / target * 100));
+  const unread = notifs.filter(n => !n.read).length;
+  const liveOrders = orders.filter(o => o.statusIdx < 4).length;
+  
+  const greet = user ? getGreeting(user.name, user.goal, orders) : { greeting: "Welcome", icon: "👋", fn: "", tip: "", sticker: "🌟", loyalty: "", meal: "breakfast" };
+  const menuItems = (foods[mGoal]?.[mMeal] || []).filter(i => i.active && i.stock && (!search || i.name.toLowerCase().includes(search.toLowerCase())));
+  const curPlan = plans.find(p => p.id === user?.plan);
+
+  const syncFoods = async(newFoods) => {
+    try { if(window.fbDB) await window.fbDB.collection("app_data").doc("foods_menu").set(newFoods); } catch(e){}
+  };
+
+  const handleSaveFood = (e) => {
+    e.preventDefault();
+    if (!foodModal.data.name || !foodModal.data.price) return pop("Name and Price required!", true);
+    const fd = foodModal.data;
+    const isNew = !fd.id;
+    const item = { ...fd, id: isNew ? Date.now() : fd.id, cal: +fd.cal, price: +fd.price, active: fd.active !== false, stock: fd.stock !== false };
+    
+    setFoods(prev => {
+      let cleanPrev = JSON.parse(JSON.stringify(prev)); 
+      if (!isNew) {
+        for (let g in cleanPrev) {
+          for (let m in cleanPrev[g]) {
+            cleanPrev[g][m] = cleanPrev[g][m].filter(x => x.id !== item.id);
+          }
+        }
+      }
+      const arr = cleanPrev[foodModal.goal]?.[foodModal.meal] || [];
+      const nf = { ...cleanPrev, [foodModal.goal]: { ...cleanPrev[foodModal.goal], [foodModal.meal]: [...arr, item] } };
+      syncFoods(nf); 
+      return nf;
     });
-    pop("✅ Saved to Firebase!");setModal(null);
+    setFoodModal(null); 
+    pop(isNew ? "✅ New Food Added!" : "✏️ Food Updated!");
   };
-  const deleteFood=(gId,meal,id,name)=>{
-    setFoods(prev=>{const nf={...prev,[gId]:{...prev[gId],[meal]:prev[gId][meal].filter(x=>x.id!==id)}};syncFoods(nf);return nf;});
+
+  const deleteFood = (gId, meal, id, name) => {
+    if (!window.confirm(`Delete ${name}?`)) return;
+    setFoods(prev => {
+      const nf = { ...prev, [gId]: { ...prev[gId], [meal]: prev[gId][meal].filter(x => x.id !== id) } };
+      syncFoods(nf);
+      return nf;
+    });
     pop(`🗑 "${name}" deleted`);
   };
-  const toggleProp=(gId,meal,id,prop)=>{
-    setFoods(prev=>{const nf={...prev,[gId]:{...prev[gId],[meal]:prev[gId][meal].map(x=>x.id===id?{...x,[prop]:!x[prop]}:x)}};syncFoods(nf);return nf;});
+
+  const toggleProp = (gId, meal, id, prop) => {
+    setFoods(prev => {
+      const nf = { ...prev, [gId]: { ...prev[gId], [meal]: prev[gId][meal].map(x => x.id === id ? { ...x, [prop]: !x[prop] } : x) } };
+      syncFoods(nf);
+      return nf;
+    });
   };
 
-  // ── ✅ FIREBASE AUTH HANDLERS ────────────────────────────────────
+  const handleSavePlan = async(e) => {
+    e.preventDefault();
+    const updatedPlans = plans.map(p => p.id === planModal.id ? planModal : p);
+    setPlans(updatedPlans);
+    try { await window.fbDB.collection("app_data").doc("premium_plans").set({plans: updatedPlans}); } catch(e){}
+    setPlanModal(null); 
+    pop("💳 Plan Updated!");
+  };
 
-  // REGISTER — Firebase Auth + Firestore
-  const handleRegister=async()=>{
+  const updateSettings = async () => {
+    try {
+      await window.fbDB.collection("app_data").doc("settings").set({ 
+        ...settings, 
+        deliveryCharge: +stgCharge, 
+        freeDeliveryMin: +stgFreeMin 
+      });
+      pop("✅ Delivery Settings Updated!");
+    } catch(e) { 
+      pop("Error updating settings", true); 
+    }
+  };
+
+  const handleRegister = async () => {
     setAuthErr("");
-    if(!rName||!rUsername||!rEmail||!rPhone||!rPassword) return setAuthErr("All fields are required");
-    if(rPassword!==rConfirm) return setAuthErr("Passwords do not match");
-    if(rPassword.length<6) return setAuthErr("Password must be at least 6 characters");
-    if(!rEmail.includes("@")) return setAuthErr("Enter a valid email address");
-    if(rPhone.length<10) return setAuthErr("Enter a valid 10-digit phone number");
+    if (!rName || !rUsername || !rEmail || !rPhone || !rPassword) return setAuthErr("All fields are required");
+    if (rPassword !== rConfirm) return setAuthErr("Passwords do not match");
+    if (rPassword.length < 6) return setAuthErr("Password min 6 characters");
     setLoading(true);
-    try{
-      // Check username unique
-      const uCheck=await window.fbDB.collection("users").where("username","==",rUsername.toLowerCase().trim()).get();
-      if(!uCheck.empty){setAuthErr("Username already taken. Try another.");setLoading(false);return;}
-      // Create Firebase Auth account
-      const cred=await window.fbAuth.createUserWithEmailAndPassword(rEmail.trim(),rPassword);
-      const uid=cred.user.uid;
-      // Save user profile to Firestore
-      const userData={
-        uid,name:rName.trim(),username:rUsername.toLowerCase().trim(),
-        email:rEmail.toLowerCase().trim(),phone:rPhone,
-        avatar:"😊",plan:null,address:"",
-        goal:"general",pref:"all",age:"25",weight:"70",height:"175",gender:"m",
-        joinedAt:new Date().toISOString()
+    try {
+      const uCheck = await window.fbDB.collection("users").where("username", "==", rUsername.toLowerCase().trim()).get();
+      if (!uCheck.empty) { setAuthErr("Username already taken."); setLoading(false); return; }
+      
+      const cred = await window.fbAuth.createUserWithEmailAndPassword(rEmail.trim(), rPassword);
+      const userData = {
+        uid: cred.user.uid, name: rName.trim(), username: rUsername.toLowerCase().trim(), 
+        email: rEmail.toLowerCase().trim(), phone: rPhone, avatar: "😊", plan: null, address: "", 
+        goal: "general", pref: "all", age: "25", weight: "70", height: "175", gender: "m", joinedAt: new Date().toISOString()
       };
-      await window.fbDB.collection("users").doc(uid).set(userData);
-      setUser(userData);
-      setScr("onboard");
+      
+      await window.fbDB.collection("users").doc(cred.user.uid).set(userData);
+      setUser(userData); 
+      setScr("onboard"); 
       pop("Account created! 🎉");
-    }catch(e){
-      if(e.code==="auth/email-already-in-use") setAuthErr("This email is already registered. Please login.");
-      else setAuthErr(e.message||"Registration failed. Try again.");
+    } catch(e) {
+      setAuthErr(e.message || "Registration failed.");
     }
     setLoading(false);
   };
 
-  // LOGIN — Firebase Auth + username lookup
-  const handleLogin=async()=>{
-    setAuthErr("");
-    if(!loginId||!loginPassword) return setAuthErr("Enter username/email and password");
+  const handleLogin = async () => {
+    setAuthErr(""); 
+    if (!loginId || !loginPassword) return setAuthErr("Enter credentials");
     setLoading(true);
-    try{
-      let email=loginId.trim();
-      // Username login — look up email from Firestore
-      if(!loginId.includes("@")){
-        const q=await window.fbDB.collection("users").where("username","==",loginId.toLowerCase().trim()).get();
-        if(q.empty){setAuthErr("Username not found.");setLoading(false);return;}
-        email=q.docs[0].data().email;
+    try {
+      let email = loginId.trim();
+      if (!loginId.includes("@")) {
+        const q = await window.fbDB.collection("users").where("username", "==", loginId.toLowerCase().trim()).get();
+        if (q.empty) { setAuthErr("Username not found."); setLoading(false); return; }
+        email = q.docs[0].data().email;
       }
-      await window.fbAuth.signInWithEmailAndPassword(email,loginPassword);
-      // onAuthStateChanged will handle the rest
+      await window.fbAuth.signInWithEmailAndPassword(email, loginPassword); 
       pop("Welcome back! 👋");
-    }catch(e){
-      if(e.code==="auth/wrong-password"||e.code==="auth/user-not-found"||e.code==="auth/invalid-credential")
-        setAuthErr("Wrong email or password. Try again.");
-      else setAuthErr(e.message||"Login failed.");
+    } catch(e) {
+      setAuthErr("Wrong email or password.");
     }
     setLoading(false);
   };
 
-  // FORGOT PASSWORD — Firebase sends real reset email ✉️
-  const handleForgotPassword=async()=>{
-    setAuthErr("");
-    if(!fEmail.includes("@")) return setAuthErr("Enter a valid email address");
+  const handleForgotPassword = async () => {
+    setAuthErr(""); 
+    if (!fEmail.includes("@")) return setAuthErr("Valid email required");
     setLoading(true);
-    try{
-      await window.fbAuth.sendPasswordResetEmail(fEmail.trim());
-      pop("✅ Password reset email sent! Check your inbox.");
-      setAuthTab("login");
+    try {
+      await window.fbAuth.sendPasswordResetEmail(fEmail.trim(), { url: window.location.href });
+      pop("✅ Password reset link sent!"); 
+      setAuthTab("login"); 
       setFEmail("");
-    }catch(e){
-      if(e.code==="auth/user-not-found") setAuthErr("No account found with this email.");
-      else setAuthErr("Failed to send email. Try again.");
+    } catch(e) {
+      setAuthErr("Failed to send email. Account may not exist.");
     }
     setLoading(false);
   };
 
-  // ADMIN LOGIN — hardcoded (no Firebase Auth)
-  const handleAdminLogin=()=>{
-    const a=admins.find(x=>x.username===adminUsername&&x.password===adminPw&&x.active);
-    if(!a){pop("Wrong admin credentials!",true);return;}
-    setAdminUser(a);setIsAdmin(true);setModal(null);setTab("admin");
-    setAdminUsername("");setAdminPw("");
+  const handleAdminLogin = () => {
+    const a = admins.find(x => x.username === adminUsername && x.password === adminPw && x.active);
+    if (!a) { pop("Wrong admin credentials!", true); return; }
+    
+    setAdminUser(a); 
+    setIsAdmin(true); 
+    setModal(null); 
+    setTab("admin"); 
+    setAdminUsername(""); 
+    setAdminPw(""); 
     pop(`Welcome ${a.name}! 🎉`);
-    // Load all users & orders for admin
-    if(window.fbDB){
-      window.fbDB.collection("users").get().then(snap=>setAllUsers(snap.docs.map(d=>d.data())));
-      window.fbDB.collection("orders").orderBy("ts","desc").get().then(snap=>setAllOrders(snap.docs.map(d=>d.data())));
-    }
   };
 
-  // SIGN OUT — Firebase Auth signOut
-  const handleSignOut=async()=>{
-    try{await window.fbAuth.signOut();}catch(e){}
-    setScr("auth");setUser(null);setCart([]);setNotifs([]);
-    setIsAdmin(false);setAdminUser(null);setTab("home");
-    setLoginId("");setLoginPassword("");setAuthTab("login");setAuthErr("");
+  const handleSignOut = async () => {
+    try { await window.fbAuth.signOut(); } catch(e){}
+    setScr("auth"); setUser(null); setCart([]); setNotifs([]); setIsAdmin(false); setAdminUser(null); setTab("home");
   };
 
-  // ── CART & ORDER ──────────────────────────────────────────────
-  const addToCart=item=>{setCart(p=>{const e=p.find(c=>c.id===item.id);return e?p.map(c=>c.id===item.id?{...c,qty:c.qty+1}:c):[...p,{...item,qty:1}];});pop(`${item.emoji} Added!`);setModal(null);};
-  const chgQty=(id,d)=>setCart(p=>p.map(c=>c.id===id?{...c,qty:Math.max(0,c.qty+d)}:c).filter(c=>c.qty>0));
-  const getQty=id=>cart.find(c=>c.id===id)?.qty||0;
+  const addToCart = item => {
+    if(window.navigator.vibrate) window.navigator.vibrate(30);
+    setCart(p => {
+      const e = p.find(c => c.id === item.id);
+      return e ? p.map(c => c.id === item.id ? { ...c, qty: c.qty + 1 } : c) : [...p, { ...item, qty: 1 }];
+    });
+    pop(`${item.emoji} Added!`); 
+    setModal(null);
+  };
 
-  // ✅ Place Order — saves to Firestore
-  const placeOrder=async()=>{
-    if(!cart.length)return;
-    const o={
-      id:Date.now(),userId:user.uid||user.id,userName:user.name,
-      userUsername:user.username,userPhone:user.phone,
-      userAddress:user.address||"No address provided",
-      items:[...cart],subtotal:cartSub,delivery,gst:gstAmt,
-      platformFee:settings.platformFee,total:orderTotal,
-      statusIdx:0,paymentStatus:"Cash on Delivery",
-      time:new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'}),
-      date:new Date().toLocaleDateString('en-IN'),ts:Date.now()
+  const chgQty = (id, d) => {
+    if(window.navigator.vibrate) window.navigator.vibrate(20);
+    setCart(p => p.map(c => c.id === id ? { ...c, qty: Math.max(0, c.qty + d) } : c).filter(c => c.qty > 0));
+  };
+  
+  const getQty = id => cart.find(c => c.id === id)?.qty || 0;
+
+  const placeOrder = async () => {
+    if (!cart.length) return; 
+    if (window.navigator.vibrate) window.navigator.vibrate([50,100,50]);
+    
+    const o = {
+      id: Date.now(), userId: user.uid || user.id, userName: user.name, userUsername: user.username, 
+      userPhone: user.phone, userAddress: user.address || "No address provided", items: [...cart], 
+      subtotal: cartSub, delivery, gst: gstAmt, platformFee: settings.platformFee, total: orderTotal, 
+      statusIdx: 0, paymentStatus: "Cash on Delivery", 
+      time: new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }), 
+      date: new Date().toLocaleDateString('en-IN'), ts: Date.now()
     };
-    // Save to Firestore
-    try{await window.fbDB.collection("orders").add(o);}catch(e){}
-    setOrders(p=>[o,...p]);addNotif(0);setCart([]);setTab("track");
+    
+    try { await window.fbDB.collection("orders").add(o); } catch(e){}
+    setCart([]); 
+    setTab("track"); 
     pop("🎉 Order placed successfully!");
   };
 
-  const updateOrder=async(oid)=>{
-    setOrders(p=>p.map(o=>{
-      if(o.id===oid&&o.statusIdx<4){
-        const ni=o.statusIdx+1;addNotif(ni);
-        // Update in Firestore too
-        try{window.fbDB.collection("orders").where("id","==",oid).get().then(snap=>{snap.docs.forEach(d=>d.ref.update({statusIdx:ni}));});}catch(e){}
-        return{...o,statusIdx:ni};
-      }return o;
-    }));
-    pop("✅ Status updated!");
+  const updateOrder = async (oid) => {
+    try {
+      const snap = await window.fbDB.collection("orders").where("id", "==", oid).get();
+      if (snap.empty) return pop("Order not found", true);
+      
+      await Promise.all(snap.docs.map(d => {
+        if (d.data().statusIdx < 4) {
+          return d.ref.update({ statusIdx: d.data().statusIdx + 1 });
+        }
+      }));
+      pop("✅ Status updated!");
+    } catch(e) { pop("Error updating status", true); }
   };
 
-  // ✅ Update user profile in Firestore
-  const saveProfile=async()=>{
-    try{
-      await window.fbDB.collection("users").doc(user.uid).update({address:user.address});
-      pop("✅ Address saved!");
-    }catch(e){pop("Saved locally!");}
+  const cancelOrder = async (oid, byAdmin = false) => {
+    if (!window.confirm(byAdmin ? "Admin: Force cancel this order?" : "Are you sure you want to cancel this order?")) return;
+    try {
+      const snap = await window.fbDB.collection("orders").where("id", "==", oid).get();
+      if (snap.empty) return pop("Order not found", true);
+
+      await Promise.all(snap.docs.map(d => d.ref.update({ statusIdx: 5 })));
+      pop("🚫 Order Cancelled!", true);
+    } catch(e) { 
+      pop("Error Cancelling Order", true); 
+    }
   };
 
-  // Activate plan — save to Firestore
-  const activatePlan=async(plan)=>{
-    const act={id:nid(),userId:user.uid,userName:user.name,userUsername:user.username,userPhone:user.phone,planId:plan.id,planName:plan.label,planPrice:plan.price,planPer:plan.per,activatedAt:new Date().toISOString(),paymentStatus:"Paid",active:true};
-    setPlanActivations(p=>[act,...p]);
-    const upd={...user,plan:plan.id,planName:plan.label};
+  const activatePlan = async (plan) => {
+    const upd = { ...user, plan: plan.id, planName: plan.label }; 
     setUser(upd);
-    try{await window.fbDB.collection("users").doc(user.uid).update({plan:plan.id,planName:plan.label});}catch(e){}
-    try{await window.fbDB.collection("plan_activations").add(act);}catch(e){}
-    pop(`✅ ${plan.label} plan activated!`);setModal(null);
+    try { await window.fbDB.collection("users").doc(user.uid).update({ plan: plan.id, planName: plan.label }); } catch(e){}
+    pop(`✅ ${plan.label} plan activated!`); 
+    setModal(null);
   };
 
-  // ─────────────────────────────────────────────────────────────
-  // SPLASH
-  // ─────────────────────────────────────────────────────────────
-  if(scr==="splash") return <div style={{minHeight:"100vh",background:C.bg,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",position:"relative",overflow:"hidden"}}>
-    <div style={{position:"absolute",inset:0,background:"radial-gradient(ellipse 60% 55% at 50% 50%,rgba(74,222,128,.09),transparent)"}}/>
-    <div style={{animation:"pop .7s cubic-bezier(.34,1.56,.64,1) both"}}>
-      <div style={{width:100,height:100,background:C.gG,borderRadius:32,display:"flex",alignItems:"center",justifyContent:"center",fontSize:48,boxShadow:"0 0 90px rgba(74,222,128,.45)",margin:"0 auto"}}>🥗</div>
-    </div>
-    <div style={{...N,color:C.w,fontSize:44,fontWeight:900,marginTop:20,animation:"up .5s .3s both",letterSpacing:-1.5}}>Cosfit</div>
-    <div style={{color:C.m,fontSize:14,marginTop:5,animation:"up .5s .4s both"}}>Eat Smart · Live Strong</div>
-    <div style={{color:"#263d2a",fontSize:11,marginTop:4,animation:"up .5s .5s both"}}>{COMPANY.brand}</div>
-    <div style={{position:"absolute",bottom:52,display:"flex",gap:8}}>
-      {[0,1,2].map(i=><div key={i} style={{width:8,height:8,borderRadius:"50%",background:i===1?C.g:"#1b2d1f",animation:`dot 1.4s ${i*.22}s infinite`}}/>)}
-    </div>
-  </div>;
+  const saveProfile = async () => {
+    try {
+      await window.fbDB.collection("users").doc(user.uid).update({ address: user.address });
+      pop("✅ Address saved!");
+    } catch (e) { pop("Saved locally!"); }
+  };
 
-  // ─────────────────────────────────────────────────────────────
-  // AUTH SCREEN
-  // ─────────────────────────────────────────────────────────────
-  if(scr==="auth") return <div style={{minHeight:"100vh",background:C.bg,display:"flex",flexDirection:"column",...F}}>
-    {toast&&<Toast t={toast}/>}
-    <div style={{flex:1,overflowY:"auto",padding:"52px 28px 40px",maxWidth:430,margin:"0 auto",width:"100%"}}>
-      <div style={{marginBottom:28,animation:"up .5s both"}}>
-        <div style={{width:64,height:64,background:C.gG,borderRadius:20,display:"flex",alignItems:"center",justifyContent:"center",fontSize:30,boxShadow:"0 0 32px rgba(74,222,128,.3)"}}>🥗</div>
-        <div style={{...N,color:C.w,fontSize:30,fontWeight:900,marginTop:14,lineHeight:1.2,letterSpacing:-.8}}>
-          {authTab==="forgot"?"Reset Password 🔑":authTab==="login"?"Sign In 👋":"Create Account 🚀"}
+  if (scr === "splash") {
+    return (
+      <div style={{ minHeight: "100vh", background: C.bg, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", position: "relative", overflow: "hidden" }}>
+        <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse 60% 55% at 50% 50%, rgba(74,222,128,.1), transparent)" }} />
+        <div style={{ animation: "pop .7s cubic-bezier(.34,1.56,.64,1) both" }}>
+          <div style={{ width: 100, height: 100, background: C.gG, borderRadius: 32, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 48, boxShadow: "0 0 90px rgba(74,222,128,.45)", margin: "0 auto" }}>🥗</div>
         </div>
-        <div style={{color:C.m,fontSize:13,marginTop:5}}>
-          {authTab==="forgot"?"We'll send a reset link to your Gmail":authTab==="login"?"Login with Username or Email":"Join the Cosfit family today"}
+        <div style={{ ...N, color: C.w, fontSize: 44, fontWeight: 900, marginTop: 20, animation: "up .5s .3s both", letterSpacing: -1.5 }}>Cosfit</div>
+        <div style={{ color: C.m, fontSize: 14, marginTop: 5, animation: "up .5s .4s both" }}>Eat Smart · Live Strong</div>
+        <div style={{ color: "rgba(74,222,128,0.5)", fontSize: 11, marginTop: 4, animation: "up .5s .5s both" }}>{COMPANY.brand}</div>
+        <div style={{ position: "absolute", bottom: 52, display: "flex", gap: 8 }}>
+          {[0, 1, 2].map(i => <div key={i} style={{ width: 8, height: 8, borderRadius: "50%", background: i === 1 ? C.g : "rgba(74,222,128,0.2)", animation: `dot 1.4s ${i * .22}s infinite` }} />)}
         </div>
       </div>
-
-      {authTab!=="forgot"&&<div style={{display:"flex",background:C.card,borderRadius:16,padding:4,gap:4,marginBottom:22}}>
-        {[["login","Sign In"],["register","Create Account"]].map(([k,l])=><button key={k} onClick={()=>{setAuthTab(k);setAuthErr("");}} style={{flex:1,padding:"12px",borderRadius:12,border:"none",background:authTab===k?C.gG:"transparent",color:authTab===k?"#060c08":C.m,fontWeight:800,fontSize:14,...N,transition:"all .2s"}}>{l}</button>)}
-      </div>}
-
-      {authErr&&<div style={{background:"rgba(248,113,113,.1)",border:"1px solid rgba(248,113,113,.3)",borderRadius:13,padding:"12px 16px",marginBottom:16,color:C.r,fontSize:13,fontWeight:600,display:"flex",gap:8,alignItems:"center",animation:"up .3s both"}}>⚠️ {authErr}</div>}
-
-      {authTab==="login"&&<div style={{display:"flex",flexDirection:"column",gap:15,animation:"up .4s both"}}>
-        <Field label="Username or Email *" value={loginId} onChange={setLoginId} ph="e.g. arjun or arjun@gmail.com"/>
-        <Field label="Password *" value={loginPassword} onChange={setLoginPassword} type="password" ph="Enter your password"/>
-        <div style={{textAlign:"right",marginTop:-6}}>
-          <span style={{color:C.g,fontSize:12,fontWeight:700,cursor:"pointer"}} onClick={()=>{setAuthTab("forgot");setAuthErr("");}}>Forgot Password?</span>
-        </div>
-        <button onClick={handleLogin} disabled={loading} style={{padding:"17px",borderRadius:16,border:"none",background:loading?"#1a2a1a":C.gG,color:loading?"rgba(255,255,255,.5)":"#060c08",...N,fontSize:16,fontWeight:900,boxShadow:loading?"none":"0 8px 36px rgba(74,222,128,.4)",marginTop:2}}>
-          {loading?<><Spinner/>Signing in...</>:"Secure Login →"}
-        </button>
-        <div style={{textAlign:"center",padding:"14px 0",borderTop:`1px solid ${C.b}`,marginTop:6}}>
-          <div style={{color:C.m,fontSize:12,marginBottom:8}}>Admin? Access Control Panel</div>
-          <button onClick={()=>setModal({type:"adminLogin"})} style={{background:"rgba(96,165,250,.1)",border:"1px solid rgba(96,165,250,.3)",color:C.blue,padding:"10px 24px",borderRadius:20,fontWeight:700,fontSize:13,...F}}>⚙️ Admin Login</button>
-        </div>
-      </div>}
-
-      {authTab==="register"&&<div style={{display:"flex",flexDirection:"column",gap:14,animation:"up .4s both"}}>
-        <Field label="Full Name *" value={rName} onChange={setRName} ph="e.g. Arjun Kumar"/>
-        <Field label="Username *" value={rUsername} onChange={v=>setRUsername(v.toLowerCase().replace(/\s/g,"_"))} ph="e.g. arjun_kumar"/>
-        <Field label="Gmail Address *" value={rEmail} onChange={setREmail} type="email" ph="e.g. arjun@gmail.com"/>
-        <Field label="Mobile Number *" value={rPhone} onChange={e=>setRPhone(e.replace(/\D/g,"").slice(0,10))} type="tel" ph="98765 43210"/>
-        <Field label="Password *" value={rPassword} onChange={setRPassword} type="password" ph="Create a strong password (min 6 chars)"/>
-        <Field label="Confirm Password *" value={rConfirm} onChange={setRConfirm} type="password" ph="Confirm your password"/>
-        <button onClick={handleRegister} disabled={loading} style={{padding:"17px",borderRadius:16,border:"none",background:loading?"#1a2a1a":C.gG,color:loading?"rgba(255,255,255,.5)":"#060c08",...N,fontSize:16,fontWeight:900,boxShadow:loading?"none":"0 8px 36px rgba(74,222,128,.4)",marginTop:2}}>
-          {loading?<><Spinner/>Creating Account...</>:"Create Account →"}
-        </button>
-      </div>}
-
-      {authTab==="forgot"&&<div style={{display:"flex",flexDirection:"column",gap:16,animation:"up .4s both"}}>
-        <div style={{background:"rgba(74,222,128,.07)",border:"1px solid rgba(74,222,128,.2)",borderRadius:14,padding:"14px 16px",fontSize:12,color:C.m,lineHeight:1.7}}>
-          📧 Enter your registered Gmail. We'll send a <span style={{color:C.g,fontWeight:700}}>secure password reset link</span> directly to your inbox.
-        </div>
-        <Field label="Registered Gmail Address *" value={fEmail} onChange={setFEmail} type="email" ph="Enter your email"/>
-        <button onClick={handleForgotPassword} disabled={loading} style={{padding:"17px",borderRadius:16,border:"none",background:loading?"#1a2a1a":C.gG,color:loading?"rgba(255,255,255,.5)":"#060c08",...N,fontSize:16,fontWeight:900,boxShadow:loading?"none":"0 8px 36px rgba(74,222,128,.4)"}}>
-          {loading?<><Spinner/>Sending Email...</>:"Send Reset Link ✉️"}
-        </button>
-        <button onClick={()=>{setAuthTab("login");setAuthErr("");}} style={{padding:"14px",borderRadius:16,border:`1.5px solid ${C.b}`,background:"transparent",color:C.m,...F,fontWeight:700,fontSize:14}}>← Back to Login</button>
-      </div>}
-    </div>
-
-    {/* Admin Login Modal */}
-    {modal?.type==="adminLogin"&&<div style={{position:"fixed",inset:0,background:"rgba(0,0,0,.93)",zIndex:960,display:"flex",alignItems:"center",justifyContent:"center",padding:24}}>
-      <div style={{background:C.surf,borderRadius:24,padding:"28px 24px",width:"100%",maxWidth:340,animation:"up .35s cubic-bezier(.34,1.56,.64,1)"}}>
-        <div style={{fontSize:48,textAlign:"center"}}>🔐</div>
-        <div style={{...N,color:C.w,fontSize:20,fontWeight:900,textAlign:"center",marginTop:12}}>Admin Login</div>
-        <div style={{color:C.m,fontSize:12,textAlign:"center",marginTop:4,marginBottom:20}}>Restricted Access Only</div>
-        <div style={{display:"flex",flexDirection:"column",gap:12,marginBottom:16}}>
-          <input type="text" placeholder="Admin Username" value={adminUsername} onChange={e=>setAdminUsername(e.target.value)} style={{width:"100%",padding:"13px 16px",background:C.card,border:`1.5px solid ${C.b}`,borderRadius:12,color:C.w,fontSize:14,...F,boxSizing:"border-box"}}/>
-          <input type="password" placeholder="Password" value={adminPw} onChange={e=>setAdminPw(e.target.value)} onKeyDown={e=>e.key==="Enter"&&handleAdminLogin()} style={{width:"100%",padding:"13px 16px",background:C.card,border:`1.5px solid ${C.b}`,borderRadius:12,color:C.w,fontSize:14,...F,boxSizing:"border-box"}}/>
-        </div>
-        <div style={{display:"flex",gap:8}}>
-          <button onClick={handleAdminLogin} style={{flex:1,background:C.gG,color:"#060c08",border:"none",padding:"13px",borderRadius:12,fontWeight:800,fontSize:14,...N}}>Enter</button>
-          <button onClick={()=>setModal(null)} style={{flex:1,background:C.card,color:C.m,border:`1px solid ${C.b}`,padding:"13px",borderRadius:12,fontWeight:700,fontSize:14}}>Cancel</button>
-        </div>
-      </div>
-    </div>}
-  </div>;
-
-  // ─────────────────────────────────────────────────────────────
-  // ONBOARDING
-  // ─────────────────────────────────────────────────────────────
-  if(scr==="onboard"){
-    const prog=((ob.step+1)/3)*100;
-    const bmi=ob.weight&&ob.height&&+ob.height>0?(+ob.weight/((+ob.height/100)**2)).toFixed(1):null;
-    const ok=[!!ob.goal,!!ob.weight&&!!ob.height&&!!ob.age,!!ob.pref][ob.step];
-    return <div style={{minHeight:"100vh",background:C.bg,display:"flex",flexDirection:"column",...F}}>
-      {toast&&<Toast t={toast}/>}
-      <div style={{padding:"52px 28px 0"}}>
-        <div style={{display:"flex",justifyContent:"space-between",marginBottom:10}}>
-          <span style={{color:C.m,fontSize:12,fontWeight:600}}>Step {ob.step+1} of 3</span>
-          <span style={{color:C.g,fontSize:12,fontWeight:700}}>{Math.round(prog)}%</span>
-        </div>
-        <div style={{background:C.card,borderRadius:99,height:5,overflow:"hidden"}}>
-          <div style={{background:C.gG,height:"100%",width:`${prog}%`,borderRadius:99,transition:"width .4s ease"}}/>
-        </div>
-      </div>
-      <div style={{flex:1,padding:"24px 28px",overflowY:"auto"}}>
-        <div style={{...N,color:C.w,fontSize:26,fontWeight:900,marginBottom:4}}>
-          {["Your Fitness Goal 🎯","Body Numbers 📊","Food Preference 🍽"][ob.step]}
-        </div>
-        <div style={{color:C.m,fontSize:13,marginBottom:22}}>
-          {["Choose what matters most","For accurate calorie targets","Show you meals you love"][ob.step]}
-        </div>
-        {ob.step===0&&<div style={{display:"flex",flexDirection:"column",gap:12}}>
-          {GOALS.map(g=><button key={g.id} onClick={()=>setOb(p=>({...p,goal:g.id}))} style={{background:ob.goal===g.id?"rgba(74,222,128,.08)":C.card,border:`1.5px solid ${ob.goal===g.id?C.g:C.b}`,borderRadius:18,padding:"18px",cursor:"pointer",textAlign:"left",display:"flex",alignItems:"center",gap:14,width:"100%",boxSizing:"border-box"}}>
-            <span style={{fontSize:32}}>{g.icon}</span>
-            <div style={{flex:1}}><div style={{color:C.w,fontWeight:800,fontSize:15,...N}}>{g.label}</div></div>
-            {ob.goal===g.id&&<div style={{width:24,height:24,borderRadius:"50%",background:C.gG,display:"flex",alignItems:"center",justifyContent:"center",color:"#060c08",fontSize:12,fontWeight:900,flexShrink:0}}>✓</div>}
-          </button>)}
-        </div>}
-        {ob.step===1&&<div style={{display:"flex",flexDirection:"column",gap:14}}>
-          {[["Age (years)","age"],["Weight (kg)","weight"],["Height (cm)","height"]].map(([l,k])=><Field key={k} label={l+" *"} value={ob[k]} onChange={v=>setOb(p=>({...p,[k]:v}))} type="number" ph="—"/>)}
-          <div>
-            <div style={{fontSize:10,fontWeight:700,color:C.m,textTransform:"uppercase",letterSpacing:1.2,marginBottom:10}}>Gender</div>
-            <div style={{display:"flex",gap:10}}>
-              {[["m","👨 Male"],["f","👩 Female"]].map(([v,l])=><button key={v} onClick={()=>setOb(p=>({...p,gender:v}))} style={{flex:1,padding:"14px",borderRadius:14,border:`1.5px solid ${ob.gender===v?C.g:C.b}`,background:ob.gender===v?"rgba(74,222,128,.1)":C.card,color:ob.gender===v?C.g:C.m,fontWeight:700,fontSize:14}}>{l}</button>)}
-            </div>
-          </div>
-          {bmi&&<div style={{background:"rgba(74,222,128,.07)",border:"1px solid rgba(74,222,128,.2)",borderRadius:14,padding:"14px 16px"}}>
-            <div style={{color:C.g,fontSize:13,fontWeight:700,...N}}>📊 BMI: {bmi} — {(+bmi)<18.5?"Underweight":(+bmi)<25?"Healthy":(+bmi)<30?"Overweight":"Obese"}</div>
-            <div style={{color:C.m,fontSize:12,marginTop:3}}>Daily target ≈ {tdee(+ob.weight,+ob.height,+ob.age||25,ob.gender,ob.goal||"general")} kcal</div>
-          </div>}
-        </div>}
-        {ob.step===2&&<div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
-          {PREFS.map(p=><button key={p.id} onClick={()=>setOb(prev=>({...prev,pref:p.id}))} style={{background:ob.pref===p.id?"rgba(74,222,128,.1)":C.card,border:`1.5px solid ${ob.pref===p.id?C.g:C.b}`,borderRadius:18,padding:"24px 16px",cursor:"pointer",textAlign:"center"}}>
-            <div style={{fontSize:40}}>{p.icon}</div>
-            <div style={{color:ob.pref===p.id?C.g:C.w,fontWeight:800,fontSize:14,marginTop:12,...N}}>{p.label}</div>
-            {ob.pref===p.id&&<div style={{color:C.g,fontSize:11,marginTop:5,fontWeight:700}}>✓ Selected</div>}
-          </button>)}
-        </div>}
-      </div>
-      <div style={{padding:"0 28px 40px",display:"flex",gap:12}}>
-        {ob.step>0&&<button onClick={()=>setOb(p=>({...p,step:p.step-1}))} style={{flex:1,padding:"15px",borderRadius:15,border:`1.5px solid ${C.b}`,background:"transparent",color:C.w,...N,fontSize:15,fontWeight:700}}>← Back</button>}
-        <button disabled={!ok} onClick={async()=>{
-          if(ob.step<2){setOb(p=>({...p,step:p.step+1}));}
-          else{
-            const u={...user,...ob};setUser(u);setMGoal(ob.goal);
-            // Save onboard data to Firestore
-            try{await window.fbDB.collection("users").doc(u.uid).update({goal:ob.goal,pref:ob.pref,age:ob.age,weight:ob.weight,height:ob.height,gender:ob.gender});}catch(e){}
-            setScr("app");pop("🎉 Profile complete! Welcome to Cosfit!");
-          }
-        }} style={{flex:2,padding:"15px",borderRadius:15,border:"none",cursor:ok?"pointer":"default",background:ok?C.gG:"#1a1a1a",color:ok?"#060c08":C.m,...N,fontSize:15,fontWeight:800,boxShadow:ok?"0 8px 32px rgba(74,222,128,.35)":"none"}}>
-          {ob.step<2?"Continue →":"🚀 Start Cosfit!"}
-        </button>
-      </div>
-    </div>;
+    );
   }
 
-  if(scr!=="app")return null;
-
-  // ═══════════════════════ MAIN APP ════════════════════════════
-  const NavBtn=(k,ic,l,b=0)=><button key={k} onClick={()=>setTab(k)} style={{flex:1,background:"none",border:"none",display:"flex",flexDirection:"column",alignItems:"center",gap:4,padding:"4px 0",position:"relative"}}>
-    <div style={{background:tab===k?"rgba(74,222,128,.13)":"transparent",borderRadius:14,padding:"7px 14px",position:"relative",transition:"background .25s"}}>
-      <span style={{fontSize:18}}>{ic}</span>
-      {b>0&&<span style={{position:"absolute",top:-4,right:-4,background:C.r,color:"#fff",borderRadius:"50%",width:17,height:17,display:"flex",alignItems:"center",justifyContent:"center",fontSize:8,fontWeight:900,animation:"pulse 1.5s infinite"}}>{b}</span>}
-    </div>
-    <span style={{fontSize:9,fontWeight:tab===k?800:500,color:tab===k?C.g:C.m,...F}}>{l}</span>
-  </button>;
-
-  return <div style={{minHeight:"100vh",maxWidth:430,margin:"0 auto",background:C.bg,position:"relative",overflow:"hidden",...F}}>
-    {toast&&<Toast t={toast}/>}
-    {banner&&<NBanner n={banner} onClose={()=>setBanner(null)}/>}
-
-    {/* ── MODALS ── */}
-    {modal?.type==="item"&&<Sheet onClose={()=>setModal(null)}>
-      <div style={{textAlign:"center"}}>
-        <div style={{fontSize:72}}>{modal.d.emoji}</div>
-        <div style={{...N,color:C.w,fontSize:20,fontWeight:900,marginTop:10}}>{modal.d.name}</div>
-        <div style={{color:C.m,fontSize:12,marginTop:5,lineHeight:1.6}}>{modal.d.desc}</div>
-        <div style={{display:"inline-flex",gap:8,background:"rgba(74,222,128,.1)",border:"1px solid rgba(74,222,128,.2)",borderRadius:20,padding:"5px 14px",marginTop:10}}>
-          <span style={{color:C.g,fontSize:12,fontWeight:700}}>{modal.d.tag}</span>
-          <span style={{color:C.m,fontSize:11}}>· ⏱ {modal.d.time}</span>
-        </div>
-      </div>
-      <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:8,marginTop:18,background:C.card,borderRadius:16,padding:"14px 6px"}}>
-        {[["🔥",modal.d.cal,"kcal"],["🥩",modal.d.p+"g","Protein"],["🌾",modal.d.c+"g","Carbs"],["💧",modal.d.f+"g","Fat"]].map(([ic,v,l])=><div key={l} style={{textAlign:"center"}}>
-          <div style={{fontSize:18}}>{ic}</div>
-          <div style={{...N,fontWeight:800,fontSize:14,color:C.w,marginTop:2}}>{v}</div>
-          <div style={{fontSize:9,color:C.m,marginTop:2}}>{l}</div>
-        </div>)}
-      </div>
-      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginTop:22}}>
-        <div>
-          <div style={{...N,fontSize:28,fontWeight:900,color:C.o}}>₹{modal.d.price}</div>
-          <div style={{fontSize:11,color:C.m}}>⏱ {modal.d.time} prep time</div>
-        </div>
-        <div style={{display:"flex",gap:10}}>
-          <button onClick={()=>setModal(null)} style={{background:C.card,color:C.m,border:`1px solid ${C.b}`,padding:"12px 18px",borderRadius:13,fontWeight:700,fontSize:13}}>Cancel</button>
-          <button onClick={()=>addToCart(modal.d)} style={{background:C.gO,color:"#fff",border:"none",padding:"12px 22px",borderRadius:13,fontWeight:800,fontSize:13,...N,boxShadow:"0 4px 20px rgba(249,115,22,.4)"}}>Add to Cart 🛒</button>
-        </div>
-      </div>
-    </Sheet>}
-
-    {modal?.type==="sub"&&<Sheet onClose={()=>setModal(null)} tall>
-      <div style={{...N,color:C.w,fontSize:22,fontWeight:900,marginBottom:5}}>Upgrade Your Plan ⚡</div>
-      <div style={{color:C.m,fontSize:13,marginBottom:20}}>Unlock personalization + priority delivery</div>
-      {plans.map(plan=><div key={plan.id} onClick={()=>activatePlan(plan)} style={{background:plan.hot?"rgba(74,222,128,.07)":C.card,border:`1.5px solid ${user?.plan===plan.id?C.g:plan.hot?C.g:C.b}`,borderRadius:18,padding:"18px",cursor:"pointer",position:"relative",marginBottom:12}}>
-        {plan.hot&&<div style={{position:"absolute",top:-10,right:16,background:C.gG,color:"#060c08",fontSize:9,fontWeight:900,padding:"3px 12px",borderRadius:99}}>POPULAR</div>}
-        {user?.plan===plan.id&&<div style={{position:"absolute",top:10,left:16,background:"rgba(74,222,128,.15)",color:C.g,fontSize:9,fontWeight:900,padding:"2px 10px",borderRadius:99}}>✓ ACTIVE</div>}
-        <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:12,marginTop:user?.plan===plan.id?14:0}}>
-          <div>
-            <div style={{color:C.w,fontWeight:800,fontSize:16,...N}}>{plan.label}</div>
-            {plan.save&&<div style={{color:C.g,fontSize:12,fontWeight:700,marginTop:3}}>{plan.save}</div>}
-          </div>
-          <div style={{textAlign:"right"}}>
-            <div style={{...N,color:C.o,fontSize:22,fontWeight:900}}>₹{plan.price}</div>
-            <div style={{color:C.m,fontSize:11}}>/{plan.per}</div>
-          </div>
-        </div>
-        {plan.features.map((f,i)=><div key={i} style={{display:"flex",gap:8,alignItems:"center",marginBottom:6}}>
-          <span style={{color:C.g,fontSize:12}}>✓</span>
-          <span style={{color:C.m,fontSize:12}}>{f}</span>
-        </div>)}
-      </div>)}
-      <button onClick={()=>setModal(null)} style={{width:"100%",marginTop:4,background:"transparent",border:`1px solid ${C.b}`,color:C.m,padding:"13px",borderRadius:14,fontWeight:600,fontSize:14}}>Maybe Later</button>
-    </Sheet>}
-
-    {modal?.type==="avatar"&&<Sheet onClose={()=>setModal(null)}>
-      <div style={{...N,color:C.w,fontSize:18,fontWeight:900,marginBottom:16}}>Choose Profile Picture</div>
-      <div style={{display:"grid",gridTemplateColumns:"repeat(5,1fr)",gap:10}}>
-        {AVATARS.map(em=><button key={em} onClick={async()=>{
-          const u={...user,avatar:em};setUser(u);setModal(null);pop("✅ Avatar updated!");
-          try{await window.fbDB.collection("users").doc(u.uid).update({avatar:em});}catch(e){}
-        }} style={{background:user?.avatar===em?"rgba(74,222,128,.15)":C.card,border:`1.5px solid ${user?.avatar===em?C.g:C.b}`,borderRadius:14,padding:"12px 0",fontSize:24,textAlign:"center"}}>
-          {em}{user?.avatar===em&&<div style={{fontSize:9,color:C.g,fontWeight:700,marginTop:3}}>✓</div>}
-        </button>)}
-      </div>
-    </Sheet>}
-
-    {/* ══ HOME ══ */}
-    {tab==="home"&&<div style={{paddingBottom:90,height:"100vh",overflowY:"auto"}}>
-      <div style={{padding:"52px 22px 18px",background:"linear-gradient(180deg,#0c1610 0%,transparent 100%)"}}>
-        <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start"}}>
-          <div>
-            <div style={{color:C.m,fontSize:13,fontWeight:600}}>{greet.icon} {greet.greeting}</div>
-            <div style={{...N,color:C.w,fontSize:28,fontWeight:900,marginTop:4,letterSpacing:-.8}}>{greet.fn}</div>
-            {curPlan&&<div style={{display:"inline-flex",alignItems:"center",gap:6,background:"rgba(251,191,36,.1)",border:"1px solid rgba(251,191,36,.3)",borderRadius:20,padding:"4px 12px",marginTop:6}}>
-              <span style={{color:C.gold,fontSize:11,fontWeight:800,...N}}>⚡ {curPlan.label} Pro Active</span>
-            </div>}
-          </div>
-          <div style={{display:"flex",gap:8}}>
-            <button onClick={()=>setTab("notifs")} style={{width:42,height:42,borderRadius:"50%",background:"rgba(74,222,128,.1)",border:"1px solid rgba(74,222,128,.25)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:18,position:"relative"}}>
-              🔔{unread>0&&<span style={{position:"absolute",top:-2,right:-2,background:C.r,color:"#fff",borderRadius:"50%",width:17,height:17,display:"flex",alignItems:"center",justifyContent:"center",fontSize:8,fontWeight:900}}>{unread}</span>}
-            </button>
-            <button onClick={()=>setTab("profile")} style={{width:42,height:42,borderRadius:"50%",background:C.card,border:`1.5px solid ${C.b}`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:20}}>
-              {user?.avatar||"😊"}
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <div style={{margin:"0 22px 16px",background:"rgba(74,222,128,.07)",border:"1px solid rgba(74,222,128,.2)",borderRadius:18,padding:"14px 16px",display:"flex",gap:12,alignItems:"flex-start"}}>
-        <span style={{fontSize:26}}>{greet.sticker}</span>
-        <div style={{flex:1}}>
-          <div style={{color:C.g,fontSize:12,fontWeight:800,...N}}>{greet.greeting} tip!</div>
-          <div style={{color:C.m,fontSize:12,marginTop:3,lineHeight:1.5}}>{greet.tip}</div>
-          {greet.loyalty&&<div style={{color:C.gold,fontSize:11,fontWeight:700,marginTop:4}}>{greet.loyalty}</div>}
-        </div>
-      </div>
-
-      <div style={{margin:"0 22px 16px",background:C.card,borderRadius:24,padding:"18px",border:`1px solid ${C.b}`}}>
-        <div style={{display:"flex",alignItems:"center",gap:18}}>
-          <div style={{position:"relative",width:84,height:84,flexShrink:0}}>
-            <svg width={84} height={84} style={{transform:"rotate(-90deg)"}}>
-              <circle cx={42} cy={42} r={34} fill="none" stroke={C.b} strokeWidth={8}/>
-              <circle cx={42} cy={42} r={34} fill="none" stroke={calP>100?C.r:C.g} strokeWidth={8} strokeDasharray={214} strokeDashoffset={214*(1-calP/100)} strokeLinecap="round" style={{transition:"stroke-dashoffset .8s ease"}}/>
-            </svg>
-            <div style={{position:"absolute",inset:0,display:"flex",alignItems:"center",justifyContent:"center"}}>
-              <div style={{...N,color:C.w,fontSize:14,fontWeight:900}}>{calP}%</div>
+  if (scr === "auth") {
+    return (
+      <div style={{ minHeight: "100vh", background: C.bg, display: "flex", flexDirection: "column", ...F }}>
+        {toast && <Toast t={toast} />}
+        <div style={{ flex: 1, overflowY: "auto", padding: "52px 28px 40px", maxWidth: 430, margin: "0 auto", width: "100%" }}>
+          <div style={{ marginBottom: 28, animation: "up .5s both" }}>
+            <div style={{ width: 64, height: 64, background: C.gG, borderRadius: 20, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 30, boxShadow: "0 0 32px rgba(74,222,128,.3)" }}>🥗</div>
+            <div style={{ ...N, color: C.w, fontSize: 30, fontWeight: 900, marginTop: 14, lineHeight: 1.2, letterSpacing: -.8 }}>
+              {authTab === "forgot" ? "Reset Password 🔑" : authTab === "login" ? "Sign In 👋" : "Create Account 🚀"}
+            </div>
+            <div style={{ color: C.m, fontSize: 13, marginTop: 5 }}>
+              {authTab === "forgot" ? "We'll send a reset link to your Gmail" : authTab === "login" ? "Login with Username or Email" : "Join the Cosfit family today"}
             </div>
           </div>
-          <div style={{flex:1}}>
-            <div style={{color:C.m,fontSize:10,fontWeight:700,textTransform:"uppercase",letterSpacing:1.2}}>Today's Intake</div>
-            <div style={{...N,color:C.w,fontSize:24,fontWeight:900,marginTop:3}}>{todayCal} <span style={{fontSize:12,color:C.m}}>kcal</span></div>
-            <div style={{color:C.m,fontSize:12,marginTop:2}}>Goal: {target} kcal</div>
+
+          {authTab !== "forgot" && (
+            <div style={{ display: "flex", background: C.card, borderRadius: 16, padding: 4, gap: 4, marginBottom: 22, border: `1px solid ${C.b}` }}>
+              {[["login", "Sign In"], ["register", "Create Account"]].map(([k, l]) => (
+                <button key={k} onClick={() => { setAuthTab(k); setAuthErr(""); }} style={{ flex: 1, padding: "12px", borderRadius: 12, border: "none", background: authTab === k ? C.gG : "transparent", color: authTab === k ? "#060c08" : C.m, fontWeight: 800, fontSize: 14, ...N, transition: "all .2s" }}>{l}</button>
+              ))}
+            </div>
+          )}
+
+          {authErr && <div style={{ background: "rgba(248,113,113,.1)", border: "1px solid rgba(248,113,113,.3)", borderRadius: 13, padding: "12px 16px", marginBottom: 16, color: C.r, fontSize: 13, fontWeight: 600, display: "flex", gap: 8, alignItems: "center", animation: "up .3s both" }}>⚠️ {authErr}</div>}
+
+          {authTab === "login" && (
+            <div style={{ display: "flex", flexDirection: "column", gap: 15, animation: "up .4s both" }}>
+              <Field label="Username or Email *" value={loginId} onChange={setLoginId} ph="e.g. arjun or arjun@gmail.com" />
+              <Field label="Password *" value={loginPassword} onChange={setLoginPassword} type="password" ph="Enter your password" />
+              <div style={{ textAlign: "right", marginTop: -6 }}>
+                <span style={{ color: C.g, fontSize: 12, fontWeight: 700, cursor: "pointer" }} onClick={() => { setAuthTab("forgot"); setAuthErr(""); }}>Forgot Password?</span>
+              </div>
+              <button onClick={handleLogin} disabled={loading} style={{ padding: "17px", borderRadius: 16, border: "none", background: loading ? "rgba(74,222,128,0.2)" : C.gG, color: loading ? "rgba(255,255,255,.5)" : "#060c08", ...N, fontSize: 16, fontWeight: 900, boxShadow: loading ? "none" : "0 8px 36px rgba(74,222,128,.4)", marginTop: 2 }}>
+                {loading ? <><Spinner />Signing in...</> : "Secure Login →"}
+              </button>
+              <div style={{ textAlign: "center", padding: "14px 0", borderTop: `1px solid rgba(74,222,128,0.1)`, marginTop: 6 }}>
+                <div style={{ color: C.m, fontSize: 12, marginBottom: 8 }}>Admin? Access Control Panel</div>
+                <button onClick={() => setModal({ type: "adminLogin" })} style={{ background: "rgba(96,165,250,.1)", border: "1px solid rgba(96,165,250,.3)", color: C.blue, padding: "10px 24px", borderRadius: 20, fontWeight: 700, fontSize: 13, ...F }}>⚙️ Admin Login</button>
+              </div>
+            </div>
+          )}
+
+          {authTab === "register" && (
+            <div style={{ display: "flex", flexDirection: "column", gap: 14, animation: "up .4s both" }}>
+              <Field label="Full Name *" value={rName} onChange={setRName} ph="e.g. Arjun Kumar" />
+              <Field label="Username *" value={rUsername} onChange={v => setRUsername(v.toLowerCase().replace(/\s/g, "_"))} ph="e.g. arjun_kumar" />
+              <Field label="Gmail Address *" value={rEmail} onChange={setREmail} type="email" ph="e.g. arjun@gmail.com" />
+              <Field label="Mobile Number *" value={rPhone} onChange={e => setRPhone(e.replace(/\D/g, "").slice(0, 10))} type="tel" ph="98765 43210" />
+              <Field label="Password *" value={rPassword} onChange={setRPassword} type="password" ph="Create a strong password (min 6 chars)" />
+              <Field label="Confirm Password *" value={rConfirm} onChange={setRConfirm} type="password" ph="Confirm your password" />
+              <button onClick={handleRegister} disabled={loading} style={{ padding: "17px", borderRadius: 16, border: "none", background: loading ? "rgba(74,222,128,0.2)" : C.gG, color: loading ? "rgba(255,255,255,.5)" : "#060c08", ...N, fontSize: 16, fontWeight: 900, boxShadow: loading ? "none" : "0 8px 36px rgba(74,222,128,.4)", marginTop: 2 }}>
+                {loading ? <><Spinner />Creating Account...</> : "Create Account →"}
+              </button>
+            </div>
+          )}
+
+          {authTab === "forgot" && (
+            <div style={{ display: "flex", flexDirection: "column", gap: 16, animation: "up .4s both" }}>
+              <div style={{ background: "rgba(74,222,128,.07)", border: "1px solid rgba(74,222,128,.2)", borderRadius: 14, padding: "14px 16px", fontSize: 12, color: C.m, lineHeight: 1.7 }}>
+                📧 Enter your registered Gmail. We'll send a <span style={{ color: C.g, fontWeight: 700 }}>secure password reset link</span> directly to your inbox.
+              </div>
+              <Field label="Registered Gmail Address *" value={fEmail} onChange={setFEmail} type="email" ph="Enter your email" />
+              <button onClick={handleForgotPassword} disabled={loading} style={{ padding: "17px", borderRadius: 16, border: "none", background: loading ? "rgba(74,222,128,0.2)" : C.gG, color: loading ? "rgba(255,255,255,.5)" : "#060c08", ...N, fontSize: 16, fontWeight: 900, boxShadow: loading ? "none" : "0 8px 36px rgba(74,222,128,.4)" }}>
+                {loading ? <><Spinner />Sending Email...</> : "Send Reset Link ✉️"}
+              </button>
+              <button onClick={() => { setAuthTab("login"); setAuthErr(""); }} style={{ padding: "14px", borderRadius: 16, border: `1.5px solid rgba(74,222,128,0.2)`, background: "transparent", color: C.m, ...F, fontWeight: 700, fontSize: 14 }}>← Back to Login</button>
+            </div>
+          )}
+        </div>
+
+        {modal?.type === "adminLogin" && (
+          <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,.93)", backdropFilter: "blur(12px)", zIndex: 960, display: "flex", alignItems: "center", justifyContent: "center", padding: 24 }}>
+            <div style={{ background: C.card, border: `1px solid ${C.b}`, borderRadius: 24, padding: "28px 24px", width: "100%", maxWidth: 340, animation: "up .35s cubic-bezier(.34,1.56,.64,1)" }}>
+              <div style={{ fontSize: 48, textAlign: "center" }}>🔐</div>
+              <div style={{ ...N, color: C.w, fontSize: 20, fontWeight: 900, textAlign: "center", marginTop: 12 }}>Admin Login</div>
+              <div style={{ color: C.m, fontSize: 12, textAlign: "center", marginTop: 4, marginBottom: 20 }}>Restricted Access Only</div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 12, marginBottom: 16 }}>
+                <input type="text" placeholder="Admin Username" value={adminUsername} onChange={e => setAdminUsername(e.target.value)} style={{ width: "100%", padding: "13px 16px", background: "rgba(255,255,255,0.03)", border: `1.5px solid ${C.b}`, borderRadius: 12, color: C.w, fontSize: 14, ...F, boxSizing: "border-box" }} />
+                <input type="password" placeholder="Password" value={adminPw} onChange={e => setAdminPw(e.target.value)} onKeyDown={e => e.key === "Enter" && handleAdminLogin()} style={{ width: "100%", padding: "13px 16px", background: "rgba(255,255,255,0.03)", border: `1.5px solid ${C.b}`, borderRadius: 12, color: C.w, fontSize: 14, ...F, boxSizing: "border-box" }} />
+              </div>
+              <div style={{ display: "flex", gap: 8 }}>
+                <button onClick={handleAdminLogin} style={{ flex: 1, background: C.gG, color: "#060c08", border: "none", padding: "13px", borderRadius: 12, fontWeight: 800, fontSize: 14, ...N }}>Enter</button>
+                <button onClick={() => setModal(null)} style={{ flex: 1, background: "rgba(255,255,255,0.05)", color: C.m, border: `1px solid ${C.b}`, padding: "13px", borderRadius: 12, fontWeight: 700, fontSize: 14 }}>Cancel</button>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  if (scr === "onboard") {
+    const prog = ((ob.step + 1) / 3) * 100;
+    const bmi = ob.weight && ob.height && +ob.height > 0 ? (+ob.weight / ((+ob.height / 100) ** 2)).toFixed(1) : null;
+    const ok = [!!ob.goal, !!ob.weight && !!ob.height && !!ob.age, !!ob.pref][ob.step];
+    
+    return (
+      <div style={{ minHeight: "100vh", background: C.bg, display: "flex", flexDirection: "column", ...F }}>
+        {toast && <Toast t={toast} />}
+        <div style={{ padding: "52px 28px 0" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 10 }}>
+            <span style={{ color: C.m, fontSize: 12, fontWeight: 600 }}>Step {ob.step + 1} of 3</span>
+            <span style={{ color: C.g, fontSize: 12, fontWeight: 700 }}>{Math.round(prog)}%</span>
+          </div>
+          <div style={{ background: "rgba(74,222,128,0.1)", borderRadius: 99, height: 5, overflow: "hidden" }}>
+            <div style={{ background: C.gG, height: "100%", width: `${prog}%`, borderRadius: 99, transition: "width .4s ease" }} />
           </div>
         </div>
-      </div>
-
-      <div style={{padding:"0 22px",marginBottom:16}}>
-        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
-          <button onClick={()=>setTab("menu")} style={{background:C.gG,borderRadius:20,padding:"16px",border:"none",textAlign:"left",boxShadow:"0 8px 28px rgba(74,222,128,.25)"}}>
-            <div style={{fontSize:28}}>🍽</div>
-            <div style={{...N,color:"#060c08",fontWeight:900,fontSize:15,marginTop:8}}>Order Food</div>
-            <div style={{color:"rgba(6,12,8,.55)",fontSize:11,marginTop:3}}>{allFlat.filter(i=>i.active&&i.stock).length} items</div>
-          </button>
-          <button onClick={()=>setTab("track")} style={{background:C.card,borderRadius:20,padding:"16px",border:`1px solid ${liveOrders>0?C.g:C.b}`,textAlign:"left",position:"relative"}}>
-            <div style={{fontSize:28}}>🛵</div>
-            <div style={{...N,color:C.w,fontWeight:900,fontSize:15,marginTop:8}}>Track Order</div>
-            <div style={{color:C.m,fontSize:11,marginTop:3}}>{orders.length} orders</div>
-            {liveOrders>0&&<div style={{position:"absolute",top:10,right:10,background:C.r,color:"#fff",borderRadius:99,fontSize:9,fontWeight:900,padding:"2px 8px",animation:"pulse 1.5s infinite"}}>● LIVE</div>}
-          </button>
-        </div>
-      </div>
-
-      <div style={{padding:"0 22px"}}>
-        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
-          <div style={{...N,color:C.w,fontSize:16,fontWeight:800}}>{greet.sticker} {(greet.meal||"breakfast").charAt(0).toUpperCase()+(greet.meal||"breakfast").slice(1)} for You</div>
-          <button onClick={()=>setTab("menu")} style={{background:"none",border:"none",color:C.g,fontSize:12,fontWeight:700,...N}}>See All →</button>
-        </div>
-        <div style={{display:"flex",gap:12,overflowX:"auto",paddingBottom:8}}>
-          {(foods[user?.goal||"general"]?.[greet.meal||"breakfast"]||[]).filter(i=>i.active&&i.stock).slice(0,5).map((item,i)=>{
-            const q=getQty(item.id);
-            return <div key={item.id} onClick={()=>setModal({type:"item",d:item})} style={{minWidth:165,background:C.card,borderRadius:20,overflow:"hidden",cursor:"pointer",border:`1px solid ${C.b}`,flexShrink:0,animation:`cIn .4s ease ${i*.08}s both`}}>
-              <div style={{background:"linear-gradient(135deg,#0c1610,#101a13)",padding:"18px 14px 12px",textAlign:"center",position:"relative"}}>
-                <div style={{fontSize:46}}>{item.emoji}</div>
-                <div style={{position:"absolute",top:8,right:8,background:"rgba(74,222,128,.14)",border:"1px solid rgba(74,222,128,.2)",borderRadius:7,padding:"2px 6px",fontSize:9,fontWeight:700,color:C.g}}>{item.tag}</div>
-              </div>
-              <div style={{padding:"10px 12px 12px"}}>
-                <div style={{...N,fontWeight:800,fontSize:12,color:C.w,lineHeight:1.3}}>{item.name}</div>
-                <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginTop:8}}>
-                  <div>
-                    <div style={{...N,color:C.o,fontWeight:900,fontSize:14}}>₹{item.price}</div>
-                    <div style={{fontSize:9,color:C.m}}>🔥{item.cal}</div>
+        
+        <div style={{ flex: 1, padding: "24px 28px", overflowY: "auto" }}>
+          <div style={{ ...N, color: C.w, fontSize: 26, fontWeight: 900, marginBottom: 4 }}>
+            {["Your Fitness Goal 🎯", "Body Numbers 📊", "Food Preference 🍽"][ob.step]}
+          </div>
+          <div style={{ color: C.m, fontSize: 13, marginBottom: 22 }}>
+            {["Choose what matters most", "For accurate calorie targets", "Show you meals you love"][ob.step]}
+          </div>
+          
+          {ob.step === 0 && (
+            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+              {GOALS.map(g => (
+                <button key={g.id} onClick={() => setOb(p => ({ ...p, goal: g.id }))} style={{ background: ob.goal === g.id ? "rgba(74,222,128,.1)" : C.card, border: `1.5px solid ${ob.goal === g.id ? C.g : C.b}`, borderRadius: 18, padding: "18px", textAlign: "left", display: "flex", alignItems: "center", gap: 14, width: "100%" }}>
+                  <span style={{ fontSize: 32 }}>{g.icon}</span>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ color: C.w, fontWeight: 800, fontSize: 15, ...N }}>{g.label}</div>
                   </div>
-                  {q>0?<div style={{display:"flex",alignItems:"center",gap:4,background:C.surf,borderRadius:9,padding:"4px 7px"}}>
-                    <button onClick={e=>{e.stopPropagation();chgQty(item.id,-1);}} style={{background:"none",border:"none",color:C.g,fontWeight:900,fontSize:16,width:20,height:20,display:"flex",alignItems:"center",justifyContent:"center"}}>−</button>
-                    <span style={{color:C.w,fontWeight:800,minWidth:14,textAlign:"center",fontSize:12,...N}}>{q}</span>
-                    <button onClick={e=>{e.stopPropagation();addToCart(item);}} style={{background:"none",border:"none",color:C.g,fontWeight:900,fontSize:16,width:20,height:20,display:"flex",alignItems:"center",justifyContent:"center"}}>+</button>
-                  </div>:<button onClick={e=>{e.stopPropagation();addToCart(item);}} style={{background:C.gO,color:"#fff",border:"none",padding:"6px 12px",borderRadius:9,fontWeight:800,fontSize:11,...N}}>+ Add</button>}
-                </div>
-              </div>
-            </div>;
-          })}
-        </div>
-      </div>
-
-      {!curPlan&&<div style={{margin:"16px 22px 0",background:"linear-gradient(135deg,#0c1610,#101a13)",border:"1px solid rgba(74,222,128,.15)",borderRadius:20,padding:"18px",cursor:"pointer"}} onClick={()=>setModal({type:"sub"})}>
-        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-          <div>
-            <div style={{fontSize:10,fontWeight:700,color:C.g,letterSpacing:1.5,textTransform:"uppercase"}}>⚡ Cosfit Pro</div>
-            <div style={{...N,color:C.w,fontSize:17,fontWeight:900,marginTop:4,lineHeight:1.3}}>Smart Meal Plans<br/>Just for You</div>
-            <div style={{color:C.m,fontSize:12,marginTop:4}}>From ₹{plans[0]?.price}/{plans[0]?.per}</div>
-          </div>
-          <div style={{background:C.gG,width:54,height:54,borderRadius:16,display:"flex",alignItems:"center",justifyContent:"center",fontSize:26,boxShadow:"0 4px 24px rgba(74,222,128,.35)"}}>⚡</div>
-        </div>
-      </div>}
-    </div>}
-
-    {/* ══ MENU ══ */}
-    {tab==="menu"&&<div style={{paddingBottom:90,height:"100vh",overflowY:"auto"}}>
-      <div style={{padding:"52px 22px 14px",background:"linear-gradient(180deg,#0c1610 0%,transparent 100%)"}}>
-        <div style={{...N,color:C.w,fontSize:26,fontWeight:900,letterSpacing:-.8}}>Menu 🍽</div>
-        <div style={{display:"flex",alignItems:"center",gap:10,background:C.card,borderRadius:14,padding:"12px 16px",marginTop:14,border:`1px solid ${C.b}`}}>
-          <span>🔍</span>
-          <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search meals..." style={{flex:1,background:"none",border:"none",color:C.w,fontSize:14,...F,width:"100%"}}/>
-          {search&&<button onClick={()=>setSearch("")} style={{background:"none",border:"none",color:C.m,fontSize:22}}>×</button>}
-        </div>
-      </div>
-      <div style={{padding:"0 22px 12px",display:"flex",gap:8,overflowX:"auto"}}>
-        {GOALS.map(g=><button key={g.id} onClick={()=>setMGoal(g.id)} style={{background:mGoal===g.id?"rgba(74,222,128,.14)":C.card,border:`1.5px solid ${mGoal===g.id?C.g:C.b}`,color:mGoal===g.id?C.g:C.m,padding:"8px 16px",borderRadius:20,fontWeight:700,fontSize:12,whiteSpace:"nowrap",flexShrink:0,...F}}>{g.icon} {g.label}</button>)}
-      </div>
-      <div style={{padding:"0 22px 14px"}}>
-        <div style={{display:"flex",background:C.card,borderRadius:16,padding:4,gap:3}}>
-          {MEALS.map(m=><button key={m} onClick={()=>setMMeal(m)} style={{flex:1,padding:"10px 8px",borderRadius:12,border:"none",background:mMeal===m?C.g:"transparent",color:mMeal===m?"#060c08":C.m,fontWeight:700,fontSize:12,...F}}>{MIC[m]} {m.charAt(0).toUpperCase()+m.slice(1)}</button>)}
-        </div>
-      </div>
-      <div style={{padding:"0 22px"}}>
-        {menuItems.length===0&&<div style={{textAlign:"center",padding:"48px 0"}}><div style={{fontSize:52}}>🔍</div><div style={{color:C.m,fontSize:14,marginTop:12,...N}}>No meals found</div></div>}
-        {menuItems.map((item,i)=>{
-          const q=getQty(item.id);
-          return <div key={item.id} style={{background:C.card,borderRadius:20,marginBottom:12,border:`1px solid ${C.b}`,overflow:"hidden",display:"flex",animation:`cIn .3s ease ${i*.05}s both`}}>
-            <div onClick={()=>setModal({type:"item",d:item})} style={{width:88,background:"linear-gradient(135deg,#0c1610,#101a13)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:40,cursor:"pointer",flexShrink:0}}>{item.emoji}</div>
-            <div style={{flex:1,padding:"13px 14px 13px 12px",minWidth:0}}>
-              <div style={{...N,fontWeight:800,fontSize:14,color:C.w}}>{item.name}</div>
-              <div style={{fontSize:11,color:C.m,marginTop:3,lineHeight:1.4}}>{item.desc}</div>
-              <div style={{display:"flex",gap:5,marginTop:7,flexWrap:"wrap"}}>
-                <span style={{background:"rgba(251,146,60,.12)",color:C.o,fontSize:10,fontWeight:700,padding:"3px 8px",borderRadius:99}}>🔥{item.cal}</span>
-                <span style={{background:"rgba(74,222,128,.1)",color:C.g,fontSize:9,fontWeight:700,padding:"3px 8px",borderRadius:99}}>{item.tag}</span>
-              </div>
-              <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginTop:10}}>
-                <span style={{...N,fontWeight:900,fontSize:16,color:C.o}}>₹{item.price}</span>
-                {q>0?<div style={{display:"flex",alignItems:"center",gap:8,background:C.surf,borderRadius:10,padding:"6px 12px"}}>
-                  <button onClick={()=>chgQty(item.id,-1)} style={{background:"none",border:"none",color:C.g,fontWeight:900,fontSize:20,width:22,height:22,display:"flex",alignItems:"center",justifyContent:"center"}}>−</button>
-                  <span style={{color:C.w,fontWeight:800,minWidth:16,textAlign:"center",...N}}>{q}</span>
-                  <button onClick={()=>addToCart(item)} style={{background:"none",border:"none",color:C.g,fontWeight:900,fontSize:20,width:22,height:22,display:"flex",alignItems:"center",justifyContent:"center"}}>+</button>
-                </div>:<button onClick={()=>addToCart(item)} style={{background:C.gO,color:"#fff",border:"none",padding:"8px 16px",borderRadius:10,fontWeight:800,fontSize:12,...N}}>+ Add</button>}
-              </div>
+                  {ob.goal === g.id && <div style={{ width: 24, height: 24, borderRadius: "50%", background: C.gG, display: "flex", alignItems: "center", justifyContent: "center", color: "#000", fontSize: 12, fontWeight: 900 }}>✓</div>}
+                </button>
+              ))}
             </div>
-          </div>;
-        })}
-      </div>
-    </div>}
-
-    {/* ══ CART ══ */}
-    {tab==="cart"&&<div style={{paddingBottom:90,height:"100vh",overflowY:"auto"}}>
-      <div style={{padding:"52px 22px 20px"}}>
-        <div style={{...N,color:C.w,fontSize:26,fontWeight:900}}>Your Cart 🛒</div>
-        {cart.length>0&&<div style={{color:C.m,fontSize:13,marginTop:4}}>{cartCount} items · {cart.reduce((s,i)=>s+i.cal*i.qty,0)} kcal</div>}
-      </div>
-      {cart.length===0?<div style={{textAlign:"center",padding:"60px 24px"}}>
-        <div style={{fontSize:74}}>🛒</div>
-        <div style={{...N,color:C.w,fontSize:20,fontWeight:900,marginTop:16}}>Cart is empty</div>
-        <button onClick={()=>setTab("menu")} style={{background:C.gG,color:"#060c08",border:"none",padding:"14px 32px",borderRadius:16,fontWeight:800,fontSize:14,marginTop:24,...N}}>Explore Menu →</button>
-      </div>:<div style={{padding:"0 22px"}}>
-        {cart.map(item=><div key={item.id} style={{background:C.card,borderRadius:18,padding:14,marginBottom:10,display:"flex",gap:12,alignItems:"center",border:`1px solid ${C.b}`}}>
-          <div style={{fontSize:32,width:44,textAlign:"center",flexShrink:0}}>{item.emoji}</div>
-          <div style={{flex:1,minWidth:0}}>
-            <div style={{...N,fontWeight:800,color:C.w,fontSize:13}}>{item.name}</div>
-            <div style={{...N,color:C.o,fontWeight:900,fontSize:14,marginTop:3}}>₹{item.price*item.qty}</div>
-          </div>
-          <div style={{display:"flex",alignItems:"center",gap:7,background:C.surf,borderRadius:11,padding:"7px 10px",flexShrink:0}}>
-            <button onClick={()=>chgQty(item.id,-1)} style={{background:"none",border:"none",color:C.g,fontWeight:900,fontSize:18,width:20,height:20,display:"flex",alignItems:"center",justifyContent:"center"}}>−</button>
-            <span style={{color:C.w,fontWeight:800,minWidth:16,textAlign:"center",...N}}>{item.qty}</span>
-            <button onClick={()=>chgQty(item.id,1)} style={{background:"none",border:"none",color:C.g,fontWeight:900,fontSize:18,width:20,height:20,display:"flex",alignItems:"center",justifyContent:"center"}}>+</button>
-          </div>
-        </div>)}
-        <div style={{background:C.card,borderRadius:18,padding:18,marginTop:6,border:`1px solid ${C.b}`,marginBottom:14}}>
-          <div style={{...N,color:C.w,fontWeight:800,fontSize:15,marginBottom:14}}>Bill Summary</div>
-          {[["Subtotal",`₹${cartSub}`],["Delivery",delivery===0?"🎁 Free":`₹${delivery}`],[`GST (${settings.gst}%)`,`₹${gstAmt}`],["Platform Fee",`₹${settings.platformFee}`]].map(([l,v])=><div key={l} style={{display:"flex",justifyContent:"space-between",marginBottom:10,fontSize:13}}>
-            <span style={{color:C.m}}>{l}</span><span style={{color:C.w,fontWeight:600}}>{v}</span>
-          </div>)}
-          <div style={{borderTop:`1px solid ${C.b}`,paddingTop:12,marginTop:4,display:"flex",justifyContent:"space-between"}}>
-            <span style={{...N,color:C.w,fontWeight:900,fontSize:17}}>Total</span>
-            <span style={{...N,color:C.o,fontWeight:900,fontSize:20}}>₹{orderTotal}</span>
-          </div>
-        </div>
-        <div style={{background:C.card,borderRadius:18,padding:18,marginBottom:16,border:`1px solid ${C.b}`}}>
-          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
-            <div style={{...N,fontWeight:800,color:C.w,fontSize:14}}>📍 Delivery Address</div>
-            <button onClick={()=>setTab("profile")} style={{background:"none",border:"none",color:C.g,fontSize:12,fontWeight:700,...N}}>Edit →</button>
-          </div>
-          {user?.address?<div style={{color:C.m,fontSize:13,lineHeight:1.6}}>{user.address}</div>:
-          <button onClick={()=>setTab("profile")} style={{width:"100%",background:"rgba(74,222,128,.07)",border:"1px dashed rgba(74,222,128,.3)",color:C.g,padding:"12px",borderRadius:12,fontWeight:700,fontSize:13}}>+ Add Delivery Address</button>}
-        </div>
-        <button onClick={placeOrder} style={{width:"100%",background:C.gO,color:"#fff",border:"none",padding:18,borderRadius:18,fontWeight:900,fontSize:16,...N,boxShadow:"0 8px 36px rgba(249,115,22,.42)"}}>🚀 Place Order</button>
-      </div>}
-    </div>}
-
-    {/* ══ TRACK ══ */}
-    {tab==="track"&&<div style={{paddingBottom:90,height:"100vh",overflowY:"auto"}}>
-      <div style={{padding:"52px 22px 22px"}}>
-        <div style={{...N,color:C.w,fontSize:26,fontWeight:900}}>Track Orders 🛵</div>
-        <div style={{color:C.m,fontSize:13,marginTop:4}}>{orders.length} total · {liveOrders} live</div>
-      </div>
-      {orders.length===0?<div style={{textAlign:"center",padding:"60px 24px"}}>
-        <div style={{fontSize:72}}>📦</div>
-        <div style={{...N,color:C.w,fontSize:20,fontWeight:900,marginTop:16}}>No orders yet</div>
-        <button onClick={()=>setTab("menu")} style={{background:C.gG,color:"#060c08",border:"none",padding:"14px 32px",borderRadius:16,fontWeight:800,fontSize:14,marginTop:24,...N}}>Order Now →</button>
-      </div>:<div style={{padding:"0 22px"}}>
-        {orders.map(order=><div key={order.id} style={{background:C.card,borderRadius:22,marginBottom:16,border:`1px solid ${order.statusIdx<4?"rgba(74,222,128,.35)":C.b}`,overflow:"hidden"}}>
-          <div style={{background:"linear-gradient(135deg,#0c1610,#101a13)",padding:"16px 18px",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-            <div>
-              <div style={{...N,color:C.w,fontWeight:800,fontSize:14}}>#{String(order.id).slice(-8)}</div>
-              <div style={{color:C.m,fontSize:11,marginTop:2}}>{order.date} · {order.time}</div>
-            </div>
-            <div style={{textAlign:"right"}}>
-              <div style={{...N,color:C.o,fontWeight:900,fontSize:18}}>₹{order.total}</div>
-              {order.statusIdx<4?<div style={{background:"rgba(74,222,128,.15)",color:C.g,borderRadius:99,fontSize:9,fontWeight:900,padding:"3px 10px",marginTop:4,display:"inline-block",animation:"pulse 1.5s infinite"}}>● LIVE</div>:<div style={{color:C.g,fontSize:11,fontWeight:700,marginTop:4}}>✅ Done</div>}
-            </div>
-          </div>
-          <div style={{padding:"18px"}}>
-            {ORDER_STEPS.map((step,i)=><div key={i} style={{display:"flex",alignItems:"flex-start",gap:12,marginBottom:i<4?14:0}}>
-              <div style={{width:30,height:30,borderRadius:"50%",flexShrink:0,background:i<order.statusIdx?"rgba(74,222,128,.18)":i===order.statusIdx?"rgba(74,222,128,.12)":"transparent",border:`2px solid ${i<=order.statusIdx?C.g:C.b}`,display:"flex",alignItems:"center",justifyContent:"center",transition:"all .5s"}}>
-                {i<order.statusIdx?<span style={{fontSize:11,color:C.g,fontWeight:900}}>✓</span>:i===order.statusIdx?<span style={{fontSize:15,animation:"pulse 1.5s infinite"}}>{step.icon}</span>:<span style={{color:C.m,fontSize:10,fontWeight:800}}>{i+1}</span>}
-              </div>
-              <div style={{flex:1,paddingTop:3}}>
-                <div style={{fontSize:12,fontWeight:i===order.statusIdx?800:500,color:i<=order.statusIdx?C.w:C.m,...N,display:"flex",alignItems:"center",gap:8}}>
-                  {step.label}{i===order.statusIdx&&<span style={{background:"rgba(74,222,128,.15)",color:C.g,fontSize:9,fontWeight:800,padding:"2px 8px",borderRadius:99}}>NOW</span>}
-                </div>
-                {i===order.statusIdx&&<div style={{fontSize:11,color:C.m,marginTop:3,lineHeight:1.5}}>{step.msg}</div>}
-              </div>
-            </div>)}
-            <div style={{display:"flex",flexWrap:"wrap",gap:6,paddingTop:12,marginTop:4,borderTop:`1px solid ${C.b}`}}>
-              {order.items.map(i=><span key={i.id} style={{background:C.surf,color:C.m,padding:"3px 10px",borderRadius:99,fontSize:11}}>{i.emoji} {i.name} ×{i.qty}</span>)}
-            </div>
-          </div>
-        </div>)}
-      </div>}
-    </div>}
-
-    {/* ══ NOTIFS ══ */}
-    {tab==="notifs"&&<div style={{paddingBottom:90,height:"100vh",overflowY:"auto"}}>
-      <div style={{padding:"52px 22px 20px",display:"flex",justifyContent:"space-between",alignItems:"flex-end"}}>
-        <div>
-          <div style={{...N,color:C.w,fontSize:26,fontWeight:900}}>Notifications 🔔</div>
-          <div style={{color:C.m,fontSize:13,marginTop:4}}>{unread} unread</div>
-        </div>
-        {unread>0&&<button onClick={()=>setNotifs(p=>p.map(n=>({...n,read:true})))} style={{background:"none",border:"none",color:C.g,fontSize:12,fontWeight:700,...N}}>Mark all read</button>}
-      </div>
-      {notifs.length===0?<div style={{textAlign:"center",padding:"60px 24px"}}>
-        <div style={{fontSize:72}}>🔔</div>
-        <div style={{...N,color:C.w,fontSize:20,fontWeight:900,marginTop:16}}>No notifications yet</div>
-      </div>:<div style={{padding:"0 22px"}}>
-        {notifs.map((n,i)=><div key={n.id} onClick={()=>setNotifs(p=>p.map(x=>x.id===n.id?{...x,read:true}:x))} style={{background:n.read?C.card:"rgba(74,222,128,.06)",borderRadius:18,padding:"16px",marginBottom:10,border:`1px solid ${n.read?C.b:"rgba(74,222,128,.25)"}`,display:"flex",gap:12,cursor:"pointer",animation:`cIn .3s ease ${i*.05}s both`}}>
-          <div style={{width:44,height:44,background:n.read?"rgba(74,222,128,.07)":"rgba(74,222,128,.14)",borderRadius:14,display:"flex",alignItems:"center",justifyContent:"center",fontSize:22,flexShrink:0}}>{n.icon}</div>
-          <div style={{flex:1}}>
-            <div style={{...N,fontWeight:800,color:C.w,fontSize:13}}>{n.label}</div>
-            <div style={{fontSize:12,color:C.m,marginTop:3,lineHeight:1.5}}>{n.msg}</div>
-            <div style={{fontSize:10,color:C.m2,marginTop:6}}>{n.time}</div>
-          </div>
-          {!n.read&&<div style={{width:9,height:9,borderRadius:"50%",background:C.g,flexShrink:0,marginTop:5,animation:"pulse 1.5s infinite"}}/>}
-        </div>)}
-      </div>}
-    </div>}
-
-    {/* ══ PROFILE ══ */}
-    {tab==="profile"&&<div style={{paddingBottom:90,height:"100vh",overflowY:"auto"}}>
-      <div style={{padding:"52px 22px 28px",background:"linear-gradient(180deg,#0c1610 0%,transparent 100%)",textAlign:"center"}}>
-        <div style={{position:"relative",display:"inline-block"}}>
-          <div style={{width:88,height:88,background:C.gG,borderRadius:"50%",display:"flex",alignItems:"center",justifyContent:"center",fontSize:42,margin:"0 auto",boxShadow:"0 0 36px rgba(74,222,128,.32)",cursor:"pointer"}} onClick={()=>setModal({type:"avatar"})}>{user?.avatar||"😊"}</div>
-          <div style={{position:"absolute",bottom:0,right:0,background:C.gG,borderRadius:"50%",width:26,height:26,display:"flex",alignItems:"center",justifyContent:"center",fontSize:13,cursor:"pointer",border:`2px solid ${C.bg}`}} onClick={()=>setModal({type:"avatar"})}>✏️</div>
-        </div>
-        <div style={{...N,color:C.w,fontSize:22,fontWeight:900,marginTop:12}}>{user?.name}</div>
-        <div style={{color:C.m,fontSize:13,marginTop:4}}>@{user?.username} · +91 {user?.phone}</div>
-        <div style={{color:C.m,fontSize:12,marginTop:3}}>{user?.email}</div>
-        {curPlan&&<div style={{display:"inline-flex",gap:6,background:"rgba(251,191,36,.1)",border:"1px solid rgba(251,191,36,.3)",borderRadius:20,padding:"6px 14px",marginTop:10}}>
-          <span style={{color:C.gold,fontSize:12,fontWeight:800,...N}}>⚡ {curPlan.label} Pro</span>
-        </div>}
-      </div>
-      <div style={{padding:"0 22px"}}>
-        <div style={{background:C.card,borderRadius:20,padding:16,border:`1px solid ${C.b}`,marginBottom:14}}>
-          <div style={{...N,color:C.w,fontWeight:800,fontSize:14,marginBottom:12}}>📍 Delivery Address</div>
-          <Field value={user?.address||""} onChange={v=>setUser(p=>({...p,address:v}))} ph="Enter your full delivery address..." rows={3}/>
-          <button onClick={saveProfile} style={{width:"100%",marginTop:10,background:C.gG,color:"#060c08",border:"none",padding:13,borderRadius:12,fontWeight:800,fontSize:14,...N}}>Save Address</button>
-        </div>
-        <div style={{display:"flex",flexDirection:"column",gap:10,marginBottom:20}}>
-          {[
-            {ic:"🖼",l:"Change Avatar",fn:()=>setModal({type:"avatar"}),col:C.g,bg:"rgba(74,222,128,.08)",bd:"rgba(74,222,128,.25)"},
-            {ic:"⚡",l:curPlan?`Active: ${curPlan.label} Pro`:"Upgrade to Pro",fn:()=>setModal({type:"sub"}),col:C.gold,bg:"rgba(251,191,36,.08)",bd:"rgba(251,191,36,.25)"},
-            {ic:"⚙️",l:isAdmin?"Admin Panel →":"Admin Login",fn:()=>isAdmin?setTab("admin"):setModal({type:"adminLogin"}),col:isAdmin?C.g:C.m,bg:C.card,bd:C.b},
-            {ic:"🚪",l:"Sign Out",fn:handleSignOut,col:C.r,bg:"rgba(248,113,113,.1)",bd:"rgba(248,113,113,.25)"},
-          ].map(b=><button key={b.l} onClick={b.fn} style={{background:b.bg,border:`1px solid ${b.bd}`,color:b.col,padding:"14px 16px",borderRadius:16,fontWeight:700,fontSize:14,textAlign:"left",display:"flex",alignItems:"center",gap:12}}>
-            <span style={{fontSize:20}}>{b.ic}</span><span>{b.l}</span>
-          </button>)}
-        </div>
-        <div style={{background:"rgba(74,222,128,.05)",border:"1px solid rgba(74,222,128,.1)",borderRadius:14,padding:"12px 16px",marginBottom:14}}>
-          <div style={{color:C.g,fontSize:11,fontWeight:700,...N,marginBottom:4}}>🔐 Firebase Auth Active</div>
-          <div style={{color:C.m,fontSize:11}}>Your account is securely stored in Firebase. Password reset works via Gmail link.</div>
-        </div>
-        <div style={{textAlign:"center",color:"#1b2d1f",fontSize:11,paddingBottom:8,lineHeight:1.8}}>Cosfit v6.0 · {COMPANY.name}</div>
-      </div>
-    </div>}
-
-    {/* ══ ADMIN PANEL ══ */}
-    {tab==="admin"&&isAdmin&&<div style={{paddingBottom:90,height:"100vh",overflowY:"auto"}}>
-      <div style={{padding:"52px 22px 16px",background:"linear-gradient(135deg,#080f1c,#0c1610)"}}>
-        <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start"}}>
-          <div>
-            <div style={{color:C.blue,fontSize:10,fontWeight:700,letterSpacing:1.5,textTransform:"uppercase"}}>⚙️ Admin Panel</div>
-            <div style={{...N,color:C.w,fontSize:22,fontWeight:900,marginTop:4}}>Control Centre</div>
-            <div style={{color:C.m,fontSize:12,marginTop:2}}>{adminUser?.name} · {adminUser?.role}</div>
-          </div>
-          <button onClick={()=>{setIsAdmin(false);setAdminUser(null);setTab("profile");pop("Exited admin");}} style={{background:"rgba(248,113,113,.15)",border:"1px solid rgba(248,113,113,.3)",color:C.r,padding:"8px 14px",borderRadius:20,fontSize:12,fontWeight:700,...N}}>Exit</button>
-        </div>
-        <div style={{display:"flex",gap:8,marginTop:14,flexWrap:"wrap"}}>
-          {[[`${orders.length} Orders`,C.g],[`${allOrders.length} Total`,C.o],[`${allUsers.length} Users`,C.pur],[`${allFlat.filter(i=>i.active).length} Items`,C.blue]].map(([l,c])=><div key={l} style={{background:"rgba(255,255,255,.04)",border:"1px solid rgba(255,255,255,.08)",borderRadius:99,padding:"4px 12px",fontSize:10,fontWeight:700,color:c}}>{l}</div>)}
-        </div>
-      </div>
-
-      <div style={{padding:"0 22px 14px"}}>
-        <div style={{display:"flex",background:C.card,borderRadius:14,padding:4,gap:2,overflowX:"auto"}}>
-          {[["orders","📦"],["foods","🍽"],["customers","👥"],["stats","📊"]].map(([k,ic])=><button key={k} onClick={()=>setAdminTab(k)} style={{flexShrink:0,padding:"9px 14px",borderRadius:10,border:"none",background:adminTab===k?C.blue:"transparent",color:adminTab===k?"#fff":C.m,fontWeight:700,fontSize:12,...F,whiteSpace:"nowrap"}}>
-            {ic} {k.charAt(0).toUpperCase()+k.slice(1)}
-          </button>)}
-        </div>
-      </div>
-
-      {adminTab==="orders"&&<div style={{padding:"0 22px"}}>
-        {[...orders,...allOrders.filter(o=>!orders.find(x=>x.id===o.id))].length===0?
-        <div style={{textAlign:"center",padding:"40px 0"}}><div style={{fontSize:52}}>📦</div><div style={{color:C.m,fontWeight:700,marginTop:12,...N}}>No orders yet</div></div>:
-        [...orders,...allOrders.filter(o=>!orders.find(x=>x.id===o.id))].map(order=><div key={order.id} style={{background:C.card,borderRadius:20,marginBottom:14,border:`1px solid ${order.statusIdx<4?"rgba(74,222,128,.3)":C.b}`,overflow:"hidden"}}>
-          <div style={{background:"linear-gradient(135deg,#080f1c,#0c1610)",padding:"14px 16px"}}>
-            <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:8}}>
+          )}
+          
+          {ob.step === 1 && (
+            <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+              {[["Age", "age"], ["Weight(kg)", "weight"], ["Height(cm)", "height"]].map(([l, k]) => (
+                <Field key={k} label={l} value={ob[k]} onChange={v => setOb(p => ({ ...p, [k]: v }))} type="number" />
+              ))}
               <div>
-                <div style={{...N,color:C.w,fontWeight:800,fontSize:13}}>#{String(order.id).slice(-8)}</div>
-                <div style={{fontSize:11,color:C.m,marginTop:2}}>{order.date} · {order.time}</div>
+                <div style={{ fontSize: 10, fontWeight: 700, color: C.m, textTransform: "uppercase", marginBottom: 10 }}>Gender</div>
+                <div style={{ display: "flex", gap: 10 }}>
+                  {[["m", "👨 Male"], ["f", "👩 Female"]].map(([v, l]) => (
+                    <button key={v} onClick={() => setOb(p => ({ ...p, gender: v }))} style={{ flex: 1, padding: "14px", borderRadius: 14, border: `1.5px solid ${ob.gender === v ? C.g : C.b}`, background: ob.gender === v ? "rgba(74,222,128,.1)" : C.card, color: ob.gender === v ? C.g : C.m, fontWeight: 700 }}>{l}</button>
+                  ))}
+                </div>
               </div>
-              <div style={{textAlign:"right"}}>
-                <div style={{...N,color:C.o,fontWeight:900,fontSize:16}}>₹{order.total}</div>
-              </div>
             </div>
-            <div style={{background:"rgba(255,255,255,.04)",borderRadius:10,padding:"10px 12px"}}>
-              <div style={{fontSize:12,color:C.m}}>👤 <span style={{color:C.w,fontWeight:700}}>{order.userName}</span></div>
-              <div style={{fontSize:12,color:C.m,marginTop:4}}>📞 <span style={{color:C.g,fontWeight:700}}>+91 {order.userPhone}</span></div>
-              <div style={{fontSize:11,color:C.m,marginTop:4}}>📍 {order.userAddress||"No address"}</div>
+          )}
+          
+          {ob.step === 2 && (
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+              {PREFS.map(p => (
+                <button key={p.id} onClick={() => setOb(prev => ({ ...prev, pref: p.id }))} style={{ background: ob.pref === p.id ? "rgba(74,222,128,.1)" : C.card, border: `1.5px solid ${ob.pref === p.id ? C.g : C.b}`, borderRadius: 18, padding: "24px 16px", textAlign: "center" }}>
+                  <div style={{ fontSize: 40 }}>{p.icon}</div>
+                  <div style={{ color: ob.pref === p.id ? C.g : C.w, fontWeight: 800, fontSize: 14, marginTop: 12, ...N }}>{p.label}</div>
+                </button>
+              ))}
             </div>
-          </div>
-          <div style={{padding:"10px 16px 14px"}}>
-            <div style={{color:C.g,fontSize:11,fontWeight:700,marginBottom:8}}>{ORDER_STEPS[order.statusIdx]?.icon} {ORDER_STEPS[order.statusIdx]?.label}</div>
-            <div style={{display:"flex",flexWrap:"wrap",gap:5,marginBottom:12}}>
-              {order.items.map(i=><span key={i.id} style={{background:C.surf,color:C.m,padding:"3px 10px",borderRadius:99,fontSize:11}}>{i.emoji} {i.name} ×{i.qty}</span>)}
-            </div>
-            {order.statusIdx<4?
-              <button onClick={()=>updateOrder(order.id)} style={{width:"100%",background:C.gG,color:"#060c08",border:"none",padding:"10px",borderRadius:12,fontWeight:900,fontSize:12,...N}}>
-                Update → {ORDER_STEPS[order.statusIdx+1]?.icon} {ORDER_STEPS[order.statusIdx+1]?.label}
-              </button>:
-              <div style={{background:"rgba(74,222,128,.07)",border:"1px solid rgba(74,222,128,.2)",borderRadius:12,padding:"10px",textAlign:"center",color:C.g,fontSize:12,fontWeight:700,...N}}>✅ Delivered!</div>
+          )}
+        </div>
+        
+        <div style={{ padding: "0 28px 40px", display: "flex", gap: 12 }}>
+          {ob.step > 0 && <button onClick={() => setOb(p => ({ ...p, step: p.step - 1 }))} style={{ flex: 1, padding: "15px", borderRadius: 15, border: `1.5px solid rgba(74,222,128,0.2)`, background: "transparent", color: C.w, ...N, fontSize: 15, fontWeight: 700 }}>← Back</button>}
+          <button disabled={!ok} onClick={async () => {
+            if (ob.step < 2) {
+              setOb(p => ({ ...p, step: p.step + 1 }));
+            } else {
+              const u = { ...user, ...ob };
+              setUser(u);
+              setMGoal(ob.goal);
+              try { await window.fbDB.collection("users").doc(u.uid).update({ goal: ob.goal, pref: ob.pref, age: ob.age, weight: ob.weight, height: ob.height, gender: ob.gender }); } catch(e){}
+              setScr("app");
+              pop("🎉 Profile complete! Welcome to Cosfit!");
             }
-          </div>
-        </div>)}
-      </div>}
+          }} style={{ flex: 2, padding: "15px", borderRadius: 15, border: "none", background: ok ? C.gG : "rgba(255,255,255,0.05)", color: ok ? "#060c08" : C.m, ...N, fontSize: 15, fontWeight: 800 }}>
+            {ob.step < 2 ? "Continue →" : "🚀 Start Cosfit!"}
+          </button>
+        </div>
+      </div>
+    );
+  }
 
-      {adminTab==="foods"&&<div style={{padding:"0 22px"}}>
-        {GOALS.map(goal=><div key={goal.id} style={{marginBottom:22}}>
-          <div style={{...N,color:C.w,fontWeight:900,fontSize:14,marginBottom:10,display:"flex",alignItems:"center",gap:8}}>
-            <span>{goal.icon}</span><span>{goal.label}</span>
-            <span style={{color:C.m,fontSize:11,fontWeight:600,marginLeft:"auto"}}>{Object.values(foods[goal.id]||{}).flat().length} items</span>
-          </div>
-          {MEALS.map(meal=><div key={meal} style={{marginBottom:12}}>
-            <div style={{fontSize:10,fontWeight:700,color:C.m,textTransform:"uppercase",letterSpacing:1.2,marginBottom:8}}>{MIC[meal]} {meal} ({(foods[goal.id]?.[meal]||[]).length})</div>
-            {(foods[goal.id]?.[meal]||[]).map(item=><div key={item.id} style={{background:C.card,borderRadius:13,padding:"10px 12px",marginBottom:7,border:`1px solid ${C.b}`,display:"flex",alignItems:"center",gap:9,opacity:!item.active?0.45:1}}>
-              <span style={{fontSize:20,flexShrink:0}}>{item.emoji}</span>
-              <div style={{flex:1,minWidth:0}}>
-                <div style={{...N,fontWeight:700,color:C.w,fontSize:13,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{item.name}</div>
-                <div style={{fontSize:10,color:C.m}}>₹{item.price} · {item.cal}kcal</div>
-              </div>
-              <div style={{display:"flex",gap:4,flexShrink:0}}>
-                <button onClick={()=>toggleProp(goal.id,meal,item.id,"stock")} style={{background:item.stock?"rgba(74,222,128,.12)":"rgba(248,113,113,.12)",border:"none",color:item.stock?C.g:C.r,width:28,height:28,borderRadius:8,fontSize:12}}>{item.stock?"📦":"🚫"}</button>
-                <button onClick={()=>toggleProp(goal.id,meal,item.id,"active")} style={{background:item.active?"rgba(74,222,128,.12)":"rgba(100,100,100,.1)",border:"none",color:item.active?C.g:C.m,width:28,height:28,borderRadius:8,fontSize:13}}>{item.active?"👁":"🙈"}</button>
-                <button onClick={()=>deleteFood(goal.id,meal,item.id,item.name)} style={{background:"rgba(248,113,113,.12)",border:"none",color:C.r,width:28,height:28,borderRadius:8,fontSize:12}}>🗑</button>
-              </div>
-            </div>)}
-          </div>)}
-        </div>)}
-      </div>}
+  if (scr !== "app") return null;
 
-      {adminTab==="customers"&&<div style={{padding:"0 22px"}}>
-        <div style={{...N,color:C.w,fontWeight:800,fontSize:15,marginBottom:14}}>👥 Firebase Users ({allUsers.length})</div>
-        {allUsers.length===0?<div style={{textAlign:"center",padding:"40px 0",color:C.m}}>No customers yet. Users registered via Firebase Auth appear here.</div>:
-        allUsers.map(u=><div key={u.uid||u.email} style={{background:C.card,borderRadius:18,padding:"16px",marginBottom:12,border:`1px solid ${C.b}`}}>
-          <div style={{display:"flex",gap:12,alignItems:"flex-start"}}>
-            <div style={{width:46,height:46,background:C.gG,borderRadius:"50%",display:"flex",alignItems:"center",justifyContent:"center",fontSize:22,flexShrink:0}}>{u.avatar||"😊"}</div>
-            <div style={{flex:1}}>
-              <div style={{...N,color:C.w,fontWeight:800,fontSize:14}}>{u.name}</div>
-              <div style={{color:C.m,fontSize:12,marginTop:2}}>@{u.username} · +91 {u.phone}</div>
-              <div style={{color:C.m,fontSize:11,marginTop:2}}>{u.email}</div>
-              {u.address&&<div style={{color:C.m,fontSize:11,marginTop:4}}>📍 {u.address}</div>}
+  const NavBtn = (k, ic, l, b = 0) => (
+    <button key={k} onClick={() => { if (window.navigator.vibrate) window.navigator.vibrate(20); setTab(k); }} style={{ flex: 1, background: "none", border: "none", display: "flex", flexDirection: "column", alignItems: "center", gap: 4, padding: "4px 0", position: "relative" }}>
+      <div style={{ background: tab === k ? "rgba(74,222,128,.13)" : "transparent", borderRadius: 14, padding: "7px 14px", position: "relative", transition: "background .25s" }}>
+        <span style={{ fontSize: 18 }}>{ic}</span>
+        {b > 0 && <span style={{ position: "absolute", top: -4, right: -4, background: C.r, color: "#fff", borderRadius: "50%", width: 17, height: 17, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 8, fontWeight: 900, animation: "pulse 1.5s infinite" }}>{b}</span>}
+      </div>
+      <span style={{ fontSize: 9, fontWeight: tab === k ? 800 : 500, color: tab === k ? C.g : C.m, ...F }}>{l}</span>
+    </button>
+  );
+
+  return (
+    <div style={{ minHeight: "100vh", maxWidth: 430, margin: "0 auto", background: C.bg, position: "relative", overflow: "hidden", ...F }}>
+      {toast && <Toast t={toast} />}
+      {banner && <NBanner n={banner} onClose={() => setBanner(null)} />}
+
+      {/* ── MODALS IN MAIN APP ── */}
+      {modal?.type === "item" && (
+        <Sheet onClose={() => setModal(null)}>
+          <div style={{ textAlign: "center" }}>
+            <div style={{ fontSize: 72, animation: "pop .4s cubic-bezier(.34,1.56,.64,1) both" }}>{modal.d.emoji}</div>
+            <div style={{ ...N, color: C.w, fontSize: 22, fontWeight: 900, marginTop: 10 }}>{modal.d.name}</div>
+            <div style={{ color: C.m, fontSize: 13, marginTop: 5, lineHeight: 1.6 }}>{modal.d.desc}</div>
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 8, marginTop: 20, background: "rgba(255,255,255,0.03)", border: `1px solid ${C.b}`, borderRadius: 16, padding: "16px 8px" }}>
+            {[["🔥", modal.d.cal, "kcal"], ["🥩", modal.d.p || 0 + "g", "Protein"], ["🌾", modal.d.c || 0 + "g", "Carbs"], ["💧", modal.d.f || 0 + "g", "Fat"]].map(([ic, v, l]) => (
+              <div key={l} style={{ textAlign: "center" }}>
+                <div style={{ fontSize: 20 }}>{ic}</div>
+                <div style={{ ...N, fontWeight: 800, fontSize: 14, color: C.w, marginTop: 4 }}>{v}</div>
+                <div style={{ fontSize: 10, color: C.m, marginTop: 2 }}>{l}</div>
+              </div>
+            ))}
+          </div>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 24 }}>
+            <div style={{ ...N, fontSize: 32, fontWeight: 900, color: C.o }}>₹{modal.d.price}</div>
+            <div style={{ display: "flex", gap: 10 }}>
+              <button onClick={() => setModal(null)} style={{ background: "transparent", color: C.m, border: `1px solid ${C.b}`, padding: "14px 20px", borderRadius: 14, fontWeight: 700, fontSize: 14 }}>Cancel</button>
+              <button onClick={() => addToCart(modal.d)} style={{ background: C.gO, color: "#fff", border: "none", padding: "14px 24px", borderRadius: 14, fontWeight: 800, fontSize: 14, ...N, boxShadow: "0 4px 20px rgba(249,115,22,.4)" }}>Add to Cart 🛒</button>
             </div>
           </div>
-        </div>)}
-      </div>}
+        </Sheet>
+      )}
 
-      {adminTab==="stats"&&<div style={{padding:"0 22px"}}>
-        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12,marginBottom:18}}>
-          {[["📦","Orders",orders.length,C.g],["💰","Revenue","₹"+orders.reduce((s,o)=>s+o.total,0),C.o],["👥","Firebase Users",allUsers.length,C.pur],["🍽","Menu Items",allFlat.length,C.blue]].map(([ic,l,v,col])=><div key={l} style={{background:C.card,borderRadius:18,padding:"16px",border:`1px solid ${C.b}`}}>
-            <div style={{fontSize:22}}>{ic}</div>
-            <div style={{...N,color:col,fontSize:24,fontWeight:900,marginTop:6}}>{v}</div>
-            <div style={{color:C.m,fontSize:11,marginTop:3}}>{l}</div>
-          </div>)}
-        </div>
-        <div style={{background:"rgba(74,222,128,.07)",border:"1px solid rgba(74,222,128,.2)",borderRadius:16,padding:"16px"}}>
-          <div style={{color:C.g,fontWeight:800,fontSize:13,...N,marginBottom:8}}>🔥 Firebase Status</div>
-          <div style={{color:C.m,fontSize:12,lineHeight:1.8}}>
-            ✅ Firebase Auth — Active<br/>
-            ✅ Firestore — Connected<br/>
-            ✅ Food Menu — Synced<br/>
-            ✅ Real Gmail OTP — Via Firebase Reset Link<br/>
-            ✅ Orders — Saved to Firestore
+      {foodModal && (
+        <Sheet onClose={() => setFoodModal(null)} tall>
+          <div style={{ ...N, color: C.w, fontSize: 22, fontWeight: 900, marginBottom: 18 }}>
+            {foodModal.data.id ? "✏️ Edit Food Item" : "🍲 Add New Food"}
+          </div>
+          <form onSubmit={handleSaveFood} style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+              <div>
+                <div style={{ fontSize: 10, fontWeight: 700, color: C.m, textTransform: "uppercase", marginBottom: 7, ...F }}>Goal Category</div>
+                <select value={foodModal.goal} onChange={e => setFoodModal(p => ({ ...p, goal: e.target.value }))} style={{ width: "100%", padding: "14px 16px", background: "rgba(255,255,255,0.03)", border: `1.5px solid ${C.b}`, borderRadius: 13, color: C.w, fontSize: 14, ...F }}>
+                  {GOALS.map(g => <option key={g.id} value={g.id} style={{ background: "#0c1610" }}>{g.label}</option>)}
+                </select>
+              </div>
+              <div>
+                <div style={{ fontSize: 10, fontWeight: 700, color: C.m, textTransform: "uppercase", marginBottom: 7, ...F }}>Meal Time</div>
+                <select value={foodModal.meal} onChange={e => setFoodModal(p => ({ ...p, meal: e.target.value }))} style={{ width: "100%", padding: "14px 16px", background: "rgba(255,255,255,0.03)", border: `1.5px solid ${C.b}`, borderRadius: 13, color: C.w, fontSize: 14, ...F }}>
+                  {MEALS.map(m => <option key={m} value={m} style={{ background: "#0c1610" }}>{m.charAt(0).toUpperCase() + m.slice(1)}</option>)}
+                </select>
+              </div>
+            </div>
+            <Field label="Food Name *" value={foodModal.data.name} onChange={v => setFoodModal(p => ({ ...p, data: { ...p.data, name: v } }))} ph="e.g. Avocado Salad" />
+            <Field label="Description" value={foodModal.data.desc} onChange={v => setFoodModal(p => ({ ...p, data: { ...p.data, desc: v } }))} ph="Short tasty description" />
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+              <Field label="Price (₹) *" type="number" value={foodModal.data.price} onChange={v => setFoodModal(p => ({ ...p, data: { ...p.data, price: v } }))} ph="199" />
+              <Field label="Calories" type="number" value={foodModal.data.cal} onChange={v => setFoodModal(p => ({ ...p, data: { ...p.data, cal: v } }))} ph="350" />
+            </div>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+              <Field label="Emoji" value={foodModal.data.emoji} onChange={v => setFoodModal(p => ({ ...p, data: { ...p.data, emoji: v } }))} ph="🥗" />
+              <Field label="Tag" value={foodModal.data.tag} onChange={v => setFoodModal(p => ({ ...p, data: { ...p.data, tag: v } }))} ph="High Protein" />
+            </div>
+            <button type="submit" style={{ background: C.gG, color: "#060c08", padding: "16px", borderRadius: 14, fontWeight: 900, marginTop: 10, border: "none", fontSize: 16, ...N, boxShadow: "0 8px 24px rgba(74,222,128,.3)" }}>
+              Save Food
+            </button>
+          </form>
+        </Sheet>
+      )}
+
+      {planModal && (
+        <Sheet onClose={() => setPlanModal(null)} tall>
+          <div style={{ ...N, color: C.w, fontSize: 22, fontWeight: 900, marginBottom: 18 }}>
+            💳 Edit Premium Plan
+          </div>
+          <form onSubmit={handleSavePlan} style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+              <Field label="Plan Name" value={planModal.label} onChange={v => setPlanModal(p => ({ ...p, label: v }))} />
+              <Field label="Per (e.g. month)" value={planModal.per} onChange={v => setPlanModal(p => ({ ...p, per: v }))} />
+            </div>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+              <Field label="Price (₹)" type="number" value={planModal.price} onChange={v => setPlanModal(p => ({ ...p, price: +v }))} />
+              <Field label="Save Text (Optional)" value={planModal.save || ""} onChange={v => setPlanModal(p => ({ ...p, save: v }))} ph="e.g. Save 25%" />
+            </div>
+            <Field label="Features (One per line)" rows={5} value={planModal.features.join('\n')} onChange={v => setPlanModal(p => ({ ...p, features: v.split('\n').filter(Boolean) }))} ph="Enter features..." />
+            <button type="submit" style={{ background: C.gG, color: "#060c08", padding: "16px", borderRadius: 14, fontWeight: 900, marginTop: 10, border: "none", fontSize: 16, ...N, boxShadow: "0 8px 24px rgba(74,222,128,.3)" }}>
+              Save Plan Updates
+            </button>
+          </form>
+        </Sheet>
+      )}
+
+      {modal?.type === "adminLogin" && (
+        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,.93)", backdropFilter: "blur(12px)", zIndex: 960, display: "flex", alignItems: "center", justifyContent: "center", padding: 24 }}>
+          <div style={{ background: C.card, border: `1px solid ${C.b}`, borderRadius: 24, padding: "28px 24px", width: "100%", maxWidth: 340, animation: "up .35s cubic-bezier(.34,1.56,.64,1)" }}>
+            <div style={{ fontSize: 48, textAlign: "center" }}>🔐</div>
+            <div style={{ ...N, color: C.w, fontSize: 20, fontWeight: 900, textAlign: "center", marginTop: 12 }}>Admin Login</div>
+            <div style={{ color: C.m, fontSize: 12, textAlign: "center", marginTop: 4, marginBottom: 20 }}>Restricted Access Only</div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 12, marginBottom: 16 }}>
+              <input type="text" placeholder="Admin Username" value={adminUsername} onChange={e => setAdminUsername(e.target.value)} style={{ width: "100%", padding: "13px 16px", background: "rgba(255,255,255,0.03)", border: `1.5px solid ${C.b}`, borderRadius: 12, color: C.w, fontSize: 14, ...F, boxSizing: "border-box" }} />
+              <input type="password" placeholder="Password" value={adminPw} onChange={e => setAdminPw(e.target.value)} onKeyDown={e => e.key === "Enter" && handleAdminLogin()} style={{ width: "100%", padding: "13px 16px", background: "rgba(255,255,255,0.03)", border: `1.5px solid ${C.b}`, borderRadius: 12, color: C.w, fontSize: 14, ...F, boxSizing: "border-box" }} />
+            </div>
+            <div style={{ display: "flex", gap: 8 }}>
+              <button onClick={handleAdminLogin} style={{ flex: 1, background: C.gG, color: "#060c08", border: "none", padding: "13px", borderRadius: 12, fontWeight: 800, fontSize: 14, ...N }}>Enter</button>
+              <button onClick={() => setModal(null)} style={{ flex: 1, background: "rgba(255,255,255,0.05)", color: C.m, border: `1px solid ${C.b}`, padding: "13px", borderRadius: 12, fontWeight: 700, fontSize: 14 }}>Cancel</button>
+            </div>
           </div>
         </div>
-      </div>}
-    </div>}
+      )}
 
-    {/* ══ BOTTOM NAV ══ */}
-    <div style={{position:"fixed",bottom:0,left:"50%",transform:"translateX(-50%)",width:"100%",maxWidth:430,background:"rgba(6,12,8,.97)",backdropFilter:"blur(24px)",borderTop:`1px solid ${C.b}`,display:"flex",padding:"10px 0 24px",zIndex:200}}>
-      {NavBtn("home","🏠","Home",0)}
-      {NavBtn("menu","🍽","Menu",0)}
-      {NavBtn("cart","🛒","Cart",cartCount)}
-      {NavBtn("track","🛵","Track",liveOrders)}
-      {NavBtn("notifs","🔔","Alerts",unread)}
+      {/* ══ HOME ══ */}
+      {tab === "home" && (
+        <div style={{ paddingBottom: 100, height: "100vh", overflowY: "auto" }}>
+          <div style={{ padding: "52px 22px 18px", background: "linear-gradient(180deg,rgba(12,22,16,0.9) 0%, transparent 100%)" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+              <div>
+                <div style={{ color: C.m, fontSize: 13, fontWeight: 700 }}>{greet.icon} {greet.greeting}</div>
+                <div style={{ ...N, color: C.w, fontSize: 28, fontWeight: 900, marginTop: 4 }}>{greet.fn}</div>
+              </div>
+              <div style={{ display: "flex", gap: 8 }}>
+                <button onClick={() => setTab("notifs")} style={{ width: 44, height: 44, borderRadius: "50%", background: "rgba(74,222,128,.08)", border: "1px solid rgba(74,222,128,.2)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18, position: "relative" }}>
+                  🔔{unread > 0 && <span style={{ position: "absolute", top: -2, right: -2, background: C.r, color: "#fff", borderRadius: "50%", width: 17, height: 17, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 8, fontWeight: 900 }}>{unread}</span>}
+                </button>
+                <button onClick={() => setTab("profile")} style={{ width: 44, height: 44, borderRadius: "50%", background: C.card, border: `1px solid ${C.b}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22 }}>
+                  {user?.avatar || "😊"}
+                </button>
+              </div>
+            </div>
+          </div>
+          <div style={{ margin: "0 22px 16px", background: C.card, borderRadius: 24, padding: "20px", border: `1px solid ${C.b}`, boxShadow: "0 12px 32px rgba(0,0,0,0.3)" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
+              <div style={{ position: "relative", width: 88, height: 88, flexShrink: 0 }}>
+                <svg width={88} height={88} style={{ transform: "rotate(-90deg)", filter: "drop-shadow(0 0 8px rgba(74,222,128,0.3))" }}>
+                  <circle cx={44} cy={44} r={36} fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth={8} />
+                  <circle cx={44} cy={44} r={36} fill="none" stroke={calP > 100 ? C.r : C.g} strokeWidth={8} strokeDasharray={226} strokeDashoffset={226 * (1 - calP / 100)} strokeLinecap="round" style={{ transition: "stroke-dashoffset 1s cubic-bezier(0.4, 0, 0.2, 1)" }} />
+                </svg>
+                <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  <div style={{ ...N, color: C.w, fontSize: 15, fontWeight: 900 }}>{calP}%</div>
+                </div>
+              </div>
+              <div style={{ flex: 1 }}>
+                <div style={{ color: C.m, fontSize: 11, fontWeight: 800, textTransform: "uppercase", letterSpacing: 1.5 }}>Today's Intake</div>
+                <div style={{ ...N, color: C.w, fontSize: 26, fontWeight: 900, marginTop: 4 }}>{todayCal} <span style={{ fontSize: 13, color: C.m }}>kcal</span></div>
+                <div style={{ color: C.g, fontSize: 12, marginTop: 4, fontWeight: 600 }}>Goal: {target} kcal</div>
+              </div>
+            </div>
+          </div>
+          <div style={{ padding: "0 22px", marginBottom: 20 }}>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
+              <button onClick={() => setTab("menu")} style={{ background: C.gG, borderRadius: 20, padding: "18px", border: "none", textAlign: "left", boxShadow: "0 12px 28px rgba(74,222,128,.25)" }}>
+                <div style={{ fontSize: 30 }}>🍽</div>
+                <div style={{ ...N, color: "#060c08", fontWeight: 900, fontSize: 16, marginTop: 10 }}>Order Food</div>
+              </button>
+              <button onClick={() => setTab("track")} style={{ background: C.card, borderRadius: 20, padding: "18px", border: `1px solid ${liveOrders > 0 ? C.g : C.b}`, textAlign: "left", position: "relative", boxShadow: "0 12px 28px rgba(0,0,0,.2)" }}>
+                <div style={{ fontSize: 30 }}>🛵</div>
+                <div style={{ ...N, color: C.w, fontWeight: 900, fontSize: 16, marginTop: 10 }}>Track Order</div>
+                {liveOrders > 0 && <div style={{ position: "absolute", top: 12, right: 12, background: C.r, color: "#fff", borderRadius: 99, fontSize: 9, fontWeight: 900, padding: "3px 8px", animation: "pulse 1.5s infinite" }}>● LIVE</div>}
+              </button>
+            </div>
+          </div>
+          <div style={{ padding: "0 22px" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
+              <div style={{ ...N, color: C.w, fontSize: 18, fontWeight: 900 }}>{greet.sticker} For You</div>
+              <button onClick={() => setTab("menu")} style={{ background: "none", border: "none", color: C.g, fontSize: 13, fontWeight: 800, ...N }}>See All →</button>
+            </div>
+            <div style={{ display: "flex", gap: 14, overflowX: "auto", paddingBottom: 12 }}>
+              {(foods[user?.goal || "general"]?.[greet.meal || "breakfast"] || []).filter(i => i.active && i.stock).slice(0, 5).map((item, i) => {
+                const q = getQty(item.id);
+                return (
+                  <div key={item.id} onClick={() => setModal({ type: "item", d: item })} style={{ minWidth: 170, background: C.card, borderRadius: 22, overflow: "hidden", cursor: "pointer", border: `1px solid ${C.b}`, flexShrink: 0, animation: `cIn .4s ease ${i * .08}s both`, boxShadow: "0 8px 24px rgba(0,0,0,0.3)" }}>
+                    <div style={{ background: "linear-gradient(135deg,rgba(255,255,255,0.02),transparent)", padding: "20px 14px 16px", textAlign: "center", position: "relative" }}>
+                      <div style={{ fontSize: 52 }}>{item.emoji}</div>
+                    </div>
+                    <div style={{ padding: "12px 14px 16px" }}>
+                      <div style={{ ...N, fontWeight: 800, fontSize: 13, color: C.w, lineHeight: 1.3 }}>{item.name}</div>
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 10 }}>
+                        <div style={{ ...N, color: C.o, fontWeight: 900, fontSize: 15 }}>₹{item.price}</div>
+                        {q > 0 ? (
+                          <div style={{ background: "rgba(255,255,255,0.05)", border: `1px solid ${C.b}`, borderRadius: 10, padding: "5px 10px" }}>
+                            <span style={{ color: C.w, fontWeight: 800, fontSize: 13, ...N }}>{q}</span>
+                          </div>
+                        ) : (
+                          <button onClick={e => { e.stopPropagation(); addToCart(item); }} style={{ background: C.gO, color: "#fff", border: "none", padding: "8px 14px", borderRadius: 10, fontWeight: 800, fontSize: 12, ...N }}>+ Add</button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ══ MENU ══ */}
+      {tab === "menu" && (
+        <div style={{ paddingBottom: 100, height: "100vh", overflowY: "auto" }}>
+          <div style={{ padding: "52px 22px 14px", background: "linear-gradient(180deg,rgba(12,22,16,0.9) 0%, transparent 100%)" }}>
+            <div style={{ ...N, color: C.w, fontSize: 28, fontWeight: 900 }}>Menu 🍽</div>
+            <div style={{ display: "flex", alignItems: "center", gap: 10, background: "rgba(255,255,255,0.03)", borderRadius: 16, padding: "14px 18px", marginTop: 16, border: `1px solid ${C.b}` }}>
+              <span style={{ fontSize: 16 }}>🔍</span>
+              <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search delicious meals..." style={{ flex: 1, background: "none", border: "none", color: C.w, fontSize: 15, ...F, width: "100%" }} />
+              {search && <button onClick={() => setSearch("")} style={{ background: "none", border: "none", color: C.m, fontSize: 22 }}>×</button>}
+            </div>
+          </div>
+          <div style={{ padding: "0 22px 12px", display: "flex", gap: 8, overflowX: "auto" }}>
+            {GOALS.map(g => (
+              <button key={g.id} onClick={() => setMGoal(g.id)} style={{ background: mGoal === g.id ? "rgba(74,222,128,.15)" : C.card, border: `1px solid ${mGoal === g.id ? C.g : C.b}`, color: mGoal === g.id ? C.g : C.w, padding: "10px 18px", borderRadius: 22, fontWeight: 800, fontSize: 13, whiteSpace: "nowrap", flexShrink: 0, ...F, boxShadow: mGoal === g.id ? "0 4px 16px rgba(74,222,128,0.2)" : "none" }}>
+                {g.icon} {g.label}
+              </button>
+            ))}
+          </div>
+          <div style={{ padding: "0 22px 16px" }}>
+            <div style={{ display: "flex", background: C.card, borderRadius: 18, padding: 5, gap: 4, border: `1px solid ${C.b}` }}>
+              {MEALS.map(m => (
+                <button key={m} onClick={() => setMMeal(m)} style={{ flex: 1, padding: "12px 8px", borderRadius: 14, border: "none", background: mMeal === m ? C.g : "transparent", color: mMeal === m ? "#060c08" : C.m, fontWeight: 800, fontSize: 13, ...F }}>
+                  {MIC[m]} {m.charAt(0).toUpperCase() + m.slice(1)}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div style={{ padding: "0 22px" }}>
+            {menuItems.length === 0 && <div style={{ textAlign: "center", padding: "48px 0" }}><div style={{ fontSize: 52 }}>🍽️</div><div style={{ color: C.m, fontSize: 15, marginTop: 12, ...N, fontWeight: 700 }}>No meals found</div></div>}
+            {menuItems.map((item, i) => {
+              const q = getQty(item.id);
+              return (
+                <div key={item.id} style={{ background: C.card, borderRadius: 22, marginBottom: 14, border: `1px solid ${C.b}`, overflow: "hidden", display: "flex", animation: `cIn .3s ease ${i * .05}s both`, boxShadow: "0 8px 24px rgba(0,0,0,0.25)" }}>
+                  <div onClick={() => setModal({ type: "item", d: item })} style={{ width: 96, background: "linear-gradient(135deg,rgba(255,255,255,0.03),transparent)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 44, cursor: "pointer", flexShrink: 0 }}>
+                    {item.emoji}
+                  </div>
+                  <div style={{ flex: 1, padding: "16px 16px 16px 12px", minWidth: 0 }}>
+                    <div style={{ ...N, fontWeight: 800, fontSize: 15, color: C.w }}>{item.name}</div>
+                    <div style={{ fontSize: 12, color: C.m, marginTop: 4, lineHeight: 1.5 }}>{item.desc}</div>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 12 }}>
+                      <span style={{ ...N, fontWeight: 900, fontSize: 18, color: C.o }}>₹{item.price}</span>
+                      {q > 0 ? (
+                        <div style={{ display: "flex", alignItems: "center", gap: 10, background: "rgba(255,255,255,0.05)", border: `1px solid ${C.b}`, borderRadius: 12, padding: "6px 14px" }}>
+                          <button onClick={() => chgQty(item.id, -1)} style={{ background: "none", border: "none", color: C.g, fontWeight: 900, fontSize: 20 }}>−</button>
+                          <span style={{ color: C.w, fontWeight: 800, fontSize: 14, ...N }}>{q}</span>
+                          <button onClick={() => addToCart(item)} style={{ background: "none", border: "none", color: C.g, fontWeight: 900, fontSize: 20 }}>+</button>
+                        </div>
+                      ) : (
+                        <button onClick={() => addToCart(item)} style={{ background: C.gO, color: "#fff", border: "none", padding: "10px 18px", borderRadius: 12, fontWeight: 900, fontSize: 13, ...N, boxShadow: "0 4px 16px rgba(249,115,22,0.3)" }}>+ Add</button>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* ══ CART ══ */}
+      {tab === "cart" && (
+        <div style={{ paddingBottom: 100, height: "100vh", overflowY: "auto" }}>
+          <div style={{ padding: "52px 22px 20px" }}>
+            <div style={{ ...N, color: C.w, fontSize: 28, fontWeight: 900 }}>Your Cart 🛒</div>
+            {cart.length > 0 && <div style={{ color: C.m, fontSize: 13, marginTop: 4 }}>{cartCount} items · {cart.reduce((s, i) => s + i.cal * i.qty, 0)} kcal</div>}
+          </div>
+          {cart.length === 0 ? (
+            <div style={{ textAlign: "center", padding: "60px 24px" }}>
+              <div style={{ fontSize: 74 }}>🛒</div>
+              <div style={{ ...N, color: C.w, fontSize: 22, fontWeight: 900, marginTop: 16 }}>Cart is empty</div>
+              <button onClick={() => setTab("menu")} style={{ background: C.gG, color: "#060c08", border: "none", padding: "14px 32px", borderRadius: 16, fontWeight: 800, fontSize: 14, marginTop: 24, ...N }}>Explore Menu →</button>
+            </div>
+          ) : (
+            <div style={{ padding: "0 22px" }}>
+              {cart.map(item => (
+                <div key={item.id} style={{ background: C.card, borderRadius: 20, padding: 16, marginBottom: 12, display: "flex", gap: 14, alignItems: "center", border: `1px solid ${C.b}`, boxShadow: "0 8px 24px rgba(0,0,0,0.2)" }}>
+                  <div style={{ fontSize: 36, width: 48, textAlign: "center" }}>{item.emoji}</div>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ ...N, fontWeight: 800, color: C.w, fontSize: 14 }}>{item.name}</div>
+                    <div style={{ ...N, color: C.o, fontWeight: 900, fontSize: 16, marginTop: 4 }}>₹{item.price * item.qty}</div>
+                  </div>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8, background: "rgba(255,255,255,0.05)", border: `1px solid ${C.b}`, borderRadius: 12, padding: "8px 12px" }}>
+                    <button onClick={() => chgQty(item.id, -1)} style={{ background: "none", border: "none", color: C.g, fontWeight: 900, fontSize: 18 }}>−</button>
+                    <span style={{ color: C.w, fontWeight: 800, fontSize: 14, ...N }}>{item.qty}</span>
+                    <button onClick={() => chgQty(item.id, 1)} style={{ background: "none", border: "none", color: C.g, fontWeight: 900, fontSize: 18 }}>+</button>
+                  </div>
+                </div>
+              ))}
+              <div style={{ background: C.card, borderRadius: 18, padding: 18, marginTop: 6, border: `1px solid ${C.b}`, marginBottom: 14 }}>
+                <div style={{ ...N, color: C.w, fontWeight: 800, fontSize: 15, marginBottom: 14 }}>Bill Summary</div>
+                {[["Subtotal", `₹${cartSub}`], ["Delivery", delivery === 0 ? "🎁 Free" : `₹${delivery}`], [`GST (${settings.gst}%)`, `₹${gstAmt}`], ["Platform Fee", `₹${settings.platformFee}`]].map(([l, v]) => (
+                  <div key={l} style={{ display: "flex", justifyContent: "space-between", marginBottom: 10, fontSize: 13 }}>
+                    <span style={{ color: C.m }}>{l}</span><span style={{ color: C.w, fontWeight: 600 }}>{v}</span>
+                  </div>
+                ))}
+                <div style={{ borderTop: `1px solid ${C.b}`, paddingTop: 12, marginTop: 4, display: "flex", justifyContent: "space-between" }}>
+                  <span style={{ ...N, color: C.w, fontWeight: 900, fontSize: 17 }}>Total</span>
+                  <span style={{ ...N, color: C.o, fontWeight: 900, fontSize: 20 }}>₹{orderTotal}</span>
+                </div>
+              </div>
+              <button onClick={placeOrder} style={{ width: "100%", background: C.gO, color: "#fff", border: "none", padding: 18, borderRadius: 18, fontWeight: 900, fontSize: 17, marginTop: 10, marginBottom: 24, ...N, boxShadow: "0 12px 36px rgba(249,115,22,.4)" }}>
+                🚀 Place Order (₹{orderTotal})
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ══ TRACK ══ */}
+      {tab === "track" && (
+        <div style={{ paddingBottom: 100, height: "100vh", overflowY: "auto" }}>
+          <div style={{ padding: "52px 22px 22px" }}>
+            <div style={{ ...N, color: C.w, fontSize: 28, fontWeight: 900 }}>Track Orders 🛵</div>
+          </div>
+          {orders.length === 0 ? (
+            <div style={{ textAlign: "center", padding: "60px 24px" }}>
+              <div style={{ fontSize: 72 }}>📦</div>
+              <div style={{ ...N, color: C.w, fontSize: 22, fontWeight: 900, marginTop: 16 }}>No orders yet</div>
+              <button onClick={() => setTab("menu")} style={{ background: C.gG, color: "#060c08", border: "none", padding: "14px 32px", borderRadius: 16, fontWeight: 800, fontSize: 14, marginTop: 24, ...N }}>Order Now →</button>
+            </div>
+          ) : (
+            <div style={{ padding: "0 22px" }}>
+              {orders.map(order => (
+                <div key={order.id} style={{ background: C.card, borderRadius: 24, marginBottom: 18, border: `1px solid ${order.statusIdx < 4 ? "rgba(74,222,128,.35)" : order.statusIdx === 5 ? C.r : C.b}`, overflow: "hidden", boxShadow: "0 12px 32px rgba(0,0,0,0.25)" }}>
+                  <div style={{ background: "rgba(255,255,255,0.02)", padding: "18px 20px", display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: `1px solid ${C.b}` }}>
+                    <div>
+                      <div style={{ ...N, color: C.w, fontWeight: 800, fontSize: 15 }}>#{String(order.id).slice(-8)}</div>
+                      <div style={{ color: C.m, fontSize: 12, marginTop: 3 }}>{order.date} · {order.time}</div>
+                    </div>
+                    <div style={{ textAlign: "right" }}>
+                      <div style={{ ...N, color: C.o, fontWeight: 900, fontSize: 20 }}>₹{order.total}</div>
+                      {order.statusIdx < 4 ? (
+                        <div style={{ background: "rgba(74,222,128,.15)", color: C.g, borderRadius: 99, fontSize: 10, fontWeight: 900, padding: "4px 12px", marginTop: 6, display: "inline-block", animation: "pulse 1.5s infinite" }}>● LIVE</div>
+                      ) : order.statusIdx === 5 ? (
+                        <div style={{ color: C.r, fontSize: 12, fontWeight: 800, marginTop: 6 }}>❌ Cancelled</div>
+                      ) : (
+                        <div style={{ color: C.g, fontSize: 12, fontWeight: 800, marginTop: 6 }}>✅ Delivered</div>
+                      )}
+                    </div>
+                  </div>
+                  <div style={{ padding: "20px" }}>
+                    {ORDER_STEPS.map((step, i) => {
+                      if (i === 5 && order.statusIdx !== 5) return null;
+                      if (i < 5 && order.statusIdx === 5) return null;
+                      
+                      return (
+                        <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 14, marginBottom: i < 4 && order.statusIdx !== 5 ? 16 : 0 }}>
+                          <div style={{ width: 32, height: 32, borderRadius: "50%", flexShrink: 0, background: i < order.statusIdx ? "rgba(74,222,128,.18)" : i === order.statusIdx && order.statusIdx !== 5 ? "rgba(74,222,128,.12)" : order.statusIdx === 5 ? "rgba(248,113,113,.15)" : "rgba(255,255,255,0.03)", border: `2px solid ${i <= order.statusIdx && order.statusIdx !== 5 ? C.g : order.statusIdx === 5 ? C.r : C.b}`, display: "flex", alignItems: "center", justifyContent: "center", transition: "all .5s" }}>
+                            {i < order.statusIdx && order.statusIdx !== 5 ? <span style={{ fontSize: 12, color: C.g, fontWeight: 900 }}>✓</span> : i === order.statusIdx ? <span style={{ fontSize: 16 }}>{step.icon}</span> : <span style={{ color: C.m, fontSize: 11, fontWeight: 800 }}>{i + 1}</span>}
+                          </div>
+                          <div style={{ flex: 1, paddingTop: 4 }}>
+                            <div style={{ fontSize: 13, fontWeight: i === order.statusIdx ? 800 : 600, color: i <= order.statusIdx && order.statusIdx !== 5 ? C.w : order.statusIdx === 5 ? C.r : C.m, ...N }}>{step.label}</div>
+                            {i === order.statusIdx && <div style={{ fontSize: 12, color: C.m, marginTop: 4, lineHeight: 1.5 }}>{step.msg}</div>}
+                          </div>
+                        </div>
+                      );
+                    })}
+                    
+                    {/* ✅ Customer Cancel Order Option */}
+                    {order.statusIdx === 0 && (
+                      <button onClick={() => cancelOrder(order.id, false)} style={{ marginTop: 20, width: "100%", background: "rgba(248,113,113,0.05)", border: `1px solid rgba(248,113,113,0.3)`, color: C.r, padding: "12px", borderRadius: 14, fontWeight: 800, fontSize: 14 }}>
+                        Cancel Order
+                      </button>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ══ NOTIFS ══ */}
+      {tab === "notifs" && (
+        <div style={{ paddingBottom: 90, height: "100vh", overflowY: "auto" }}>
+          <div style={{ padding: "52px 22px 20px", display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+            <div>
+              <div style={{ ...N, color: C.w, fontSize: 26, fontWeight: 900 }}>Alerts 🔔</div>
+            </div>
+            {unread > 0 && <button onClick={() => setNotifs(p => p.map(n => ({ ...n, read: true })))} style={{ background: "none", border: "none", color: C.g, fontSize: 12, fontWeight: 700, ...N }}>Mark all read</button>}
+          </div>
+          {notifs.length === 0 ? (
+            <div style={{ textAlign: "center", padding: "60px 24px" }}>
+              <div style={{ fontSize: 72 }}>🔔</div>
+              <div style={{ ...N, color: C.w, fontSize: 20, fontWeight: 900, marginTop: 16 }}>No alerts</div>
+            </div>
+          ) : (
+            <div style={{ padding: "0 22px" }}>
+              {notifs.map((n, i) => (
+                <div key={n.id} onClick={() => setNotifs(p => p.map(x => x.id === n.id ? { ...x, read: true } : x))} style={{ background: n.read ? C.card : "rgba(74,222,128,.06)", borderRadius: 18, padding: "16px", marginBottom: 10, border: `1px solid ${n.read ? C.b : "rgba(74,222,128,.25)"}`, display: "flex", gap: 12, cursor: "pointer", animation: `cIn .3s ease ${i * .05}s both` }}>
+                  <div style={{ width: 44, height: 44, background: n.read ? "rgba(74,222,128,.07)" : "rgba(74,222,128,.14)", borderRadius: 14, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22, flexShrink: 0 }}>{n.icon}</div>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ ...N, fontWeight: 800, color: C.w, fontSize: 13 }}>{n.label}</div>
+                    <div style={{ fontSize: 12, color: C.m, marginTop: 3, lineHeight: 1.5 }}>{n.msg}</div>
+                    <div style={{ fontSize: 10, color: C.m2, marginTop: 6 }}>{n.time}</div>
+                  </div>
+                  {!n.read && <div style={{ width: 9, height: 9, borderRadius: "50%", background: C.g, flexShrink: 0, marginTop: 5, animation: "pulse 1.5s infinite" }} />}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ══ PROFILE ══ */}
+      {tab === "profile" && (
+        <div style={{ paddingBottom: 100, height: "100vh", overflowY: "auto" }}>
+          <div style={{ padding: "52px 22px 28px", textAlign: "center", background: "linear-gradient(180deg,rgba(12,22,16,0.9) 0%, transparent 100%)" }}>
+            <div style={{ position: "relative", display: "inline-block" }}>
+              <div style={{ width: 96, height: 96, background: C.gG, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 46, margin: "0 auto", boxShadow: "0 12px 32px rgba(74,222,128,.3)", cursor: "pointer" }} onClick={() => setModal({ type: "avatar" })}>
+                {user?.avatar || "😊"}
+              </div>
+              <div style={{ position: "absolute", bottom: 0, right: 0, background: C.gG, borderRadius: "50%", width: 28, height: 28, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, cursor: "pointer", border: `2px solid ${C.bg}` }} onClick={() => setModal({ type: "avatar" })}>✏️</div>
+            </div>
+            <div style={{ ...N, color: C.w, fontSize: 24, fontWeight: 900, marginTop: 16 }}>{user?.name}</div>
+            <div style={{ color: C.m, fontSize: 14, marginTop: 6 }}>@{user?.username} · +91 {user?.phone}</div>
+            <div style={{ color: C.m, fontSize: 12, marginTop: 3 }}>{user?.email}</div>
+          </div>
+          
+          <div style={{ padding: "0 22px" }}>
+            
+            {/* ✅ NEW: HEALTH PROFILE CARD */}
+            <div style={{ background: C.card, borderRadius: 20, padding: 16, border: `1px solid ${C.b}`, marginBottom: 14 }}>
+              <div style={{ ...N, color: C.w, fontWeight: 800, fontSize: 15, marginBottom: 14 }}>📊 Health Profile</div>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+                <div style={{ background: "rgba(255,255,255,0.03)", padding: "12px", borderRadius: 14, border: `1px solid ${C.b}` }}>
+                   <div style={{ fontSize: 11, color: C.m }}>Weight</div>
+                   <div style={{ ...N, fontSize: 16, fontWeight: 800, color: C.w, marginTop: 4 }}>{user?.weight || "--"} kg</div>
+                </div>
+                <div style={{ background: "rgba(255,255,255,0.03)", padding: "12px", borderRadius: 14, border: `1px solid ${C.b}` }}>
+                   <div style={{ fontSize: 11, color: C.m }}>Height</div>
+                   <div style={{ ...N, fontSize: 16, fontWeight: 800, color: C.w, marginTop: 4 }}>{user?.height || "--"} cm</div>
+                </div>
+                <div style={{ background: "rgba(255,255,255,0.03)", padding: "12px", borderRadius: 14, border: `1px solid ${C.b}` }}>
+                   <div style={{ fontSize: 11, color: C.m }}>BMI</div>
+                   <div style={{ display: "flex", alignItems:"baseline", gap: 6, marginTop: 4 }}>
+                     <div style={{ ...N, fontSize: 16, fontWeight: 800, color: C.g }}>
+                       {user?.weight && user?.height ? (+user.weight / ((+user.height / 100) ** 2)).toFixed(1) : "--"}
+                     </div>
+                     {user?.weight && user?.height && (
+                       <div style={{ fontSize: 9, color: C.g, background: "rgba(74,222,128,.1)", padding: "2px 6px", borderRadius: 99 }}>
+                         {(+(+user.weight / ((+user.height / 100) ** 2)).toFixed(1)) < 18.5 ? "Underweight" : (+(+user.weight / ((+user.height / 100) ** 2)).toFixed(1)) < 25 ? "Healthy" : (+(+user.weight / ((+user.height / 100) ** 2)).toFixed(1)) < 30 ? "Overweight" : "Obese"}
+                       </div>
+                     )}
+                   </div>
+                </div>
+                <div style={{ background: "rgba(255,255,255,0.03)", padding: "12px", borderRadius: 14, border: `1px solid ${C.b}` }}>
+                   <div style={{ fontSize: 11, color: C.m }}>Daily Target</div>
+                   <div style={{ ...N, fontSize: 16, fontWeight: 800, color: C.o, marginTop: 4 }}>
+                     {user ? tdee(+user.weight||70, +user.height||175, +user.age||25, user.gender||"m", user.goal||"general") : "--"} kcal
+                   </div>
+                </div>
+              </div>
+              <div style={{ display: "flex", gap: 8, marginTop: 12 }}>
+                 <div style={{ flex: 1, background: "rgba(74,222,128,0.1)", color: C.g, padding: "10px", borderRadius: 12, fontSize: 12, fontWeight: 700, textAlign: "center", border: `1px solid rgba(74,222,128,0.2)` }}>
+                   🎯 {GOALS.find(g => g.id === user?.goal)?.label || "Stay Fit"}
+                 </div>
+                 <div style={{ flex: 1, background: "rgba(96,165,250,0.1)", color: C.blue, padding: "10px", borderRadius: 12, fontSize: 12, fontWeight: 700, textAlign: "center", border: `1px solid rgba(96,165,250,0.2)` }}>
+                   🍽 {PREFS.find(p => p.id === user?.pref)?.label || "Everything"}
+                 </div>
+              </div>
+            </div>
+
+            <div style={{ background: C.card, borderRadius: 20, padding: 16, border: `1px solid ${C.b}`, marginBottom: 14 }}>
+              <div style={{ ...N, color: C.w, fontWeight: 800, fontSize: 14, marginBottom: 12 }}>📍 Delivery Address</div>
+              <Field value={user?.address || ""} onChange={v => setUser(p => ({ ...p, address: v }))} ph="Enter your full delivery address..." rows={3} />
+              <button onClick={saveProfile} style={{ width: "100%", marginTop: 10, background: C.gG, color: "#060c08", border: "none", padding: 13, borderRadius: 12, fontWeight: 800, fontSize: 14, ...N }}>Save Address</button>
+            </div>
+            
+            <div style={{ display: "flex", flexDirection: "column", gap: 12, paddingBottom: 20 }}>
+              <button onClick={() => isAdmin ? setTab("admin") : setModal({ type: "adminLogin" })} style={{ background: C.card, border: `1px solid ${C.b}`, color: isAdmin ? C.g : C.w, padding: "16px 20px", borderRadius: 18, fontWeight: 800, fontSize: 15, textAlign: "left", boxShadow: "0 8px 24px rgba(0,0,0,0.2)" }}>
+                ⚙️ {isAdmin ? "Admin Panel →" : "Admin Login"}
+              </button>
+              <button onClick={handleSignOut} style={{ background: "rgba(248,113,113,.08)", border: "1px solid rgba(248,113,113,.25)", color: C.r, padding: "16px 20px", borderRadius: 18, fontWeight: 800, fontSize: 15, textAlign: "left" }}>
+                🚪 Sign Out
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ══ ADMIN PANEL ══ */}
+      {tab === "admin" && isAdmin && (
+        <div style={{ paddingBottom: 100, height: "100vh", overflowY: "auto" }}>
+          <div style={{ padding: "52px 22px 18px", background: "linear-gradient(135deg,rgba(16,26,20,0.95),rgba(8,15,28,0.95))" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+              <div>
+                <div style={{ color: C.blue, fontSize: 11, fontWeight: 800, letterSpacing: 1.5 }}>⚙️ ADMIN</div>
+                <div style={{ ...N, color: C.w, fontSize: 24, fontWeight: 900, marginTop: 4 }}>Control Centre</div>
+              </div>
+              <button onClick={() => { setIsAdmin(false); setTab("profile"); }} style={{ background: "rgba(248,113,113,.15)", color: C.r, padding: "10px 16px", borderRadius: 20, fontSize: 13, fontWeight: 800, border: "none" }}>Exit</button>
+            </div>
+          </div>
+          <div style={{ padding: "0 22px 16px" }}>
+            <div style={{ display: "flex", background: C.card, borderRadius: 16, padding: 5, gap: 4, overflowX: "auto", border: `1px solid ${C.b}` }}>
+              {[["orders", "📦"], ["foods", "🍽"], ["plans", "💳"], ["customers", "👥"], ["stats", "📊"]].map(([k, ic]) => (
+                <button key={k} onClick={() => setAdminTab(k)} style={{ flexShrink: 0, padding: "12px 16px", borderRadius: 12, border: "none", background: adminTab === k ? C.blue : "transparent", color: adminTab === k ? "#fff" : C.m, fontWeight: 800, fontSize: 13 }}>
+                  {ic} {k.toUpperCase()}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {adminTab === "orders" && (
+            <div style={{ padding: "0 22px" }}>
+              {allOrders.map(order => (
+                <div key={order.id} style={{ background: C.card, borderRadius: 22, marginBottom: 16, border: `1px solid ${order.statusIdx < 4 ? "rgba(74,222,128,.4)" : order.statusIdx === 5 ? C.r : C.b}`, overflow: "hidden", boxShadow: "0 12px 32px rgba(0,0,0,0.25)" }}>
+                  <div style={{ background: "rgba(255,255,255,0.03)", padding: "16px 18px" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 10 }}>
+                      <div>
+                        <div style={{ ...N, color: C.w, fontWeight: 900, fontSize: 14 }}>#{String(order.id).slice(-8)}</div>
+                        <div style={{ fontSize: 12, color: C.m, marginTop: 2 }}>{order.date}</div>
+                      </div>
+                      <div style={{ ...N, color: C.o, fontWeight: 900, fontSize: 18 }}>₹{order.total}</div>
+                    </div>
+                    <div style={{ fontSize: 13, color: C.m }}>👤 <span style={{ color: C.w }}>{order.userName}</span> · 📞 <span style={{ color: C.g }}>{order.userPhone}</span></div>
+                  </div>
+                  <div style={{ padding: "14px 18px 18px" }}>
+                    <div style={{ color: order.statusIdx === 5 ? C.r : C.g, fontSize: 12, fontWeight: 800, marginBottom: 10 }}>{ORDER_STEPS[order.statusIdx]?.icon} {ORDER_STEPS[order.statusIdx]?.label}</div>
+                    
+                    {/* ✅ Admin Action Buttons (Update & Cancel) */}
+                    {order.statusIdx < 4 ? (
+                      <div style={{ display: "flex", gap: 10, marginTop: 12 }}>
+                        <button onClick={() => updateOrder(order.id)} style={{ flex: 2, background: C.gG, color: "#060c08", border: "none", padding: "12px", borderRadius: 14, fontWeight: 900, fontSize: 13, ...N, boxShadow: "0 6px 20px rgba(74,222,128,0.3)" }}>
+                          Update → {ORDER_STEPS[order.statusIdx + 1]?.icon}
+                        </button>
+                        <button onClick={() => cancelOrder(order.id, true)} style={{ flex: 1, background: "transparent", border: `1px solid ${C.r}`, color: C.r, padding: "12px", borderRadius: 14, fontWeight: 800, fontSize: 13, ...N }}>Cancel</button>
+                      </div>
+                    ) : (
+                      <div style={{ background: order.statusIdx === 5 ? "rgba(248,113,113,.1)" : "rgba(74,222,128,.1)", border: `1px solid ${order.statusIdx === 5 ? "rgba(248,113,113,.2)" : "rgba(74,222,128,.2)"}`, borderRadius: 14, padding: "12px", textAlign: "center", color: order.statusIdx === 5 ? C.r : C.g, fontSize: 13, fontWeight: 800, ...N }}>
+                        {order.statusIdx === 5 ? "🚫 Cancelled" : "✅ Delivered!"}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {adminTab === "foods" && (
+            <div style={{ padding: "0 22px" }}>
+              <button onClick={() => setFoodModal({ goal: "general", meal: "breakfast", data: { name: "", desc: "", price: "", cal: "", emoji: "🍲", tag: "New", p: 0, c: 0, f: 0, time: "10m" } })} style={{ background: C.gG, color: "#060c08", padding: "14px 16px", width: "100%", borderRadius: 16, fontWeight: 900, border: "none", marginBottom: 24, fontSize: 15, ...N, boxShadow: "0 8px 24px rgba(74,222,128,0.3)" }}>
+                + Add New Food Item
+              </button>
+              {GOALS.map(goal => (
+                <div key={goal.id} style={{ marginBottom: 26 }}>
+                  <div style={{ ...N, color: C.w, fontWeight: 900, fontSize: 16, marginBottom: 12 }}>{goal.icon} {goal.label}</div>
+                  {MEALS.map(meal => (
+                    <div key={meal} style={{ marginBottom: 14 }}>
+                      <div style={{ fontSize: 11, fontWeight: 800, color: C.m, textTransform: "uppercase", marginBottom: 8, letterSpacing: 1.2 }}>{MIC[meal]} {meal} ({(foods[goal.id]?.[meal] || []).length})</div>
+                      {(foods[goal.id]?.[meal] || []).map(item => (
+                        <div key={item.id} style={{ background: C.card, borderRadius: 16, padding: "12px 14px", marginBottom: 8, border: `1px solid ${C.b}`, display: "flex", alignItems: "center", gap: 12, opacity: !item.active ? 0.5 : 1 }}>
+                          <span style={{ fontSize: 24, flexShrink: 0 }}>{item.emoji}</span>
+                          <div style={{ flex: 1, minWidth: 0 }}>
+                            <div style={{ ...N, fontWeight: 800, color: C.w, fontSize: 14 }}>{item.name}</div>
+                          </div>
+                          <div style={{ display: "flex", gap: 6, flexShrink: 0 }}>
+                            <button onClick={() => setFoodModal({ goal: goal.id, meal: meal, data: item })} style={{ background: "rgba(96,165,250,.15)", border: "none", color: C.blue, width: 32, height: 32, borderRadius: 10, fontSize: 13 }}>✏️</button>
+                            <button onClick={() => toggleProp(goal.id, meal, item.id, "stock")} style={{ background: item.stock ? "rgba(74,222,128,.15)" : "rgba(248,113,113,.15)", border: "none", color: item.stock ? C.g : C.r, width: 32, height: 32, borderRadius: 10 }}>{item.stock ? "📦" : "🚫"}</button>
+                            <button onClick={() => toggleProp(goal.id, meal, item.id, "active")} style={{ background: item.active ? "rgba(74,222,128,.15)" : "rgba(100,100,100,.15)", border: "none", color: item.active ? C.g : C.m, width: 32, height: 32, borderRadius: 10, fontSize: 14 }}>{item.active ? "👁" : "🙈"}</button>
+                            <button onClick={() => deleteFood(goal.id, meal, item.id, item.name)} style={{ background: "rgba(248,113,113,.15)", border: "none", color: C.r, width: 32, height: 32, borderRadius: 10 }}>🗑</button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ))}
+                </div>
+              ))}
+            </div>
+          )}
+
+          {adminTab === "plans" && (
+            <div style={{ padding: "0 22px" }}>
+              {plans.map(plan => (
+                <div key={plan.id} style={{ background: C.card, borderRadius: 22, padding: "20px", marginBottom: 16, border: `1px solid ${C.b}` }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+                    <div>
+                      <div style={{ ...N, color: C.w, fontWeight: 900, fontSize: 18 }}>{plan.label}</div>
+                      <div style={{ color: C.o, fontWeight: 900, fontSize: 22, marginTop: 4 }}>₹{plan.price}<span style={{ fontSize: 12, color: C.m }}>/{plan.per}</span></div>
+                    </div>
+                    <button onClick={() => setPlanModal({ ...plan, features: plan.features || [] })} style={{ background: "rgba(96,165,250,.15)", border: "none", color: C.blue, padding: "8px 16px", borderRadius: 12, fontWeight: 800, fontSize: 13 }}>✏️ Edit Plan</button>
+                  </div>
+                  <div style={{ marginTop: 12, paddingTop: 12, borderTop: `1px solid ${C.b}` }}>
+                    {plan.features.map((f, i) => <div key={i} style={{ fontSize: 12, color: C.m, marginBottom: 6 }}>✓ {f}</div>)}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {adminTab === "customers" && (
+            <div style={{ padding: "0 22px" }}>
+              <div style={{ ...N, color: C.w, fontWeight: 900, fontSize: 16, marginBottom: 16 }}>👥 Users ({allUsers.length})</div>
+              {allUsers.map(u => (
+                <div key={u.uid} style={{ background: C.card, borderRadius: 20, padding: "18px", marginBottom: 14, border: `1px solid ${C.b}` }}>
+                  <div style={{ ...N, color: C.w, fontWeight: 900, fontSize: 15 }}>{u.name}</div>
+                  <div style={{ color: C.m, fontSize: 13, marginTop: 4 }}>{u.email} · +91 {u.phone}</div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* ✅ Admin Stats & Delivery Settings Tab */}
+          {adminTab === "stats" && (
+            <div style={{ padding: "0 22px" }}>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 18 }}>
+                {[["📦", "Orders", orders.length, C.g], ["💰", "Revenue", "₹" + orders.reduce((s, o) => s + o.total, 0), C.o], ["👥", "Users", allUsers.length, C.pur], ["🍽", "Items", allFlat.length, C.blue]].map(([ic, l, v, col]) => (
+                  <div key={l} style={{ background: C.card, borderRadius: 18, padding: "16px", border: `1px solid ${C.b}` }}>
+                    <div style={{ fontSize: 22 }}>{ic}</div>
+                    <div style={{ ...N, color: col, fontSize: 24, fontWeight: 900, marginTop: 6 }}>{v}</div>
+                    <div style={{ color: C.m, fontSize: 11, marginTop: 3 }}>{l}</div>
+                  </div>
+                ))}
+              </div>
+
+              {/* ✅ Delivery Fee Dynamic Settings Panel */}
+              <div style={{ background: C.card, border: `1px solid ${C.b}`, borderRadius: 18, padding: "18px", marginBottom: 18 }}>
+                <div style={{ color: C.w, fontWeight: 900, fontSize: 15, ...N, marginBottom: 14 }}>🛵 Delivery Settings</div>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 14 }}>
+                  <Field label="Delivery Fee (₹)" type="number" value={stgCharge} onChange={setStgCharge} />
+                  <Field label="Free Min Order (₹)" type="number" value={stgFreeMin} onChange={setStgFreeMin} />
+                </div>
+                <button onClick={updateSettings} style={{ width: "100%", background: "rgba(96,165,250,.15)", color: C.blue, padding: "12px", borderRadius: 12, fontWeight: 800, fontSize: 13, ...N, border: "none" }}>
+                  💾 Update Delivery Settings
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ✅ PERFECTED PREMIUM BOTTOM NAV (WITH NOTIFS BUTTON) */}
+      <div style={{ position: "fixed", bottom: 0, left: "50%", transform: "translateX(-50%)", width: "100%", maxWidth: 430, background: "linear-gradient(to top, rgba(6,12,8,0.98) 50%, rgba(6,12,8,0.85))", backdropFilter: "blur(24px)", borderTop: `1px solid rgba(74,222,128,0.1)`, display: "flex", padding: "10px 0 24px", zIndex: 200, boxShadow: "0 -10px 30px rgba(0,0,0,0.5)" }}>
+        {NavBtn("home", "🏠", "Home", 0)}
+        {NavBtn("menu", "🍽", "Menu", 0)}
+        {NavBtn("cart", "🛒", "Cart", cartCount)}
+        {NavBtn("track", "🛵", "Track", liveOrders)}
+        {NavBtn("notifs", "🔔", "Alerts", unread)}
+      </div>
     </div>
-  </div>;
+  );
 }
 
-ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
 </script>
 <script>
 // ✅ Service Worker — works on any HTTPS domain
