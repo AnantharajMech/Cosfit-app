@@ -1,12 +1,24 @@
 {
-  "name": "cosfit-app",
-  "version": "1.0.0",
-  "description": "Cosfit Smart Food Delivery App",
-  "main": "server.js",
-  "scripts": {
-    "start": "node server.js"
-  },
-  "dependencies": {
-    "express": "^4.18.2"
-  }
+  "name": "Cosfit — Eat Smart Live Strong",
+  "short_name": "Cosfit",
+  "description": "Smart fitness food delivery by Coscoom Creative Tech Solutions",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#060c08",
+  "theme_color": "#4ade80",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "icon.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
 }
