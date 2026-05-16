@@ -31,9 +31,7 @@ button { cursor: pointer; border: none; outline: none; transition: transform 0.1
 button:active { transform: scale(0.94) !important; }
 select { 
   background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%234ade80%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.4-12.8z%22%2F%3E%3C%2Fsvg%3E"); 
-  background-repeat: no-repeat; 
-  background-position: right 14px top 50%; 
-  background-size: 10px auto; 
+  background-repeat: no-repeat; background-position: right 14px top 50%; background-size: 10px auto; 
 }
 @keyframes pop { from { opacity: 0; transform: scale(0.15); } to { opacity: 1; transform: scale(1); } }
 @keyframes up { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
@@ -45,6 +43,7 @@ select {
 @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.18); box-shadow: 0 0 12px rgba(74,222,128,0.5); } }
 @keyframes toast { from { opacity: 0; transform: translateX(-50%) translateY(-20px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
 @keyframes spin { from { transform: rotate(0); } to { transform: rotate(360deg); } }
+@keyframes aiGlow { 0% { box-shadow: 0 0 10px rgba(96,165,250,0.2); } 50% { box-shadow: 0 0 20px rgba(96,165,250,0.5); } 100% { box-shadow: 0 0 10px rgba(96,165,250,0.2); } }
 </style>
 </head>
 <body>
@@ -64,12 +63,7 @@ const C = {
   r: "#f87171", blue: "#60a5fa", pur: "#a78bfa",
 };
 
-const COMPANY = { 
-  name: "Coscoom Creative Tech Solutions", 
-  brand: "Idappadi Creators", 
-  email: "anantharajeinstein@gmail.com", 
-  phone: "8778148899" 
-};
+const COMPANY = { name: "Coscoom Creative Tech Solutions", brand: "Idappadi Creators", email: "anantharajeinstein@gmail.com", phone: "8778148899" };
 
 // ── FIREBASE CONFIG ──────────────────────────────────────────────
 const FIREBASE_CONFIG = {
@@ -88,15 +82,7 @@ const INIT_ADMINS = [
   { id: 3, name: "Ajith", username: "Ajithmech", role: "Staff", password: "ajithmerga160893", active: true },
 ];
 
-const INIT_SETTINGS = { 
-  deliveryCharge: 40, 
-  freeDeliveryMin: 400, 
-  platformFee: 10, 
-  gst: 5, 
-  appName: "Cosfit", 
-  currency: "₹", 
-  supportPhone: "8778148899" 
-};
+const INIT_SETTINGS = { deliveryCharge: 40, freeDeliveryMin: 400, platformFee: 10, gst: 5, appName: "Cosfit", currency: "₹", supportPhone: "8778148899" };
 
 const INIT_PLANS = [
   { id: "w", label: "Weekly", price: 499, per: "week", save: "", hot: false, features: ["Personalized meal plan", "Calorie & macro tracking", "Free delivery on all orders", "Priority customer support"] },
@@ -183,41 +169,45 @@ const tdee = (w, h, a, g, goal) => {
   return Math.round(bmr * 1.55) + ((GOALS.find(x => x.id === goal)) || { calMod: 0 }).calMod;
 };
 
+// 🤖 AI TIPS GENERATOR
+const getAITip = (user) => {
+  if (!user || !user.weight || !user.height) return "🤖 AI: Start tracking your meals to unlock personalized health insights!";
+  const bmi = (+user.weight / ((+user.height / 100) ** 2)).toFixed(1);
+  const target = tdee(+user.weight, +user.height, +user.age, user.gender, user.goal);
+  const tips = [
+    `🤖 AI Coach: Hydration is key! Drinking 500ml of water 30 mins before meals can boost your metabolism.`,
+    `🧠 AI Insight: Your daily goal is ${target} kcal. Keep an eye on portion sizes to stay on track.`,
+    `⚡ Smart Health: Did you know? Eating protein-rich foods reduces hunger hormone levels naturally.`,
+    `🧘 AI Mindfulness: Don't just focus on calories; getting 7-8 hours of sleep helps regulate your weight!`,
+  ];
+  if (user.goal === 'weight_loss') {
+    tips.push(`🔥 AI Coach: To lose weight safely, maintain a deficit of 300-500 kcal today. Avoid sugary drinks!`);
+    tips.push(`📉 AI Insight: Your BMI is ${bmi}. Incorporate more fiber (veggies/oats) today to stay full longer without extra calories.`);
+  } else if (user.goal === 'muscle_gain') {
+    tips.push(`💪 AI Coach: Building muscle requires energy! Make sure you are in a slight caloric surplus today.`);
+    tips.push(`🥩 AI Insight: To support muscle recovery, try to consume at least 1.6g of protein per kg of your body weight (${Math.round(user.weight * 1.6)}g total).`);
+  } else {
+    tips.push(`🌿 AI Coach: Maintenance is about balance. Keep your macros steady and stay active today!`);
+  }
+  return tips[Math.floor(Math.random() * tips.length)];
+};
+
 const getGreeting = (name, goal, orders) => {
   const hr = new Date().getHours();
   const fn = name?.split(" ")[0] || "there";
   let greeting, icon, meal, tip, sticker;
-  
-  if (hr >= 5 && hr < 12) { 
-    greeting = "Good Morning"; icon = "☀️"; meal = "breakfast"; sticker = "🌅"; 
-    tip = goal === "weight_loss" ? "Start light – detox smoothie awaits!" : goal === "muscle_gain" ? "Fuel up! High-protein breakfast 💪" : "Healthy breakfast to start your day!"; 
-  } else if (hr >= 12 && hr < 17) { 
-    greeting = "Good Afternoon"; icon = "🌤"; meal = "lunch"; sticker = "🌞"; 
-    tip = goal === "weight_loss" ? "Stay on track – choose low-cal lunch!" : goal === "muscle_gain" ? "Lunch = muscle building time 💪" : "Keep energy going – lunch time!"; 
-  } else if (hr >= 17 && hr < 21) { 
-    greeting = "Good Evening"; icon = "🌆"; meal = "dinner"; sticker = "🌇"; 
-    tip = goal === "weight_loss" ? "Light dinner = better sleep!" : goal === "muscle_gain" ? "Recovery dinner – protein is key!" : "Wind down with nutritious dinner!"; 
-  } else { 
-    greeting = "Good Night"; icon = "🌙"; meal = "dinner"; sticker = "🌃"; 
-    tip = "Light meal recommended for better sleep 😴"; 
-  }
-  
+  if (hr >= 5 && hr < 12) { greeting = "Good Morning"; icon = "☀️"; meal = "breakfast"; sticker = "🌅"; tip = goal === "weight_loss" ? "Start light – detox smoothie awaits!" : goal === "muscle_gain" ? "Fuel up! High-protein breakfast 💪" : "Healthy breakfast to start your day!"; } 
+  else if (hr >= 12 && hr < 17) { greeting = "Good Afternoon"; icon = "🌤"; meal = "lunch"; sticker = "🌞"; tip = goal === "weight_loss" ? "Stay on track – choose low-cal lunch!" : goal === "muscle_gain" ? "Lunch = muscle building time 💪" : "Keep energy going – lunch time!"; } 
+  else if (hr >= 17 && hr < 21) { greeting = "Good Evening"; icon = "🌆"; meal = "dinner"; sticker = "🌇"; tip = goal === "weight_loss" ? "Light dinner = better sleep!" : goal === "muscle_gain" ? "Recovery dinner – protein is key!" : "Wind down with nutritious dinner!"; } 
+  else { greeting = "Good Night"; icon = "🌙"; meal = "dinner"; sticker = "🌃"; tip = "Light meal recommended for better sleep 😴"; }
   const loyalty = orders.length >= 10 ? "🏆 Top customer!" : orders.length >= 5 ? "⭐ Loyal member!" : orders.length >= 2 ? "✨ Regular customer!" : "";
   return { greeting, icon, meal, tip, sticker, loyalty, fn };
 };
 
-// ── MINI COMPONENTS ──────────────────────────────────────────────
+// ── COMPONENTS ──────────────────────────────────────────────
 function Toast({ t }) {
   return (
-    <div style={{
-      position: "fixed", top: 22, left: "50%", transform: "translateX(-50%)",
-      background: t.err ? "rgba(248,113,113,.15)" : "rgba(74,222,128,.15)",
-      border: `1px solid ${t.err ? "rgba(248,113,113,.5)" : "rgba(74,222,128,.5)"}`,
-      color: t.err ? "#fca5a5" : "#4ade80", padding: "12px 22px", borderRadius: 50,
-      fontWeight: 800, fontSize: 13, zIndex: 9999, whiteSpace: "nowrap",
-      maxWidth: "88vw", ...F, animation: "toast .35s cubic-bezier(.34,1.56,.64,1) both",
-      backdropFilter: "blur(12px)", boxShadow: "0 8px 32px rgba(0,0,0,.6)"
-    }}>
+    <div style={{ position: "fixed", top: 22, left: "50%", transform: "translateX(-50%)", background: t.err ? "rgba(248,113,113,.15)" : "rgba(74,222,128,.15)", border: `1px solid ${t.err ? "rgba(248,113,113,.5)" : "rgba(74,222,128,.5)"}`, color: t.err ? "#fca5a5" : "#4ade80", padding: "12px 22px", borderRadius: 50, fontWeight: 800, fontSize: 13, zIndex: 9999, whiteSpace: "nowrap", maxWidth: "88vw", ...F, animation: "toast .35s cubic-bezier(.34,1.56,.64,1) both", backdropFilter: "blur(12px)", boxShadow: "0 8px 32px rgba(0,0,0,.6)" }}>
       {t.msg}
     </div>
   );
@@ -225,18 +215,8 @@ function Toast({ t }) {
 
 function NBanner({ n, onClose }) {
   return (
-    <div onClick={onClose} style={{
-      position: "fixed", top: 0, left: "50%", transform: "translateX(-50%)",
-      width: "100%", maxWidth: 430, zIndex: 9990,
-      background: "linear-gradient(135deg,rgba(12,22,16,0.95),rgba(20,32,25,0.95))",
-      backdropFilter: "blur(16px)", borderBottom: "1px solid rgba(74,222,128,.3)",
-      padding: "14px 20px 16px", display: "flex", alignItems: "center", gap: 12,
-      animation: "notif .45s cubic-bezier(.34,1.56,.64,1) both",
-      boxShadow: "0 12px 40px rgba(0,0,0,.8)", cursor: "pointer"
-    }}>
-      <div style={{ width: 44, height: 44, background: "rgba(74,222,128,.15)", borderRadius: 14, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22, flexShrink: 0 }}>
-        {n.icon}
-      </div>
+    <div onClick={onClose} style={{ position: "fixed", top: 0, left: "50%", transform: "translateX(-50%)", width: "100%", maxWidth: 430, zIndex: 9990, background: "linear-gradient(135deg,rgba(12,22,16,0.95),rgba(20,32,25,0.95))", backdropFilter: "blur(16px)", borderBottom: "1px solid rgba(74,222,128,.3)", padding: "14px 20px 16px", display: "flex", alignItems: "center", gap: 12, animation: "notif .45s cubic-bezier(.34,1.56,.64,1) both", boxShadow: "0 12px 40px rgba(0,0,0,.8)", cursor: "pointer" }}>
+      <div style={{ width: 44, height: 44, background: "rgba(74,222,128,.15)", borderRadius: 14, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22, flexShrink: 0 }}>{n.icon}</div>
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{ color: C.g, fontWeight: 800, fontSize: 13, ...N }}>{n.label}</div>
         <div style={{ color: C.w, fontSize: 12, marginTop: 2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{n.msg}</div>
@@ -248,17 +228,8 @@ function NBanner({ n, onClose }) {
 
 function Sheet({ onClose, children, tall }) {
   return (
-    <div style={{
-      position: "fixed", inset: 0, background: "rgba(0,0,0,.75)",
-      backdropFilter: "blur(8px)", zIndex: 950, display: "flex",
-      alignItems: "flex-end", justifyContent: "center", animation: "fadeIn .2s both"
-    }} onClick={onClose}>
-      <div style={{
-        background: "#0c1610", borderTop: `1px solid ${C.g}`, borderRadius: "28px 28px 0 0",
-        width: "100%", maxWidth: 430, padding: "22px 22px 44px",
-        animation: "slideUp .35s cubic-bezier(.34,1.56,.64,1)", maxHeight: tall ? "94vh" : "82vh",
-        overflowY: "auto", boxShadow: "0 -10px 40px rgba(74,222,128,0.1)"
-      }} onClick={e => e.stopPropagation()}>
+    <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,.75)", backdropFilter: "blur(8px)", zIndex: 950, display: "flex", alignItems: "flex-end", justifyContent: "center", animation: "fadeIn .2s both" }} onClick={onClose}>
+      <div style={{ background: "#0c1610", borderTop: `1px solid ${C.g}`, borderRadius: "28px 28px 0 0", width: "100%", maxWidth: 430, padding: "22px 22px 44px", animation: "slideUp .35s cubic-bezier(.34,1.56,.64,1)", maxHeight: tall ? "94vh" : "82vh", overflowY: "auto", boxShadow: "0 -10px 40px rgba(74,222,128,0.1)" }} onClick={e => e.stopPropagation()}>
         <div style={{ width: 42, height: 4, background: C.m2, borderRadius: 99, margin: "0 auto 20px" }}/>
         {children}
       </div>
@@ -267,26 +238,17 @@ function Sheet({ onClose, children, tall }) {
 }
 
 function Field({ label, value, onChange, type = "text", ph = "", rows, min, note }) {
-  const s = {
-    width: "100%", padding: "13px 16px", background: "rgba(255,255,255,0.03)",
-    border: `1.5px solid ${value ? "rgba(74,222,128,.4)" : C.b}`, borderRadius: 13,
-    color: C.w, fontSize: 14, ...F, transition: "all .3s", boxSizing: "border-box"
-  };
+  const s = { width: "100%", padding: "13px 16px", background: "rgba(255,255,255,0.03)", border: `1.5px solid ${value ? "rgba(74,222,128,.4)" : C.b}`, borderRadius: 13, color: C.w, fontSize: 14, ...F, transition: "all .3s", boxSizing: "border-box" };
   return (
     <div style={{ width: "100%" }}>
       {label && <div style={{ fontSize: 10, fontWeight: 700, color: C.m, textTransform: "uppercase", letterSpacing: 1.2, marginBottom: 7, ...F }}>{label}</div>}
-      {rows ? 
-        <textarea rows={rows} value={value} onChange={e => onChange(e.target.value)} placeholder={ph} style={{ ...s, resize: "none", lineHeight: 1.7 }} />
-        : <input type={type} value={value} onChange={e => onChange(type === "number" ? +e.target.value : e.target.value)} placeholder={ph} min={min} style={s} />
-      }
+      {rows ? <textarea rows={rows} value={value} onChange={e => onChange(e.target.value)} placeholder={ph} style={{ ...s, resize: "none", lineHeight: 1.7 }} /> : <input type={type} value={value} onChange={e => onChange(type === "number" ? +e.target.value : e.target.value)} placeholder={ph} min={min} style={s} />}
       {note && <div style={{ fontSize: 11, color: C.m, marginTop: 5, ...F }}>{note}</div>}
     </div>
   );
 }
 
-function Spinner() {
-  return <div style={{ width: 18, height: 18, border: "2px solid rgba(74,222,128,.3)", borderTop: "2px solid #4ade80", borderRadius: "50%", animation: "spin .7s linear infinite", display: "inline-block", marginRight: 8, verticalAlign: "middle" }} />;
-}
+function Spinner() { return <div style={{ width: 18, height: 18, border: "2px solid rgba(74,222,128,.3)", borderTop: "2px solid #4ade80", borderRadius: "50%", animation: "spin .7s linear infinite", display: "inline-block", marginRight: 8, verticalAlign: "middle" }} />; }
 
 // ═══════════════ MAIN APP ════════════════════════════════════════
 function App() {
@@ -295,14 +257,10 @@ function App() {
   const [authErr, setAuthErr] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const [rName, setRName] = useState("");
-  const [rUsername, setRUsername] = useState("");
-  const [rEmail, setREmail] = useState("");
-  const [rPhone, setRPhone] = useState("");
-  const [rPassword, setRPassword] = useState("");
-  const [rConfirm, setRConfirm] = useState("");
-  const [loginId, setLoginId] = useState("");
-  const [loginPassword, setLoginPassword] = useState("");
+  const [rName, setRName] = useState(""); const [rUsername, setRUsername] = useState("");
+  const [rEmail, setREmail] = useState(""); const [rPhone, setRPhone] = useState("");
+  const [rPassword, setRPassword] = useState(""); const [rConfirm, setRConfirm] = useState("");
+  const [loginId, setLoginId] = useState(""); const [loginPassword, setLoginPassword] = useState("");
   const [fEmail, setFEmail] = useState("");
 
   const [user, setUser] = useState(null);
@@ -325,12 +283,15 @@ function App() {
 
   const [stgCharge, setStgCharge] = useState(settings.deliveryCharge);
   const [stgFreeMin, setStgFreeMin] = useState(settings.freeDeliveryMin);
+  const [broadcastMsg, setBroadcastMsg] = useState(""); 
 
   const [tab, setTab] = useState("home");
   const [adminTab, setAdminTab] = useState("orders");
   const [modal, setModal] = useState(null);
   const [foodModal, setFoodModal] = useState(null); 
   const [planModal, setPlanModal] = useState(null); 
+  const [editProfileData, setEditProfileData] = useState(null); 
+  const [dailyAITip, setDailyAITip] = useState(""); 
 
   const [mGoal, setMGoal] = useState("weight_loss");
   const [mMeal, setMMeal] = useState("breakfast");
@@ -345,45 +306,39 @@ function App() {
       window.fbDB = firestore;
       window.fbAuth = fireauth;
 
-      // Load Foods
       firestore.collection("app_data").doc("foods_menu").get().then(snap => {
-        if(snap.exists) setFoods(snap.data()); 
-        else firestore.collection("app_data").doc("foods_menu").set(INIT_FOODS);
+        if(snap.exists) setFoods(snap.data()); else firestore.collection("app_data").doc("foods_menu").set(INIT_FOODS);
       }).catch(()=>{});
 
-      // Load Plans
       firestore.collection("app_data").doc("premium_plans").get().then(snap => {
-        if(snap.exists) setPlans(snap.data().plans); 
-        else firestore.collection("app_data").doc("premium_plans").set({plans: INIT_PLANS});
+        if(snap.exists) setPlans(snap.data().plans); else firestore.collection("app_data").doc("premium_plans").set({plans: INIT_PLANS});
       }).catch(()=>{});
 
-      // Delivery Settings Live Sync
       firestore.collection("app_data").doc("settings").onSnapshot(snap => {
         if(snap.exists) {
-           const data = snap.data();
-           setSettings(data);
-           setStgCharge(data.deliveryCharge !== undefined ? data.deliveryCharge : 40);
-           setStgFreeMin(data.freeDeliveryMin !== undefined ? data.freeDeliveryMin : 400);
-        } else {
-           firestore.collection("app_data").doc("settings").set(INIT_SETTINGS);
+           const data = snap.data(); setSettings(data); setStgCharge(data.deliveryCharge ?? 40); setStgFreeMin(data.freeDeliveryMin ?? 400);
+        } else firestore.collection("app_data").doc("settings").set(INIT_SETTINGS);
+      });
+
+      firestore.collection("app_data").doc("broadcast").onSnapshot(snap => {
+        if(snap.exists && snap.data().msg && user && !isAdmin) {
+          addNotifCustom("📢 Announcement", snap.data().msg, "📢");
         }
       });
 
-      // Authentication State
       fireauth.onAuthStateChanged(async (fbUser) => {
         if (fbUser) {
           try {
             const doc = await firestore.collection("users").doc(fbUser.uid).get();
             if (doc.exists) {
               const userData = { ...doc.data(), uid: fbUser.uid };
-              setUser(userData); 
-              setMGoal(userData.goal || "general"); 
+              setUser(userData); setMGoal(userData.goal || "general"); 
+              setDailyAITip(getAITip(userData)); 
               setScr("app");
             } else {
               const basicUser = { uid: fbUser.uid, email: fbUser.email, name: fbUser.email.split("@")[0], username: fbUser.email.split("@")[0].toLowerCase(), phone: "", avatar: "😊", plan: null, address: "", goal: "general", pref: "all", age: "25", weight: "70", height: "175", gender: "m", joinedAt: new Date().toISOString() };
               try { await firestore.collection("users").doc(fbUser.uid).set(basicUser); } catch(e){}
-              setUser(basicUser); 
-              setScr("onboard");
+              setUser(basicUser); setScr("onboard");
             }
           } catch(e) {
             setUser({ uid: fbUser.uid, email: fbUser.email || "", name: (fbUser.email || "user").split("@")[0], username: (fbUser.email || "user").split("@")[0].toLowerCase(), phone: "", avatar: "😊", plan: null, address: "", goal: "general", pref: "all", age: "25", weight: "70", height: "175", gender: "m" });
@@ -393,12 +348,9 @@ function App() {
           setTimeout(() => setScr("auth"), 2000);
         }
       });
-    } catch(e) { 
-      setTimeout(() => setScr("auth"), 2000); 
-    }
+    } catch(e) { setTimeout(() => setScr("auth"), 2000); }
   }, []);
 
-  // Notifications Sync Logic
   useEffect(() => {
     if (user?.uid && window.fbDB) {
       const unsub = window.fbDB.collection("orders").where("userId", "==", user.uid)
@@ -408,9 +360,7 @@ function App() {
             if (prev.length > 0) {
               fetched.forEach(newO => {
                 const oldO = prev.find(o => o.id === newO.id);
-                if (oldO && oldO.statusIdx !== newO.statusIdx) {
-                  addNotif(newO.statusIdx);
-                }
+                if (oldO && oldO.statusIdx !== newO.statusIdx) addNotif(newO.statusIdx);
               });
             }
             return fetched.sort((a, b) => b.ts - a.ts);
@@ -430,35 +380,33 @@ function App() {
 
   const pop = (msg, err = false) => {
     if(window.navigator.vibrate) window.navigator.vibrate(err ? [40,50,40] : 40);
-    setToast({ msg, err });
-    setTimeout(() => setToast(null), 3200);
+    setToast({ msg, err }); setTimeout(() => setToast(null), 3200);
   };
 
   const addNotif = (si) => {
     if(window.navigator.vibrate) window.navigator.vibrate([50,100,50]);
     const n = { id: Date.now(), ...ORDER_STEPS[si], read: false, time: new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }) };
-    setNotifs(p => [n, ...p]);
-    setBanner(n);
-    setTimeout(() => setBanner(null), 5000);
+    setNotifs(p => [n, ...p]); setBanner(n); setTimeout(() => setBanner(null), 5000);
+  };
+
+  const addNotifCustom = (label, msg, icon) => {
+    if(window.navigator.vibrate) window.navigator.vibrate([50,100,50]);
+    const n = { id: Date.now(), icon, label, msg, read: false, time: new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }) };
+    setNotifs(p => [n, ...p]); setBanner(n); setTimeout(() => setBanner(null), 6000);
   };
 
   let allFlat = [];
-  Object.values(foods).forEach(g => {
-    if (g) {
-      Object.values(g).forEach(arr => {
-        if (Array.isArray(arr)) {
-          arr.forEach(item => allFlat.push(item));
-        }
-      });
-    }
-  });
+  Object.values(foods).forEach(g => { if (g) Object.values(g).forEach(arr => { if (Array.isArray(arr)) arr.forEach(item => allFlat.push(item)); }); });
 
   const cartCount = cart.reduce((s, i) => s + i.qty, 0);
   const cartSub = cart.reduce((s, i) => s + i.price * i.qty, 0);
   const delivery = cartSub >= settings.freeDeliveryMin ? 0 : settings.deliveryCharge;
   const gstAmt = Math.round(cartSub * settings.gst / 100);
   const orderTotal = cartSub + delivery + gstAmt + settings.platformFee;
-  const todayCal = cart.reduce((s, i) => s + i.cal * i.qty, 0);
+  
+  const todayOrders = orders.filter(o => o.date === new Date().toLocaleDateString('en-IN') && o.statusIdx < 5);
+  const todayCal = todayOrders.reduce((sum, o) => sum + o.items.reduce((s, i) => s + (i.cal * i.qty), 0), 0);
+  
   const target = user ? tdee(+user.weight || 70, +user.height || 175, +user.age || 25, user.gender || "m", user.goal || "general") : 2000;
   const calP = Math.min(100, Math.round(todayCal / target * 100));
   const unread = notifs.filter(n => !n.read).length;
@@ -468,51 +416,31 @@ function App() {
   const menuItems = (foods[mGoal]?.[mMeal] || []).filter(i => i.active && i.stock && (!search || i.name.toLowerCase().includes(search.toLowerCase())));
   const curPlan = plans.find(p => p.id === user?.plan);
 
-  const syncFoods = async(newFoods) => {
-    try { if(window.fbDB) await window.fbDB.collection("app_data").doc("foods_menu").set(newFoods); } catch(e){}
-  };
+  const syncFoods = async(newFoods) => { try { if(window.fbDB) await window.fbDB.collection("app_data").doc("foods_menu").set(newFoods); } catch(e){} };
 
   const handleSaveFood = (e) => {
     e.preventDefault();
     if (!foodModal.data.name || !foodModal.data.price) return pop("Name and Price required!", true);
-    const fd = foodModal.data;
-    const isNew = !fd.id;
+    const fd = foodModal.data; const isNew = !fd.id;
     const item = { ...fd, id: isNew ? Date.now() : fd.id, cal: +fd.cal, price: +fd.price, active: fd.active !== false, stock: fd.stock !== false };
-    
     setFoods(prev => {
       let cleanPrev = JSON.parse(JSON.stringify(prev)); 
-      if (!isNew) {
-        for (let g in cleanPrev) {
-          for (let m in cleanPrev[g]) {
-            cleanPrev[g][m] = cleanPrev[g][m].filter(x => x.id !== item.id);
-          }
-        }
-      }
+      if (!isNew) { for (let g in cleanPrev) { for (let m in cleanPrev[g]) { cleanPrev[g][m] = cleanPrev[g][m].filter(x => x.id !== item.id); } } }
       const arr = cleanPrev[foodModal.goal]?.[foodModal.meal] || [];
       const nf = { ...cleanPrev, [foodModal.goal]: { ...cleanPrev[foodModal.goal], [foodModal.meal]: [...arr, item] } };
-      syncFoods(nf); 
-      return nf;
+      syncFoods(nf); return nf;
     });
-    setFoodModal(null); 
-    pop(isNew ? "✅ New Food Added!" : "✏️ Food Updated!");
+    setFoodModal(null); pop(isNew ? "✅ New Food Added!" : "✏️ Food Updated!");
   };
 
   const deleteFood = (gId, meal, id, name) => {
     if (!window.confirm(`Delete ${name}?`)) return;
-    setFoods(prev => {
-      const nf = { ...prev, [gId]: { ...prev[gId], [meal]: prev[gId][meal].filter(x => x.id !== id) } };
-      syncFoods(nf);
-      return nf;
-    });
+    setFoods(prev => { const nf = { ...prev, [gId]: { ...prev[gId], [meal]: prev[gId][meal].filter(x => x.id !== id) } }; syncFoods(nf); return nf; });
     pop(`🗑 "${name}" deleted`);
   };
 
   const toggleProp = (gId, meal, id, prop) => {
-    setFoods(prev => {
-      const nf = { ...prev, [gId]: { ...prev[gId], [meal]: prev[gId][meal].map(x => x.id === id ? { ...x, [prop]: !x[prop] } : x) } };
-      syncFoods(nf);
-      return nf;
-    });
+    setFoods(prev => { const nf = { ...prev, [gId]: { ...prev[gId], [meal]: prev[gId][meal].map(x => x.id === id ? { ...x, [prop]: !x[prop] } : x) } }; syncFoods(nf); return nf; });
   };
 
   const handleSavePlan = async(e) => {
@@ -520,23 +448,31 @@ function App() {
     const updatedPlans = plans.map(p => p.id === planModal.id ? planModal : p);
     setPlans(updatedPlans);
     try { await window.fbDB.collection("app_data").doc("premium_plans").set({plans: updatedPlans}); } catch(e){}
-    setPlanModal(null); 
-    pop("💳 Plan Updated!");
+    setPlanModal(null); pop("💳 Plan Updated!");
   };
 
   const updateSettings = async () => {
-    try {
-      await window.fbDB.collection("app_data").doc("settings").set({ 
-        ...settings, 
-        deliveryCharge: +stgCharge, 
-        freeDeliveryMin: +stgFreeMin 
-      });
-      pop("✅ Delivery Settings Updated!");
-    } catch(e) { 
-      pop("Error updating settings", true); 
-    }
+    try { await window.fbDB.collection("app_data").doc("settings").set({ ...settings, deliveryCharge: +stgCharge, freeDeliveryMin: +stgFreeMin }); pop("✅ Delivery Settings Updated!"); } catch(e) { pop("Error updating settings", true); }
   };
 
+  const handleBroadcast = async () => {
+    if(!broadcastMsg.trim()) return pop("Enter a message first", true);
+    try {
+      await window.fbDB.collection("app_data").doc("broadcast").set({ msg: broadcastMsg, ts: Date.now() });
+      pop("📢 Broadcast Sent to All Users!"); setBroadcastMsg("");
+    } catch(e) { pop("Failed to send broadcast", true); }
+  };
+
+  const handleUpdateProfile = async (e) => {
+    e.preventDefault();
+    try {
+      const upd = { ...user, age: editProfileData.age, weight: editProfileData.weight, height: editProfileData.height, goal: editProfileData.goal, pref: editProfileData.pref };
+      await window.fbDB.collection("users").doc(user.uid).update(upd);
+      setUser(upd); setMGoal(upd.goal); setDailyAITip(getAITip(upd)); setModal(null); pop("✅ Health Profile Updated!");
+    } catch(e) { pop("Error saving profile", true); }
+  };
+
+  // ── AUTHENTICATION ──
   const handleRegister = async () => {
     setAuthErr("");
     if (!rName || !rUsername || !rEmail || !rPhone || !rPassword) return setAuthErr("All fields are required");
@@ -546,27 +482,16 @@ function App() {
     try {
       const uCheck = await window.fbDB.collection("users").where("username", "==", rUsername.toLowerCase().trim()).get();
       if (!uCheck.empty) { setAuthErr("Username already taken."); setLoading(false); return; }
-      
       const cred = await window.fbAuth.createUserWithEmailAndPassword(rEmail.trim(), rPassword);
-      const userData = {
-        uid: cred.user.uid, name: rName.trim(), username: rUsername.toLowerCase().trim(), 
-        email: rEmail.toLowerCase().trim(), phone: rPhone, avatar: "😊", plan: null, address: "", 
-        goal: "general", pref: "all", age: "25", weight: "70", height: "175", gender: "m", joinedAt: new Date().toISOString()
-      };
-      
+      const userData = { uid: cred.user.uid, name: rName.trim(), username: rUsername.toLowerCase().trim(), email: rEmail.toLowerCase().trim(), phone: rPhone, avatar: "😊", plan: null, address: "", goal: "general", pref: "all", age: "25", weight: "70", height: "175", gender: "m", joinedAt: new Date().toISOString() };
       await window.fbDB.collection("users").doc(cred.user.uid).set(userData);
-      setUser(userData); 
-      setScr("onboard"); 
-      pop("Account created! 🎉");
-    } catch(e) {
-      setAuthErr(e.message || "Registration failed.");
-    }
+      setUser(userData); setScr("onboard"); pop("Account created! 🎉");
+    } catch(e) { setAuthErr(e.message || "Registration failed."); }
     setLoading(false);
   };
 
   const handleLogin = async () => {
-    setAuthErr(""); 
-    if (!loginId || !loginPassword) return setAuthErr("Enter credentials");
+    setAuthErr(""); if (!loginId || !loginPassword) return setAuthErr("Enter credentials");
     setLoading(true);
     try {
       let email = loginId.trim();
@@ -575,29 +500,19 @@ function App() {
         if (q.empty) { setAuthErr("Username not found."); setLoading(false); return; }
         email = q.docs[0].data().email;
       }
-      await window.fbAuth.signInWithEmailAndPassword(email, loginPassword); 
-      pop("Welcome back! 👋");
-    } catch(e) {
-      setAuthErr("Wrong email or password.");
-    }
+      await window.fbAuth.signInWithEmailAndPassword(email, loginPassword); pop("Welcome back! 👋");
+    } catch(e) { setAuthErr("Wrong email or password."); }
     setLoading(false);
   };
 
   const handleForgotPassword = async () => {
-    setAuthErr(""); 
-    if (!fEmail.includes("@")) return setAuthErr("Valid email required");
+    setAuthErr(""); if (!fEmail.includes("@")) return setAuthErr("Valid email required");
     setLoading(true);
-    try {
-      await window.fbAuth.sendPasswordResetEmail(fEmail.trim(), { url: window.location.href });
-      pop("✅ Password reset link sent!"); 
-      setAuthTab("login"); 
-      setFEmail("");
-    } catch(e) {
-      setAuthErr("Failed to send email. Account may not exist.");
-    }
+    try { await window.fbAuth.sendPasswordResetEmail(fEmail.trim(), { url: window.location.href }); pop("✅ Password reset link sent!"); setAuthTab("login"); setFEmail(""); } catch(e) { setAuthErr("Failed to send email."); }
     setLoading(false);
   };
 
+  // ✅ BUG FIXED: Added setScr("app") inside handleAdminLogin
   const handleAdminLogin = () => {
     const a = admins.find(x => x.username === adminUsername && x.password === adminPw && x.active);
     if (!a) { pop("Wrong admin credentials!", true); return; }
@@ -606,6 +521,7 @@ function App() {
     setIsAdmin(true); 
     setModal(null); 
     setTab("admin"); 
+    setScr("app"); 
     setAdminUsername(""); 
     setAdminPw(""); 
     pop(`Welcome ${a.name}! 🎉`);
@@ -616,52 +532,23 @@ function App() {
     setScr("auth"); setUser(null); setCart([]); setNotifs([]); setIsAdmin(false); setAdminUser(null); setTab("home");
   };
 
-  const addToCart = item => {
-    if(window.navigator.vibrate) window.navigator.vibrate(30);
-    setCart(p => {
-      const e = p.find(c => c.id === item.id);
-      return e ? p.map(c => c.id === item.id ? { ...c, qty: c.qty + 1 } : c) : [...p, { ...item, qty: 1 }];
-    });
-    pop(`${item.emoji} Added!`); 
-    setModal(null);
-  };
-
-  const chgQty = (id, d) => {
-    if(window.navigator.vibrate) window.navigator.vibrate(20);
-    setCart(p => p.map(c => c.id === id ? { ...c, qty: Math.max(0, c.qty + d) } : c).filter(c => c.qty > 0));
-  };
-  
+  const addToCart = item => { if(window.navigator.vibrate) window.navigator.vibrate(30); setCart(p => { const e = p.find(c => c.id === item.id); return e ? p.map(c => c.id === item.id ? { ...c, qty: c.qty + 1 } : c) : [...p, { ...item, qty: 1 }]; }); pop(`${item.emoji} Added!`); setModal(null); };
+  const chgQty = (id, d) => { if(window.navigator.vibrate) window.navigator.vibrate(20); setCart(p => p.map(c => c.id === id ? { ...c, qty: Math.max(0, c.qty + d) } : c).filter(c => c.qty > 0)); };
   const getQty = id => cart.find(c => c.id === id)?.qty || 0;
 
   const placeOrder = async () => {
     if (!cart.length) return; 
     if (window.navigator.vibrate) window.navigator.vibrate([50,100,50]);
-    
-    const o = {
-      id: Date.now(), userId: user.uid || user.id, userName: user.name, userUsername: user.username, 
-      userPhone: user.phone, userAddress: user.address || "No address provided", items: [...cart], 
-      subtotal: cartSub, delivery, gst: gstAmt, platformFee: settings.platformFee, total: orderTotal, 
-      statusIdx: 0, paymentStatus: "Cash on Delivery", 
-      time: new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }), 
-      date: new Date().toLocaleDateString('en-IN'), ts: Date.now()
-    };
-    
+    const o = { id: Date.now(), userId: user?.uid || "admin", userName: user?.name || "Admin", userUsername: user?.username || "admin", userPhone: user?.phone || "", userAddress: user?.address || "No address provided", items: [...cart], subtotal: cartSub, delivery, gst: gstAmt, platformFee: settings.platformFee, total: orderTotal, statusIdx: 0, paymentStatus: "Cash on Delivery", time: new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }), date: new Date().toLocaleDateString('en-IN'), ts: Date.now() };
     try { await window.fbDB.collection("orders").add(o); } catch(e){}
-    setCart([]); 
-    setTab("track"); 
-    pop("🎉 Order placed successfully!");
+    setCart([]); setTab("track"); pop("🎉 Order placed successfully!");
   };
 
   const updateOrder = async (oid) => {
     try {
       const snap = await window.fbDB.collection("orders").where("id", "==", oid).get();
       if (snap.empty) return pop("Order not found", true);
-      
-      await Promise.all(snap.docs.map(d => {
-        if (d.data().statusIdx < 4) {
-          return d.ref.update({ statusIdx: d.data().statusIdx + 1 });
-        }
-      }));
+      await Promise.all(snap.docs.map(d => { if (d.data().statusIdx < 4) { return d.ref.update({ statusIdx: d.data().statusIdx + 1 }); } }));
       pop("✅ Status updated!");
     } catch(e) { pop("Error updating status", true); }
   };
@@ -671,20 +558,15 @@ function App() {
     try {
       const snap = await window.fbDB.collection("orders").where("id", "==", oid).get();
       if (snap.empty) return pop("Order not found", true);
-
       await Promise.all(snap.docs.map(d => d.ref.update({ statusIdx: 5 })));
       pop("🚫 Order Cancelled!", true);
-    } catch(e) { 
-      pop("Error Cancelling Order", true); 
-    }
+    } catch(e) { pop("Error Cancelling Order", true); }
   };
 
   const activatePlan = async (plan) => {
-    const upd = { ...user, plan: plan.id, planName: plan.label }; 
-    setUser(upd);
+    const upd = { ...user, plan: plan.id, planName: plan.label }; setUser(upd);
     try { await window.fbDB.collection("users").doc(user.uid).update({ plan: plan.id, planName: plan.label }); } catch(e){}
-    pop(`✅ ${plan.label} plan activated!`); 
-    setModal(null);
+    pop(`✅ ${plan.label} plan activated!`); setModal(null);
   };
 
   const saveProfile = async () => {
@@ -694,19 +576,16 @@ function App() {
     } catch (e) { pop("Saved locally!"); }
   };
 
+  // ─────────────────────────────────────────────────────────────
   if (scr === "splash") {
     return (
       <div style={{ minHeight: "100vh", background: C.bg, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", position: "relative", overflow: "hidden" }}>
         <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse 60% 55% at 50% 50%, rgba(74,222,128,.1), transparent)" }} />
-        <div style={{ animation: "pop .7s cubic-bezier(.34,1.56,.64,1) both" }}>
-          <div style={{ width: 100, height: 100, background: C.gG, borderRadius: 32, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 48, boxShadow: "0 0 90px rgba(74,222,128,.45)", margin: "0 auto" }}>🥗</div>
-        </div>
+        <div style={{ animation: "pop .7s cubic-bezier(.34,1.56,.64,1) both" }}><div style={{ width: 100, height: 100, background: C.gG, borderRadius: 32, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 48, boxShadow: "0 0 90px rgba(74,222,128,.45)", margin: "0 auto" }}>🥗</div></div>
         <div style={{ ...N, color: C.w, fontSize: 44, fontWeight: 900, marginTop: 20, animation: "up .5s .3s both", letterSpacing: -1.5 }}>Cosfit</div>
         <div style={{ color: C.m, fontSize: 14, marginTop: 5, animation: "up .5s .4s both" }}>Eat Smart · Live Strong</div>
         <div style={{ color: "rgba(74,222,128,0.5)", fontSize: 11, marginTop: 4, animation: "up .5s .5s both" }}>{COMPANY.brand}</div>
-        <div style={{ position: "absolute", bottom: 52, display: "flex", gap: 8 }}>
-          {[0, 1, 2].map(i => <div key={i} style={{ width: 8, height: 8, borderRadius: "50%", background: i === 1 ? C.g : "rgba(74,222,128,0.2)", animation: `dot 1.4s ${i * .22}s infinite` }} />)}
-        </div>
+        <div style={{ position: "absolute", bottom: 52, display: "flex", gap: 8 }}>{[0, 1, 2].map(i => <div key={i} style={{ width: 8, height: 8, borderRadius: "50%", background: i === 1 ? C.g : "rgba(74,222,128,0.2)", animation: `dot 1.4s ${i * .22}s infinite` }} />)}</div>
       </div>
     );
   }
@@ -725,34 +604,24 @@ function App() {
               {authTab === "forgot" ? "We'll send a reset link to your Gmail" : authTab === "login" ? "Login with Username or Email" : "Join the Cosfit family today"}
             </div>
           </div>
-
           {authTab !== "forgot" && (
             <div style={{ display: "flex", background: C.card, borderRadius: 16, padding: 4, gap: 4, marginBottom: 22, border: `1px solid ${C.b}` }}>
-              {[["login", "Sign In"], ["register", "Create Account"]].map(([k, l]) => (
-                <button key={k} onClick={() => { setAuthTab(k); setAuthErr(""); }} style={{ flex: 1, padding: "12px", borderRadius: 12, border: "none", background: authTab === k ? C.gG : "transparent", color: authTab === k ? "#060c08" : C.m, fontWeight: 800, fontSize: 14, ...N, transition: "all .2s" }}>{l}</button>
-              ))}
+              {[["login", "Sign In"], ["register", "Create Account"]].map(([k, l]) => (<button key={k} onClick={() => { setAuthTab(k); setAuthErr(""); }} style={{ flex: 1, padding: "12px", borderRadius: 12, border: "none", background: authTab === k ? C.gG : "transparent", color: authTab === k ? "#060c08" : C.m, fontWeight: 800, fontSize: 14, ...N, transition: "all .2s" }}>{l}</button>))}
             </div>
           )}
-
           {authErr && <div style={{ background: "rgba(248,113,113,.1)", border: "1px solid rgba(248,113,113,.3)", borderRadius: 13, padding: "12px 16px", marginBottom: 16, color: C.r, fontSize: 13, fontWeight: 600, display: "flex", gap: 8, alignItems: "center", animation: "up .3s both" }}>⚠️ {authErr}</div>}
-
           {authTab === "login" && (
             <div style={{ display: "flex", flexDirection: "column", gap: 15, animation: "up .4s both" }}>
               <Field label="Username or Email *" value={loginId} onChange={setLoginId} ph="e.g. arjun or arjun@gmail.com" />
               <Field label="Password *" value={loginPassword} onChange={setLoginPassword} type="password" ph="Enter your password" />
-              <div style={{ textAlign: "right", marginTop: -6 }}>
-                <span style={{ color: C.g, fontSize: 12, fontWeight: 700, cursor: "pointer" }} onClick={() => { setAuthTab("forgot"); setAuthErr(""); }}>Forgot Password?</span>
-              </div>
-              <button onClick={handleLogin} disabled={loading} style={{ padding: "17px", borderRadius: 16, border: "none", background: loading ? "rgba(74,222,128,0.2)" : C.gG, color: loading ? "rgba(255,255,255,.5)" : "#060c08", ...N, fontSize: 16, fontWeight: 900, boxShadow: loading ? "none" : "0 8px 36px rgba(74,222,128,.4)", marginTop: 2 }}>
-                {loading ? <><Spinner />Signing in...</> : "Secure Login →"}
-              </button>
+              <div style={{ textAlign: "right", marginTop: -6 }}><span style={{ color: C.g, fontSize: 12, fontWeight: 700, cursor: "pointer" }} onClick={() => { setAuthTab("forgot"); setAuthErr(""); }}>Forgot Password?</span></div>
+              <button onClick={handleLogin} disabled={loading} style={{ padding: "17px", borderRadius: 16, border: "none", background: loading ? "rgba(74,222,128,0.2)" : C.gG, color: loading ? "rgba(255,255,255,.5)" : "#060c08", ...N, fontSize: 16, fontWeight: 900, boxShadow: loading ? "none" : "0 8px 36px rgba(74,222,128,.4)", marginTop: 2 }}>{loading ? <><Spinner />Signing in...</> : "Secure Login →"}</button>
               <div style={{ textAlign: "center", padding: "14px 0", borderTop: `1px solid rgba(74,222,128,0.1)`, marginTop: 6 }}>
                 <div style={{ color: C.m, fontSize: 12, marginBottom: 8 }}>Admin? Access Control Panel</div>
                 <button onClick={() => setModal({ type: "adminLogin" })} style={{ background: "rgba(96,165,250,.1)", border: "1px solid rgba(96,165,250,.3)", color: C.blue, padding: "10px 24px", borderRadius: 20, fontWeight: 700, fontSize: 13, ...F }}>⚙️ Admin Login</button>
               </div>
             </div>
           )}
-
           {authTab === "register" && (
             <div style={{ display: "flex", flexDirection: "column", gap: 14, animation: "up .4s both" }}>
               <Field label="Full Name *" value={rName} onChange={setRName} ph="e.g. Arjun Kumar" />
@@ -761,26 +630,18 @@ function App() {
               <Field label="Mobile Number *" value={rPhone} onChange={e => setRPhone(e.replace(/\D/g, "").slice(0, 10))} type="tel" ph="98765 43210" />
               <Field label="Password *" value={rPassword} onChange={setRPassword} type="password" ph="Create a strong password (min 6 chars)" />
               <Field label="Confirm Password *" value={rConfirm} onChange={setRConfirm} type="password" ph="Confirm your password" />
-              <button onClick={handleRegister} disabled={loading} style={{ padding: "17px", borderRadius: 16, border: "none", background: loading ? "rgba(74,222,128,0.2)" : C.gG, color: loading ? "rgba(255,255,255,.5)" : "#060c08", ...N, fontSize: 16, fontWeight: 900, boxShadow: loading ? "none" : "0 8px 36px rgba(74,222,128,.4)", marginTop: 2 }}>
-                {loading ? <><Spinner />Creating Account...</> : "Create Account →"}
-              </button>
+              <button onClick={handleRegister} disabled={loading} style={{ padding: "17px", borderRadius: 16, border: "none", background: loading ? "rgba(74,222,128,0.2)" : C.gG, color: loading ? "rgba(255,255,255,.5)" : "#060c08", ...N, fontSize: 16, fontWeight: 900, boxShadow: loading ? "none" : "0 8px 36px rgba(74,222,128,.4)", marginTop: 2 }}>{loading ? <><Spinner />Creating Account...</> : "Create Account →"}</button>
             </div>
           )}
-
           {authTab === "forgot" && (
             <div style={{ display: "flex", flexDirection: "column", gap: 16, animation: "up .4s both" }}>
-              <div style={{ background: "rgba(74,222,128,.07)", border: "1px solid rgba(74,222,128,.2)", borderRadius: 14, padding: "14px 16px", fontSize: 12, color: C.m, lineHeight: 1.7 }}>
-                📧 Enter your registered Gmail. We'll send a <span style={{ color: C.g, fontWeight: 700 }}>secure password reset link</span> directly to your inbox.
-              </div>
+              <div style={{ background: "rgba(74,222,128,.07)", border: "1px solid rgba(74,222,128,.2)", borderRadius: 14, padding: "14px 16px", fontSize: 12, color: C.m, lineHeight: 1.7 }}>📧 Enter your registered Gmail. We'll send a <span style={{ color: C.g, fontWeight: 700 }}>secure password reset link</span> directly to your inbox.</div>
               <Field label="Registered Gmail Address *" value={fEmail} onChange={setFEmail} type="email" ph="Enter your email" />
-              <button onClick={handleForgotPassword} disabled={loading} style={{ padding: "17px", borderRadius: 16, border: "none", background: loading ? "rgba(74,222,128,0.2)" : C.gG, color: loading ? "rgba(255,255,255,.5)" : "#060c08", ...N, fontSize: 16, fontWeight: 900, boxShadow: loading ? "none" : "0 8px 36px rgba(74,222,128,.4)" }}>
-                {loading ? <><Spinner />Sending Email...</> : "Send Reset Link ✉️"}
-              </button>
+              <button onClick={handleForgotPassword} disabled={loading} style={{ padding: "17px", borderRadius: 16, border: "none", background: loading ? "rgba(74,222,128,0.2)" : C.gG, color: loading ? "rgba(255,255,255,.5)" : "#060c08", ...N, fontSize: 16, fontWeight: 900, boxShadow: loading ? "none" : "0 8px 36px rgba(74,222,128,.4)" }}>{loading ? <><Spinner />Sending Email...</> : "Send Reset Link ✉️"}</button>
               <button onClick={() => { setAuthTab("login"); setAuthErr(""); }} style={{ padding: "14px", borderRadius: 16, border: `1.5px solid rgba(74,222,128,0.2)`, background: "transparent", color: C.m, ...F, fontWeight: 700, fontSize: 14 }}>← Back to Login</button>
             </div>
           )}
         </div>
-
         {modal?.type === "adminLogin" && (
           <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,.93)", backdropFilter: "blur(12px)", zIndex: 960, display: "flex", alignItems: "center", justifyContent: "center", padding: 24 }}>
             <div style={{ background: C.card, border: `1px solid ${C.b}`, borderRadius: 24, padding: "28px 24px", width: "100%", maxWidth: 340, animation: "up .35s cubic-bezier(.34,1.56,.64,1)" }}>
@@ -806,7 +667,6 @@ function App() {
     const prog = ((ob.step + 1) / 3) * 100;
     const bmi = ob.weight && ob.height && +ob.height > 0 ? (+ob.weight / ((+ob.height / 100) ** 2)).toFixed(1) : null;
     const ok = [!!ob.goal, !!ob.weight && !!ob.height && !!ob.age, !!ob.pref][ob.step];
-    
     return (
       <div style={{ minHeight: "100vh", background: C.bg, display: "flex", flexDirection: "column", ...F }}>
         {toast && <Toast t={toast} />}
@@ -819,73 +679,35 @@ function App() {
             <div style={{ background: C.gG, height: "100%", width: `${prog}%`, borderRadius: 99, transition: "width .4s ease" }} />
           </div>
         </div>
-        
         <div style={{ flex: 1, padding: "24px 28px", overflowY: "auto" }}>
-          <div style={{ ...N, color: C.w, fontSize: 26, fontWeight: 900, marginBottom: 4 }}>
-            {["Your Fitness Goal 🎯", "Body Numbers 📊", "Food Preference 🍽"][ob.step]}
-          </div>
-          <div style={{ color: C.m, fontSize: 13, marginBottom: 22 }}>
-            {["Choose what matters most", "For accurate calorie targets", "Show you meals you love"][ob.step]}
-          </div>
-          
+          <div style={{ ...N, color: C.w, fontSize: 26, fontWeight: 900, marginBottom: 4 }}>{["Your Fitness Goal 🎯", "Body Numbers 📊", "Food Preference 🍽"][ob.step]}</div>
+          <div style={{ color: C.m, fontSize: 13, marginBottom: 22 }}>{["Choose what matters most", "For accurate calorie targets", "Show you meals you love"][ob.step]}</div>
           {ob.step === 0 && (
             <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-              {GOALS.map(g => (
-                <button key={g.id} onClick={() => setOb(p => ({ ...p, goal: g.id }))} style={{ background: ob.goal === g.id ? "rgba(74,222,128,.1)" : C.card, border: `1.5px solid ${ob.goal === g.id ? C.g : C.b}`, borderRadius: 18, padding: "18px", textAlign: "left", display: "flex", alignItems: "center", gap: 14, width: "100%" }}>
-                  <span style={{ fontSize: 32 }}>{g.icon}</span>
-                  <div style={{ flex: 1 }}>
-                    <div style={{ color: C.w, fontWeight: 800, fontSize: 15, ...N }}>{g.label}</div>
-                  </div>
-                  {ob.goal === g.id && <div style={{ width: 24, height: 24, borderRadius: "50%", background: C.gG, display: "flex", alignItems: "center", justifyContent: "center", color: "#000", fontSize: 12, fontWeight: 900 }}>✓</div>}
-                </button>
-              ))}
+              {GOALS.map(g => (<button key={g.id} onClick={() => setOb(p => ({ ...p, goal: g.id }))} style={{ background: ob.goal === g.id ? "rgba(74,222,128,.1)" : C.card, border: `1.5px solid ${ob.goal === g.id ? C.g : C.b}`, borderRadius: 18, padding: "18px", textAlign: "left", display: "flex", alignItems: "center", gap: 14, width: "100%" }}><span style={{ fontSize: 32 }}>{g.icon}</span><div style={{ flex: 1 }}><div style={{ color: C.w, fontWeight: 800, fontSize: 15, ...N }}>{g.label}</div></div>{ob.goal === g.id && <div style={{ width: 24, height: 24, borderRadius: "50%", background: C.gG, display: "flex", alignItems: "center", justifyContent: "center", color: "#000", fontSize: 12, fontWeight: 900 }}>✓</div>}</button>))}
             </div>
           )}
-          
           {ob.step === 1 && (
             <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-              {[["Age", "age"], ["Weight(kg)", "weight"], ["Height(cm)", "height"]].map(([l, k]) => (
-                <Field key={k} label={l} value={ob[k]} onChange={v => setOb(p => ({ ...p, [k]: v }))} type="number" />
-              ))}
-              <div>
-                <div style={{ fontSize: 10, fontWeight: 700, color: C.m, textTransform: "uppercase", marginBottom: 10 }}>Gender</div>
-                <div style={{ display: "flex", gap: 10 }}>
-                  {[["m", "👨 Male"], ["f", "👩 Female"]].map(([v, l]) => (
-                    <button key={v} onClick={() => setOb(p => ({ ...p, gender: v }))} style={{ flex: 1, padding: "14px", borderRadius: 14, border: `1.5px solid ${ob.gender === v ? C.g : C.b}`, background: ob.gender === v ? "rgba(74,222,128,.1)" : C.card, color: ob.gender === v ? C.g : C.m, fontWeight: 700 }}>{l}</button>
-                  ))}
-                </div>
-              </div>
+              {[["Age", "age"], ["Weight(kg)", "weight"], ["Height(cm)", "height"]].map(([l, k]) => (<Field key={k} label={l} value={ob[k]} onChange={v => setOb(p => ({ ...p, [k]: v }))} type="number" />))}
+              <div><div style={{ fontSize: 10, fontWeight: 700, color: C.m, textTransform: "uppercase", marginBottom: 10 }}>Gender</div><div style={{ display: "flex", gap: 10 }}>{[["m", "👨 Male"], ["f", "👩 Female"]].map(([v, l]) => (<button key={v} onClick={() => setOb(p => ({ ...p, gender: v }))} style={{ flex: 1, padding: "14px", borderRadius: 14, border: `1.5px solid ${ob.gender === v ? C.g : C.b}`, background: ob.gender === v ? "rgba(74,222,128,.1)" : C.card, color: ob.gender === v ? C.g : C.m, fontWeight: 700 }}>{l}</button>))}</div></div>
             </div>
           )}
-          
           {ob.step === 2 && (
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-              {PREFS.map(p => (
-                <button key={p.id} onClick={() => setOb(prev => ({ ...prev, pref: p.id }))} style={{ background: ob.pref === p.id ? "rgba(74,222,128,.1)" : C.card, border: `1.5px solid ${ob.pref === p.id ? C.g : C.b}`, borderRadius: 18, padding: "24px 16px", textAlign: "center" }}>
-                  <div style={{ fontSize: 40 }}>{p.icon}</div>
-                  <div style={{ color: ob.pref === p.id ? C.g : C.w, fontWeight: 800, fontSize: 14, marginTop: 12, ...N }}>{p.label}</div>
-                </button>
-              ))}
+              {PREFS.map(p => (<button key={p.id} onClick={() => setOb(prev => ({ ...prev, pref: p.id }))} style={{ background: ob.pref === p.id ? "rgba(74,222,128,.1)" : C.card, border: `1.5px solid ${ob.pref === p.id ? C.g : C.b}`, borderRadius: 18, padding: "24px 16px", textAlign: "center" }}><div style={{ fontSize: 40 }}>{p.icon}</div><div style={{ color: ob.pref === p.id ? C.g : C.w, fontWeight: 800, fontSize: 14, marginTop: 12, ...N }}>{p.label}</div></button>))}
             </div>
           )}
         </div>
-        
         <div style={{ padding: "0 28px 40px", display: "flex", gap: 12 }}>
           {ob.step > 0 && <button onClick={() => setOb(p => ({ ...p, step: p.step - 1 }))} style={{ flex: 1, padding: "15px", borderRadius: 15, border: `1.5px solid rgba(74,222,128,0.2)`, background: "transparent", color: C.w, ...N, fontSize: 15, fontWeight: 700 }}>← Back</button>}
           <button disabled={!ok} onClick={async () => {
-            if (ob.step < 2) {
-              setOb(p => ({ ...p, step: p.step + 1 }));
-            } else {
-              const u = { ...user, ...ob };
-              setUser(u);
-              setMGoal(ob.goal);
+            if (ob.step < 2) { setOb(p => ({ ...p, step: p.step + 1 })); } else {
+              const u = { ...user, ...ob }; setUser(u); setMGoal(ob.goal);
               try { await window.fbDB.collection("users").doc(u.uid).update({ goal: ob.goal, pref: ob.pref, age: ob.age, weight: ob.weight, height: ob.height, gender: ob.gender }); } catch(e){}
-              setScr("app");
-              pop("🎉 Profile complete! Welcome to Cosfit!");
+              setScr("app"); pop("🎉 Profile complete! Welcome to Cosfit!");
             }
-          }} style={{ flex: 2, padding: "15px", borderRadius: 15, border: "none", background: ok ? C.gG : "rgba(255,255,255,0.05)", color: ok ? "#060c08" : C.m, ...N, fontSize: 15, fontWeight: 800 }}>
-            {ob.step < 2 ? "Continue →" : "🚀 Start Cosfit!"}
-          </button>
+          }} style={{ flex: 2, padding: "15px", borderRadius: 15, border: "none", background: ok ? C.gG : "rgba(255,255,255,0.05)", color: ok ? "#060c08" : C.m, ...N, fontSize: 15, fontWeight: 800 }}>{ob.step < 2 ? "Continue →" : "🚀 Start Cosfit!"}</button>
         </div>
       </div>
     );
@@ -918,11 +740,7 @@ function App() {
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 8, marginTop: 20, background: "rgba(255,255,255,0.03)", border: `1px solid ${C.b}`, borderRadius: 16, padding: "16px 8px" }}>
             {[["🔥", modal.d.cal, "kcal"], ["🥩", modal.d.p || 0 + "g", "Protein"], ["🌾", modal.d.c || 0 + "g", "Carbs"], ["💧", modal.d.f || 0 + "g", "Fat"]].map(([ic, v, l]) => (
-              <div key={l} style={{ textAlign: "center" }}>
-                <div style={{ fontSize: 20 }}>{ic}</div>
-                <div style={{ ...N, fontWeight: 800, fontSize: 14, color: C.w, marginTop: 4 }}>{v}</div>
-                <div style={{ fontSize: 10, color: C.m, marginTop: 2 }}>{l}</div>
-              </div>
+              <div key={l} style={{ textAlign: "center" }}><div style={{ fontSize: 20 }}>{ic}</div><div style={{ ...N, fontWeight: 800, fontSize: 14, color: C.w, marginTop: 4 }}>{v}</div><div style={{ fontSize: 10, color: C.m, marginTop: 2 }}>{l}</div></div>
             ))}
           </div>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 24 }}>
@@ -937,63 +755,94 @@ function App() {
 
       {foodModal && (
         <Sheet onClose={() => setFoodModal(null)} tall>
-          <div style={{ ...N, color: C.w, fontSize: 22, fontWeight: 900, marginBottom: 18 }}>
-            {foodModal.data.id ? "✏️ Edit Food Item" : "🍲 Add New Food"}
-          </div>
+          <div style={{ ...N, color: C.w, fontSize: 22, fontWeight: 900, marginBottom: 18 }}>{foodModal.data.id ? "✏️ Edit Food Item" : "🍲 Add New Food"}</div>
           <form onSubmit={handleSaveFood} style={{ display: "flex", flexDirection: "column", gap: 14 }}>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-              <div>
-                <div style={{ fontSize: 10, fontWeight: 700, color: C.m, textTransform: "uppercase", marginBottom: 7, ...F }}>Goal Category</div>
-                <select value={foodModal.goal} onChange={e => setFoodModal(p => ({ ...p, goal: e.target.value }))} style={{ width: "100%", padding: "14px 16px", background: "rgba(255,255,255,0.03)", border: `1.5px solid ${C.b}`, borderRadius: 13, color: C.w, fontSize: 14, ...F }}>
-                  {GOALS.map(g => <option key={g.id} value={g.id} style={{ background: "#0c1610" }}>{g.label}</option>)}
-                </select>
-              </div>
-              <div>
-                <div style={{ fontSize: 10, fontWeight: 700, color: C.m, textTransform: "uppercase", marginBottom: 7, ...F }}>Meal Time</div>
-                <select value={foodModal.meal} onChange={e => setFoodModal(p => ({ ...p, meal: e.target.value }))} style={{ width: "100%", padding: "14px 16px", background: "rgba(255,255,255,0.03)", border: `1.5px solid ${C.b}`, borderRadius: 13, color: C.w, fontSize: 14, ...F }}>
-                  {MEALS.map(m => <option key={m} value={m} style={{ background: "#0c1610" }}>{m.charAt(0).toUpperCase() + m.slice(1)}</option>)}
-                </select>
-              </div>
+              <div><div style={{ fontSize: 10, fontWeight: 700, color: C.m, textTransform: "uppercase", marginBottom: 7, ...F }}>Goal Category</div><select value={foodModal.goal} onChange={e => setFoodModal(p => ({ ...p, goal: e.target.value }))} style={{ width: "100%", padding: "14px 16px", background: "rgba(255,255,255,0.03)", border: `1.5px solid ${C.b}`, borderRadius: 13, color: C.w, fontSize: 14, ...F }}>{GOALS.map(g => <option key={g.id} value={g.id} style={{ background: "#0c1610" }}>{g.label}</option>)}</select></div>
+              <div><div style={{ fontSize: 10, fontWeight: 700, color: C.m, textTransform: "uppercase", marginBottom: 7, ...F }}>Meal Time</div><select value={foodModal.meal} onChange={e => setFoodModal(p => ({ ...p, meal: e.target.value }))} style={{ width: "100%", padding: "14px 16px", background: "rgba(255,255,255,0.03)", border: `1.5px solid ${C.b}`, borderRadius: 13, color: C.w, fontSize: 14, ...F }}>{MEALS.map(m => <option key={m} value={m} style={{ background: "#0c1610" }}>{m.charAt(0).toUpperCase() + m.slice(1)}</option>)}</select></div>
             </div>
             <Field label="Food Name *" value={foodModal.data.name} onChange={v => setFoodModal(p => ({ ...p, data: { ...p.data, name: v } }))} ph="e.g. Avocado Salad" />
             <Field label="Description" value={foodModal.data.desc} onChange={v => setFoodModal(p => ({ ...p, data: { ...p.data, desc: v } }))} ph="Short tasty description" />
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-              <Field label="Price (₹) *" type="number" value={foodModal.data.price} onChange={v => setFoodModal(p => ({ ...p, data: { ...p.data, price: v } }))} ph="199" />
-              <Field label="Calories" type="number" value={foodModal.data.cal} onChange={v => setFoodModal(p => ({ ...p, data: { ...p.data, cal: v } }))} ph="350" />
-            </div>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-              <Field label="Emoji" value={foodModal.data.emoji} onChange={v => setFoodModal(p => ({ ...p, data: { ...p.data, emoji: v } }))} ph="🥗" />
-              <Field label="Tag" value={foodModal.data.tag} onChange={v => setFoodModal(p => ({ ...p, data: { ...p.data, tag: v } }))} ph="High Protein" />
-            </div>
-            <button type="submit" style={{ background: C.gG, color: "#060c08", padding: "16px", borderRadius: 14, fontWeight: 900, marginTop: 10, border: "none", fontSize: 16, ...N, boxShadow: "0 8px 24px rgba(74,222,128,.3)" }}>
-              Save Food
-            </button>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}><Field label="Price (₹) *" type="number" value={foodModal.data.price} onChange={v => setFoodModal(p => ({ ...p, data: { ...p.data, price: v } }))} ph="199" /><Field label="Calories" type="number" value={foodModal.data.cal} onChange={v => setFoodModal(p => ({ ...p, data: { ...p.data, cal: v } }))} ph="350" /></div>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}><Field label="Emoji" value={foodModal.data.emoji} onChange={v => setFoodModal(p => ({ ...p, data: { ...p.data, emoji: v } }))} ph="🥗" /><Field label="Tag" value={foodModal.data.tag} onChange={v => setFoodModal(p => ({ ...p, data: { ...p.data, tag: v } }))} ph="High Protein" /></div>
+            <button type="submit" style={{ background: C.gG, color: "#060c08", padding: "16px", borderRadius: 14, fontWeight: 900, marginTop: 10, border: "none", fontSize: 16, ...N, boxShadow: "0 8px 24px rgba(74,222,128,.3)" }}>Save Food</button>
           </form>
         </Sheet>
       )}
 
       {planModal && (
         <Sheet onClose={() => setPlanModal(null)} tall>
-          <div style={{ ...N, color: C.w, fontSize: 22, fontWeight: 900, marginBottom: 18 }}>
-            💳 Edit Premium Plan
-          </div>
+          <div style={{ ...N, color: C.w, fontSize: 22, fontWeight: 900, marginBottom: 18 }}>💳 Edit Premium Plan</div>
           <form onSubmit={handleSavePlan} style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-              <Field label="Plan Name" value={planModal.label} onChange={v => setPlanModal(p => ({ ...p, label: v }))} />
-              <Field label="Per (e.g. month)" value={planModal.per} onChange={v => setPlanModal(p => ({ ...p, per: v }))} />
-            </div>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-              <Field label="Price (₹)" type="number" value={planModal.price} onChange={v => setPlanModal(p => ({ ...p, price: +v }))} />
-              <Field label="Save Text (Optional)" value={planModal.save || ""} onChange={v => setPlanModal(p => ({ ...p, save: v }))} ph="e.g. Save 25%" />
-            </div>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}><Field label="Plan Name" value={planModal.label} onChange={v => setPlanModal(p => ({ ...p, label: v }))} /><Field label="Per (e.g. month)" value={planModal.per} onChange={v => setPlanModal(p => ({ ...p, per: v }))} /></div>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}><Field label="Price (₹)" type="number" value={planModal.price} onChange={v => setPlanModal(p => ({ ...p, price: +v }))} /><Field label="Save Text (Optional)" value={planModal.save || ""} onChange={v => setPlanModal(p => ({ ...p, save: v }))} ph="e.g. Save 25%" /></div>
             <Field label="Features (One per line)" rows={5} value={planModal.features.join('\n')} onChange={v => setPlanModal(p => ({ ...p, features: v.split('\n').filter(Boolean) }))} ph="Enter features..." />
+            <button type="submit" style={{ background: C.gG, color: "#060c08", padding: "16px", borderRadius: 14, fontWeight: 900, marginTop: 10, border: "none", fontSize: 16, ...N, boxShadow: "0 8px 24px rgba(74,222,128,.3)" }}>Save Plan Updates</button>
+          </form>
+        </Sheet>
+      )}
+
+      {modal?.type === "editProfile" && (
+        <Sheet onClose={() => setModal(null)} tall>
+          <div style={{ ...N, color: C.w, fontSize: 22, fontWeight: 900, marginBottom: 18 }}>⚙️ Edit Health Data</div>
+          <form onSubmit={handleUpdateProfile} style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10 }}>
+              <Field label="Age" type="number" value={editProfileData.age} onChange={v => setEditProfileData(p => ({ ...p, age: v }))} />
+              <Field label="Weight(kg)" type="number" value={editProfileData.weight} onChange={v => setEditProfileData(p => ({ ...p, weight: v }))} />
+              <Field label="Height(cm)" type="number" value={editProfileData.height} onChange={v => setEditProfileData(p => ({ ...p, height: v }))} />
+            </div>
+            <div>
+              <div style={{ fontSize: 10, fontWeight: 700, color: C.m, textTransform: "uppercase", marginBottom: 7, ...F }}>Fitness Goal</div>
+              <select value={editProfileData.goal} onChange={e => setEditProfileData(p => ({ ...p, goal: e.target.value }))} style={{ width: "100%", padding: "14px 16px", background: "rgba(255,255,255,0.03)", border: `1.5px solid ${C.b}`, borderRadius: 13, color: C.w, fontSize: 14, ...F }}>
+                {GOALS.map(g => <option key={g.id} value={g.id} style={{ background: "#0c1610" }}>{g.label}</option>)}
+              </select>
+            </div>
+            <div>
+              <div style={{ fontSize: 10, fontWeight: 700, color: C.m, textTransform: "uppercase", marginBottom: 7, ...F }}>Food Preference</div>
+              <select value={editProfileData.pref} onChange={e => setEditProfileData(p => ({ ...p, pref: e.target.value }))} style={{ width: "100%", padding: "14px 16px", background: "rgba(255,255,255,0.03)", border: `1.5px solid ${C.b}`, borderRadius: 13, color: C.w, fontSize: 14, ...F }}>
+                {PREFS.map(p => <option key={p.id} value={p.id} style={{ background: "#0c1610" }}>{p.label}</option>)}
+              </select>
+            </div>
             <button type="submit" style={{ background: C.gG, color: "#060c08", padding: "16px", borderRadius: 14, fontWeight: 900, marginTop: 10, border: "none", fontSize: 16, ...N, boxShadow: "0 8px 24px rgba(74,222,128,.3)" }}>
-              Save Plan Updates
+              Save Profile Updates
             </button>
           </form>
         </Sheet>
       )}
 
+      {modal?.type === "sub" && (
+        <Sheet onClose={() => setModal(null)} tall>
+          <div style={{ ...N, color: C.w, fontSize: 24, fontWeight: 900, marginBottom: 5 }}>Upgrade to Premium ⚡</div>
+          <div style={{ color: C.m, fontSize: 13, marginBottom: 20 }}>Unlock AI personalization + priority delivery</div>
+          {plans.map(plan => (
+            <div key={plan.id} onClick={() => activatePlan(plan)} style={{ background: plan.hot ? "rgba(74,222,128,.07)" : C.card, border: `1.5px solid ${user?.plan === plan.id ? C.g : plan.hot ? C.g : C.b}`, borderRadius: 18, padding: "18px", cursor: "pointer", position: "relative", marginBottom: 12 }}>
+              {plan.hot && <div style={{ position: "absolute", top: -10, right: 16, background: C.gG, color: "#060c08", fontSize: 9, fontWeight: 900, padding: "3px 12px", borderRadius: 99 }}>POPULAR</div>}
+              {user?.plan === plan.id && <div style={{ position: "absolute", top: 10, left: 16, background: "rgba(74,222,128,.15)", color: C.g, fontSize: 9, fontWeight: 900, padding: "2px 10px", borderRadius: 99 }}>✓ ACTIVE</div>}
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 12, marginTop: user?.plan === plan.id ? 14 : 0 }}>
+                <div><div style={{ color: C.w, fontWeight: 800, fontSize: 16, ...N }}>{plan.label}</div>{plan.save && <div style={{ color: C.g, fontSize: 12, fontWeight: 700, marginTop: 3 }}>{plan.save}</div>}</div>
+                <div style={{ textAlign: "right" }}><div style={{ ...N, color: C.o, fontSize: 22, fontWeight: 900 }}>₹{plan.price}</div><div style={{ color: C.m, fontSize: 11 }}>/{plan.per}</div></div>
+              </div>
+              {plan.features.map((f, i) => <div key={i} style={{ display: "flex", gap: 8, alignItems: "center", marginBottom: 6 }}><span style={{ color: C.g, fontSize: 12 }}>✓</span><span style={{ color: C.m, fontSize: 12 }}>{f}</span></div>)}
+            </div>
+          ))}
+          <button onClick={() => setModal(null)} style={{ width: "100%", marginTop: 4, background: "transparent", border: `1px solid ${C.b}`, color: C.m, padding: "13px", borderRadius: 14, fontWeight: 600, fontSize: 14 }}>Maybe Later</button>
+        </Sheet>
+      )}
+
+      {modal?.type === "avatar" && (
+        <Sheet onClose={() => setModal(null)}>
+          <div style={{ ...N, color: C.w, fontSize: 18, fontWeight: 900, marginBottom: 16 }}>Choose Profile Picture</div>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(5,1fr)", gap: 10 }}>
+            {AVATARS.map(em => (
+              <button key={em} onClick={async () => { const u = { ...user, avatar: em }; setUser(u); setModal(null); pop("✅ Avatar updated!"); try { await window.fbDB.collection("users").doc(u.uid).update({ avatar: em }); } catch(e){} }} style={{ background: user?.avatar === em ? "rgba(74,222,128,.15)" : C.card, border: `1.5px solid ${user?.avatar === em ? C.g : C.b}`, borderRadius: 14, padding: "12px 0", fontSize: 24, textAlign: "center" }}>
+                {em}{user?.avatar === em && <div style={{ fontSize: 9, color: C.g, fontWeight: 700, marginTop: 3 }}>✓</div>}
+              </button>
+            ))}
+          </div>
+        </Sheet>
+      )}
+
+      {/* ✅ ADMIN LOGIN FIX (Inside Main App to allow seamless login without crash) */}
       {modal?.type === "adminLogin" && (
         <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,.93)", backdropFilter: "blur(12px)", zIndex: 960, display: "flex", alignItems: "center", justifyContent: "center", padding: 24 }}>
           <div style={{ background: C.card, border: `1px solid ${C.b}`, borderRadius: 24, padding: "28px 24px", width: "100%", maxWidth: 340, animation: "up .35s cubic-bezier(.34,1.56,.64,1)" }}>
@@ -1012,7 +861,6 @@ function App() {
         </div>
       )}
 
-      {/* ══ HOME ══ */}
       {tab === "home" && (
         <div style={{ paddingBottom: 100, height: "100vh", overflowY: "auto" }}>
           <div style={{ padding: "52px 22px 18px", background: "linear-gradient(180deg,rgba(12,22,16,0.9) 0%, transparent 100%)" }}>
@@ -1031,6 +879,15 @@ function App() {
               </div>
             </div>
           </div>
+
+          <div style={{ margin: "0 22px 16px", background: "rgba(96,165,250,.07)", border: "1px solid rgba(96,165,250,.2)", borderRadius: 20, padding: "16px", display: "flex", gap: 14, alignItems: "flex-start", animation: "aiGlow 4s infinite" }}>
+            <span style={{ fontSize: 28, animation: "pop .5s cubic-bezier(.34,1.56,.64,1) both" }}>🤖</span>
+            <div style={{ flex: 1 }}>
+              <div style={{ color: C.blue, fontSize: 13, fontWeight: 800, ...N }}>AI Coach Insight</div>
+              <div style={{ color: C.w, fontSize: 12, marginTop: 4, lineHeight: 1.5, opacity: 0.9 }}>{dailyAITip}</div>
+            </div>
+          </div>
+
           <div style={{ margin: "0 22px 16px", background: C.card, borderRadius: 24, padding: "20px", border: `1px solid ${C.b}`, boxShadow: "0 12px 32px rgba(0,0,0,0.3)" }}>
             <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
               <div style={{ position: "relative", width: 88, height: 88, flexShrink: 0 }}>
@@ -1045,10 +902,11 @@ function App() {
               <div style={{ flex: 1 }}>
                 <div style={{ color: C.m, fontSize: 11, fontWeight: 800, textTransform: "uppercase", letterSpacing: 1.5 }}>Today's Intake</div>
                 <div style={{ ...N, color: C.w, fontSize: 26, fontWeight: 900, marginTop: 4 }}>{todayCal} <span style={{ fontSize: 13, color: C.m }}>kcal</span></div>
-                <div style={{ color: C.g, fontSize: 12, marginTop: 4, fontWeight: 600 }}>Goal: {target} kcal</div>
+                <div style={{ color: C.g, fontSize: 12, marginTop: 4, fontWeight: 600 }}>Target: {target} kcal</div>
               </div>
             </div>
           </div>
+
           <div style={{ padding: "0 22px", marginBottom: 20 }}>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
               <button onClick={() => setTab("menu")} style={{ background: C.gG, borderRadius: 20, padding: "18px", border: "none", textAlign: "left", boxShadow: "0 12px 28px rgba(74,222,128,.25)" }}>
@@ -1062,6 +920,7 @@ function App() {
               </button>
             </div>
           </div>
+
           <div style={{ padding: "0 22px" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
               <div style={{ ...N, color: C.w, fontSize: 18, fontWeight: 900 }}>{greet.sticker} For You</div>
@@ -1093,10 +952,21 @@ function App() {
               })}
             </div>
           </div>
+
+          {!curPlan && (
+            <div style={{ margin: "16px 22px 0", background: "linear-gradient(135deg,#0c1610,#101a13)", border: "1px solid rgba(251,191,36,.3)", borderRadius: 20, padding: "18px", cursor: "pointer", boxShadow: "0 8px 24px rgba(251,191,36,.1)" }} onClick={() => setModal({ type: "sub" })}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <div>
+                  <div style={{ fontSize: 10, fontWeight: 900, color: C.gold, letterSpacing: 1.5, textTransform: "uppercase" }}>⚡ Upgrade to Premium</div>
+                  <div style={{ ...N, color: C.w, fontSize: 17, fontWeight: 900, marginTop: 4, lineHeight: 1.3 }}>Smart Meal Plans<br />Just for You</div>
+                </div>
+                <div style={{ background: "rgba(251,191,36,.15)", width: 54, height: 54, borderRadius: 16, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 26, border: `1px solid rgba(251,191,36,.4)` }}>👑</div>
+              </div>
+            </div>
+          )}
         </div>
       )}
 
-      {/* ══ MENU ══ */}
       {tab === "menu" && (
         <div style={{ paddingBottom: 100, height: "100vh", overflowY: "auto" }}>
           <div style={{ padding: "52px 22px 14px", background: "linear-gradient(180deg,rgba(12,22,16,0.9) 0%, transparent 100%)" }}>
@@ -1155,7 +1025,6 @@ function App() {
         </div>
       )}
 
-      {/* ══ CART ══ */}
       {tab === "cart" && (
         <div style={{ paddingBottom: 100, height: "100vh", overflowY: "auto" }}>
           <div style={{ padding: "52px 22px 20px" }}>
@@ -1196,6 +1065,17 @@ function App() {
                   <span style={{ ...N, color: C.o, fontWeight: 900, fontSize: 20 }}>₹{orderTotal}</span>
                 </div>
               </div>
+              <div style={{ background: C.card, borderRadius: 18, padding: 18, marginBottom: 16, border: `1px solid ${C.b}` }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+                  <div style={{ ...N, fontWeight: 800, color: C.w, fontSize: 14 }}>📍 Delivery Address</div>
+                  <button onClick={() => setTab("profile")} style={{ background: "none", border: "none", color: C.g, fontSize: 12, fontWeight: 700, ...N }}>Edit →</button>
+                </div>
+                {user?.address ? (
+                  <div style={{ color: C.m, fontSize: 13, lineHeight: 1.6 }}>{user.address}</div>
+                ) : (
+                  <button onClick={() => setTab("profile")} style={{ width: "100%", background: "rgba(74,222,128,.07)", border: "1px dashed rgba(74,222,128,.3)", color: C.g, padding: "12px", borderRadius: 12, fontWeight: 700, fontSize: 13 }}>+ Add Delivery Address</button>
+                )}
+              </div>
               <button onClick={placeOrder} style={{ width: "100%", background: C.gO, color: "#fff", border: "none", padding: 18, borderRadius: 18, fontWeight: 900, fontSize: 17, marginTop: 10, marginBottom: 24, ...N, boxShadow: "0 12px 36px rgba(249,115,22,.4)" }}>
                 🚀 Place Order (₹{orderTotal})
               </button>
@@ -1204,7 +1084,6 @@ function App() {
         </div>
       )}
 
-      {/* ══ TRACK ══ */}
       {tab === "track" && (
         <div style={{ paddingBottom: 100, height: "100vh", overflowY: "auto" }}>
           <div style={{ padding: "52px 22px 22px" }}>
@@ -1254,7 +1133,6 @@ function App() {
                       );
                     })}
                     
-                    {/* ✅ Customer Cancel Order Option */}
                     {order.statusIdx === 0 && (
                       <button onClick={() => cancelOrder(order.id, false)} style={{ marginTop: 20, width: "100%", background: "rgba(248,113,113,0.05)", border: `1px solid rgba(248,113,113,0.3)`, color: C.r, padding: "12px", borderRadius: 14, fontWeight: 800, fontSize: 14 }}>
                         Cancel Order
@@ -1268,7 +1146,6 @@ function App() {
         </div>
       )}
 
-      {/* ══ NOTIFS ══ */}
       {tab === "notifs" && (
         <div style={{ paddingBottom: 90, height: "100vh", overflowY: "auto" }}>
           <div style={{ padding: "52px 22px 20px", display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
@@ -1286,7 +1163,7 @@ function App() {
             <div style={{ padding: "0 22px" }}>
               {notifs.map((n, i) => (
                 <div key={n.id} onClick={() => setNotifs(p => p.map(x => x.id === n.id ? { ...x, read: true } : x))} style={{ background: n.read ? C.card : "rgba(74,222,128,.06)", borderRadius: 18, padding: "16px", marginBottom: 10, border: `1px solid ${n.read ? C.b : "rgba(74,222,128,.25)"}`, display: "flex", gap: 12, cursor: "pointer", animation: `cIn .3s ease ${i * .05}s both` }}>
-                  <div style={{ width: 44, height: 44, background: n.read ? "rgba(74,222,128,.07)" : "rgba(74,222,128,.14)", borderRadius: 14, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22, flexShrink: 0 }}>{n.icon}</div>
+                  <div style={{ width: 44, height: 44, background: n.read ? "rgba(74,222,128,.07)" : "rgba(74,222,128,.14)", borderRadius: 14, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22, flexShrink: 0 }}>{n.icon || "🔔"}</div>
                   <div style={{ flex: 1 }}>
                     <div style={{ ...N, fontWeight: 800, color: C.w, fontSize: 13 }}>{n.label}</div>
                     <div style={{ fontSize: 12, color: C.m, marginTop: 3, lineHeight: 1.5 }}>{n.msg}</div>
@@ -1300,7 +1177,6 @@ function App() {
         </div>
       )}
 
-      {/* ══ PROFILE ══ */}
       {tab === "profile" && (
         <div style={{ paddingBottom: 100, height: "100vh", overflowY: "auto" }}>
           <div style={{ padding: "52px 22px 28px", textAlign: "center", background: "linear-gradient(180deg,rgba(12,22,16,0.9) 0%, transparent 100%)" }}>
@@ -1317,9 +1193,21 @@ function App() {
           
           <div style={{ padding: "0 22px" }}>
             
-            {/* ✅ NEW: HEALTH PROFILE CARD */}
+            {!curPlan ? (
+              <button onClick={() => setModal({ type: "sub" })} style={{ width: "100%", background: "linear-gradient(135deg, rgba(251,191,36,0.1), rgba(251,191,36,0.05))", border: `1px solid rgba(251,191,36,0.4)`, color: C.gold, padding: "16px", borderRadius: 20, fontWeight: 900, fontSize: 15, marginBottom: 14, boxShadow: "0 8px 24px rgba(251,191,36,0.1)", display: "flex", justifyContent: "center", alignItems: "center", gap: 10 }}>
+                👑 Upgrade to Premium Plan
+              </button>
+            ) : (
+               <div style={{ width: "100%", background: "linear-gradient(135deg, rgba(74,222,128,0.1), rgba(74,222,128,0.05))", border: `1px solid rgba(74,222,128,0.4)`, color: C.g, padding: "16px", borderRadius: 20, fontWeight: 900, fontSize: 15, marginBottom: 14, display: "flex", justifyContent: "center", alignItems: "center", gap: 10 }}>
+                ⚡ {curPlan.label} Pro Active
+              </div>
+            )}
+
             <div style={{ background: C.card, borderRadius: 20, padding: 16, border: `1px solid ${C.b}`, marginBottom: 14 }}>
-              <div style={{ ...N, color: C.w, fontWeight: 800, fontSize: 15, marginBottom: 14 }}>📊 Health Profile</div>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
+                <div style={{ ...N, color: C.w, fontWeight: 800, fontSize: 15 }}>📊 Health Profile</div>
+                <button onClick={() => { setEditProfileData({ age: user?.age||"", weight: user?.weight||"", height: user?.height||"", goal: user?.goal||"general", pref: user?.pref||"all" }); setModal({ type: "editProfile" }); }} style={{ background: "rgba(96,165,250,0.1)", border: "none", color: C.blue, padding: "6px 12px", borderRadius: 10, fontSize: 12, fontWeight: 800 }}>✏️ Edit</button>
+              </div>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
                 <div style={{ background: "rgba(255,255,255,0.03)", padding: "12px", borderRadius: 14, border: `1px solid ${C.b}` }}>
                    <div style={{ fontSize: 11, color: C.m }}>Weight</div>
@@ -1330,14 +1218,14 @@ function App() {
                    <div style={{ ...N, fontSize: 16, fontWeight: 800, color: C.w, marginTop: 4 }}>{user?.height || "--"} cm</div>
                 </div>
                 <div style={{ background: "rgba(255,255,255,0.03)", padding: "12px", borderRadius: 14, border: `1px solid ${C.b}` }}>
-                   <div style={{ fontSize: 11, color: C.m }}>BMI</div>
-                   <div style={{ display: "flex", alignItems:"baseline", gap: 6, marginTop: 4 }}>
+                   <div style={{ fontSize: 11, color: C.m }}>BMI Score</div>
+                   <div style={{ display: "flex", alignItems:"center", gap: 6, marginTop: 4 }}>
                      <div style={{ ...N, fontSize: 16, fontWeight: 800, color: C.g }}>
                        {user?.weight && user?.height ? (+user.weight / ((+user.height / 100) ** 2)).toFixed(1) : "--"}
                      </div>
                      {user?.weight && user?.height && (
-                       <div style={{ fontSize: 9, color: C.g, background: "rgba(74,222,128,.1)", padding: "2px 6px", borderRadius: 99 }}>
-                         {(+(+user.weight / ((+user.height / 100) ** 2)).toFixed(1)) < 18.5 ? "Underweight" : (+(+user.weight / ((+user.height / 100) ** 2)).toFixed(1)) < 25 ? "Healthy" : (+(+user.weight / ((+user.height / 100) ** 2)).toFixed(1)) < 30 ? "Overweight" : "Obese"}
+                       <div style={{ fontSize: 9, color: C.bg, fontWeight: 900, background: C.g, padding: "3px 6px", borderRadius: 99 }}>
+                         {(+(+user.weight / ((+user.height / 100) ** 2)).toFixed(1)) < 18.5 ? "Low" : (+(+user.weight / ((+user.height / 100) ** 2)).toFixed(1)) < 25 ? "Good" : "High"}
                        </div>
                      )}
                    </div>
@@ -1391,7 +1279,7 @@ function App() {
           </div>
           <div style={{ padding: "0 22px 16px" }}>
             <div style={{ display: "flex", background: C.card, borderRadius: 16, padding: 5, gap: 4, overflowX: "auto", border: `1px solid ${C.b}` }}>
-              {[["orders", "📦"], ["foods", "🍽"], ["plans", "💳"], ["customers", "👥"], ["stats", "📊"]].map(([k, ic]) => (
+              {[["orders", "📦"], ["foods", "🍽"], ["plans", "💳"], ["customers", "👥"], ["stats", "📊"], ["broadcast", "📢"]].map(([k, ic]) => (
                 <button key={k} onClick={() => setAdminTab(k)} style={{ flexShrink: 0, padding: "12px 16px", borderRadius: 12, border: "none", background: adminTab === k ? C.blue : "transparent", color: adminTab === k ? "#fff" : C.m, fontWeight: 800, fontSize: 13 }}>
                   {ic} {k.toUpperCase()}
                 </button>
@@ -1401,37 +1289,43 @@ function App() {
 
           {adminTab === "orders" && (
             <div style={{ padding: "0 22px" }}>
-              {allOrders.map(order => (
-                <div key={order.id} style={{ background: C.card, borderRadius: 22, marginBottom: 16, border: `1px solid ${order.statusIdx < 4 ? "rgba(74,222,128,.4)" : order.statusIdx === 5 ? C.r : C.b}`, overflow: "hidden", boxShadow: "0 12px 32px rgba(0,0,0,0.25)" }}>
-                  <div style={{ background: "rgba(255,255,255,0.03)", padding: "16px 18px" }}>
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 10 }}>
-                      <div>
-                        <div style={{ ...N, color: C.w, fontWeight: 900, fontSize: 14 }}>#{String(order.id).slice(-8)}</div>
-                        <div style={{ fontSize: 12, color: C.m, marginTop: 2 }}>{order.date}</div>
-                      </div>
-                      <div style={{ ...N, color: C.o, fontWeight: 900, fontSize: 18 }}>₹{order.total}</div>
-                    </div>
-                    <div style={{ fontSize: 13, color: C.m }}>👤 <span style={{ color: C.w }}>{order.userName}</span> · 📞 <span style={{ color: C.g }}>{order.userPhone}</span></div>
-                  </div>
-                  <div style={{ padding: "14px 18px 18px" }}>
-                    <div style={{ color: order.statusIdx === 5 ? C.r : C.g, fontSize: 12, fontWeight: 800, marginBottom: 10 }}>{ORDER_STEPS[order.statusIdx]?.icon} {ORDER_STEPS[order.statusIdx]?.label}</div>
-                    
-                    {/* ✅ Admin Action Buttons (Update & Cancel) */}
-                    {order.statusIdx < 4 ? (
-                      <div style={{ display: "flex", gap: 10, marginTop: 12 }}>
-                        <button onClick={() => updateOrder(order.id)} style={{ flex: 2, background: C.gG, color: "#060c08", border: "none", padding: "12px", borderRadius: 14, fontWeight: 900, fontSize: 13, ...N, boxShadow: "0 6px 20px rgba(74,222,128,0.3)" }}>
-                          Update → {ORDER_STEPS[order.statusIdx + 1]?.icon}
-                        </button>
-                        <button onClick={() => cancelOrder(order.id, true)} style={{ flex: 1, background: "transparent", border: `1px solid ${C.r}`, color: C.r, padding: "12px", borderRadius: 14, fontWeight: 800, fontSize: 13, ...N }}>Cancel</button>
-                      </div>
-                    ) : (
-                      <div style={{ background: order.statusIdx === 5 ? "rgba(248,113,113,.1)" : "rgba(74,222,128,.1)", border: `1px solid ${order.statusIdx === 5 ? "rgba(248,113,113,.2)" : "rgba(74,222,128,.2)"}`, borderRadius: 14, padding: "12px", textAlign: "center", color: order.statusIdx === 5 ? C.r : C.g, fontSize: 13, fontWeight: 800, ...N }}>
-                        {order.statusIdx === 5 ? "🚫 Cancelled" : "✅ Delivered!"}
-                      </div>
-                    )}
-                  </div>
+              {allOrders.length === 0 ? (
+                <div style={{ textAlign: "center", padding: "40px 0" }}>
+                  <div style={{ fontSize: 52 }}>📦</div>
+                  <div style={{ color: C.m, fontWeight: 700, marginTop: 12, ...N }}>No orders yet</div>
                 </div>
-              ))}
+              ) : (
+                allOrders.map(order => (
+                  <div key={order.id} style={{ background: C.card, borderRadius: 22, marginBottom: 16, border: `1px solid ${order.statusIdx < 4 ? "rgba(74,222,128,.4)" : order.statusIdx === 5 ? C.r : C.b}`, overflow: "hidden", boxShadow: "0 12px 32px rgba(0,0,0,0.25)" }}>
+                    <div style={{ background: "rgba(255,255,255,0.03)", padding: "16px 18px" }}>
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 10 }}>
+                        <div>
+                          <div style={{ ...N, color: C.w, fontWeight: 900, fontSize: 14 }}>#{String(order.id).slice(-8)}</div>
+                          <div style={{ fontSize: 12, color: C.m, marginTop: 2 }}>{order.date}</div>
+                        </div>
+                        <div style={{ ...N, color: C.o, fontWeight: 900, fontSize: 18 }}>₹{order.total}</div>
+                      </div>
+                      <div style={{ fontSize: 13, color: C.m }}>👤 <span style={{ color: C.w }}>{order.userName}</span> · 📞 <span style={{ color: C.g }}>{order.userPhone}</span></div>
+                    </div>
+                    <div style={{ padding: "14px 18px 18px" }}>
+                      <div style={{ color: order.statusIdx === 5 ? C.r : C.g, fontSize: 12, fontWeight: 800, marginBottom: 10 }}>{ORDER_STEPS[order.statusIdx]?.icon} {ORDER_STEPS[order.statusIdx]?.label}</div>
+                      
+                      {order.statusIdx < 4 ? (
+                        <div style={{ display: "flex", gap: 10, marginTop: 12 }}>
+                          <button onClick={() => updateOrder(order.id)} style={{ flex: 2, background: C.gG, color: "#060c08", border: "none", padding: "12px", borderRadius: 14, fontWeight: 900, fontSize: 13, ...N, boxShadow: "0 6px 20px rgba(74,222,128,0.3)" }}>
+                            Update → {ORDER_STEPS[order.statusIdx + 1]?.icon}
+                          </button>
+                          <button onClick={() => cancelOrder(order.id, true)} style={{ flex: 1, background: "transparent", border: `1px solid ${C.r}`, color: C.r, padding: "12px", borderRadius: 14, fontWeight: 800, fontSize: 13, ...N }}>Cancel</button>
+                        </div>
+                      ) : (
+                        <div style={{ background: order.statusIdx === 5 ? "rgba(248,113,113,.1)" : "rgba(74,222,128,.1)", border: `1px solid ${order.statusIdx === 5 ? "rgba(248,113,113,.2)" : "rgba(74,222,128,.2)"}`, borderRadius: 14, padding: "12px", textAlign: "center", color: order.statusIdx === 5 ? C.r : C.g, fontSize: 13, fontWeight: 800, ...N }}>
+                          {order.statusIdx === 5 ? "🚫 Cancelled" : "✅ Delivered!"}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))
+              )}
             </div>
           )}
 
@@ -1479,7 +1373,7 @@ function App() {
                     <button onClick={() => setPlanModal({ ...plan, features: plan.features || [] })} style={{ background: "rgba(96,165,250,.15)", border: "none", color: C.blue, padding: "8px 16px", borderRadius: 12, fontWeight: 800, fontSize: 13 }}>✏️ Edit Plan</button>
                   </div>
                   <div style={{ marginTop: 12, paddingTop: 12, borderTop: `1px solid ${C.b}` }}>
-                    {plan.features.map((f, i) => <div key={i} style={{ fontSize: 12, color: C.m, marginBottom: 6 }}>✓ {f}</div>)}
+                    {(plan.features || []).map((f, i) => <div key={i} style={{ fontSize: 12, color: C.m, marginBottom: 6 }}>✓ {f}</div>)}
                   </div>
                 </div>
               ))}
@@ -1498,11 +1392,10 @@ function App() {
             </div>
           )}
 
-          {/* ✅ Admin Stats & Delivery Settings Tab */}
           {adminTab === "stats" && (
             <div style={{ padding: "0 22px" }}>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 18 }}>
-                {[["📦", "Orders", orders.length, C.g], ["💰", "Revenue", "₹" + orders.reduce((s, o) => s + o.total, 0), C.o], ["👥", "Users", allUsers.length, C.pur], ["🍽", "Items", allFlat.length, C.blue]].map(([ic, l, v, col]) => (
+                {[["📦", "Orders", allOrders.length, C.g], ["💰", "Revenue", "₹" + allOrders.reduce((s, o) => s + o.total, 0), C.o], ["👥", "Users", allUsers.length, C.pur], ["🍽", "Items", allFlat.length, C.blue]].map(([ic, l, v, col]) => (
                   <div key={l} style={{ background: C.card, borderRadius: 18, padding: "16px", border: `1px solid ${C.b}` }}>
                     <div style={{ fontSize: 22 }}>{ic}</div>
                     <div style={{ ...N, color: col, fontSize: 24, fontWeight: 900, marginTop: 6 }}>{v}</div>
@@ -1511,7 +1404,6 @@ function App() {
                 ))}
               </div>
 
-              {/* ✅ Delivery Fee Dynamic Settings Panel */}
               <div style={{ background: C.card, border: `1px solid ${C.b}`, borderRadius: 18, padding: "18px", marginBottom: 18 }}>
                 <div style={{ color: C.w, fontWeight: 900, fontSize: 15, ...N, marginBottom: 14 }}>🛵 Delivery Settings</div>
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 14 }}>
@@ -1520,6 +1412,19 @@ function App() {
                 </div>
                 <button onClick={updateSettings} style={{ width: "100%", background: "rgba(96,165,250,.15)", color: C.blue, padding: "12px", borderRadius: 12, fontWeight: 800, fontSize: 13, ...N, border: "none" }}>
                   💾 Update Delivery Settings
+                </button>
+              </div>
+            </div>
+          )}
+
+          {adminTab === "broadcast" && (
+            <div style={{ padding: "0 22px" }}>
+              <div style={{ background: C.card, border: `1px solid ${C.b}`, borderRadius: 18, padding: "18px", marginBottom: 18 }}>
+                <div style={{ color: C.w, fontWeight: 900, fontSize: 15, ...N, marginBottom: 14 }}>📢 Broadcast Announcement</div>
+                <div style={{ color: C.m, fontSize: 12, marginBottom: 16 }}>Send a global notification alert to all your customers instantly.</div>
+                <Field label="Message Content" value={broadcastMsg} onChange={setBroadcastMsg} ph="e.g. 50% Offer valid only for today!" rows={3} />
+                <button onClick={handleBroadcast} style={{ width: "100%", marginTop: 12, background: C.gG, color: "#060c08", padding: "14px", borderRadius: 14, fontWeight: 900, fontSize: 14, ...N, border: "none", boxShadow: "0 8px 24px rgba(74,222,128,.3)" }}>
+                  🚀 Send to All Users
                 </button>
               </div>
             </div>
