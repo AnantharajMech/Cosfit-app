@@ -4,15 +4,22 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
 <title>Cosfit — Eat Smart Live Strong</title>
+
+<!-- ஆப்-ஐ பிரீமியமாக காட்டும் PWA அமைப்புகள் -->
 <meta name="description" content="Smart fitness food delivery by Coscoom Creative Tech Solutions"/>
 <meta name="theme-color" content="#4ade80"/>
 <meta name="mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
-<link rel="manifest" href="manifest.json"/>
-<link rel="apple-touch-icon" href="icon.png"/>
+<meta name="apple-mobile-web-app-title" content="Cosfit">
+
+<!-- GitHub Pages-க்கு ஏற்ற சரியான PWA லிங்குகள் (./ சேர்க்கப்பட்டுள்ளது) -->
+<link rel="manifest" href="./manifest.json"/>
+<link rel="apple-touch-icon" href="./icon-192x192.png"/>
+
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
 
+<!-- Firebase & React Scripts -->
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
@@ -512,7 +519,6 @@ function App() {
     setLoading(false);
   };
 
-  // ✅ BUG FIXED: Added setScr("app") inside handleAdminLogin
   const handleAdminLogin = () => {
     const a = admins.find(x => x.username === adminUsername && x.password === adminPw && x.active);
     if (!a) { pop("Wrong admin credentials!", true); return; }
@@ -1206,7 +1212,7 @@ function App() {
             <div style={{ background: C.card, borderRadius: 20, padding: 16, border: `1px solid ${C.b}`, marginBottom: 14 }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
                 <div style={{ ...N, color: C.w, fontWeight: 800, fontSize: 15 }}>📊 Health Profile</div>
-                <button onClick={() => { setEditProfileData({ age: user?.age||"", weight: user?.weight||"", height: user?.height||"", goal: user?.goal||"general", pref: user?.pref||"all" }); setModal({ type: "editProfile" }); }} style={{ background: "rgba(96,165,250,0.1)", border: "none", color: C.blue, padding: "6px 12px", borderRadius: 10, fontSize: 12, fontWeight: 800 }}>✏️ Edit</button>
+                <button onClick={() => { setEditProfileData({ age: user?.age||"", weight: user?.weight||"", height: user?.height||" ", goal: user?.goal||"general", pref: user?.pref||"all" }); setModal({ type: "editProfile" }); }} style={{ background: "rgba(96,165,250,0.1)", border: "none", color: C.blue, padding: "6px 12px", borderRadius: 10, fontSize: 12, fontWeight: 800 }}>✏️ Edit</button>
               </div>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
                 <div style={{ background: "rgba(255,255,255,0.03)", padding: "12px", borderRadius: 14, border: `1px solid ${C.b}` }}>
@@ -1446,11 +1452,20 @@ function App() {
 
 ReactDOM.createRoot(document.getElementById("root")).render(<App />);
 </script>
+
+<!-- ✅ Service Worker (Updated for GitHub Pages) -->
 <script>
-// ✅ Service Worker — works on any HTTPS domain
-if("serviceWorker" in navigator && location.protocol === "https:"){
-  navigator.serviceWorker.register("sw.js").then(()=>console.log("✅ SW registered")).catch(e=>console.log("SW:",e));
-}
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js')
+        .then(registration => {
+          console.log('ServiceWorker registered successfully');
+        })
+        .catch(error => {
+          console.log('ServiceWorker registration failed: ', error);
+        });
+    });
+  }
 </script>
 </body>
 </html>
